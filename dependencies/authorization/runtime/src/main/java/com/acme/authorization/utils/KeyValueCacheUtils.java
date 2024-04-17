@@ -13,15 +13,7 @@ import java.util.*;
 public class KeyValueCacheUtils {
     private static final String CACHE_DIR = "/.cache_v2";
 
-    private static Logger logger = Logger.getLogger(KeyValueCacheUtils.class.getName());
-
-    public static synchronized void putCache(String cacheName, String key, String value, CacheUpdateMode cacheUpdateMode){
-        saveCache(cacheName, key, value);
-    }
-
-    public static synchronized void saveCache(String cacheName, String key, String value, CacheUpdateMode cacheUpdateMode) {
-        saveCache(cacheName, key, value);
-    }
+    private static final Logger logger = Logger.getLogger(KeyValueCacheUtils.class.getName());
 
     public static synchronized void removeCache(String cacheName, String key) {
         saveCache(cacheName, key, "");

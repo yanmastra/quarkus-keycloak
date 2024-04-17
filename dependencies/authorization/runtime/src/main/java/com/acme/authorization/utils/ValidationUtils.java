@@ -4,10 +4,9 @@ import java.util.regex.Pattern;
 
 public class ValidationUtils {
     private ValidationUtils(){}
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_! #$%&'*+/=?`{|}~^. -]+@[a-zA-Z0-9. -]+$");
 
     public static boolean isEmail(String email) {
-        return Pattern.compile("^[a-zA-Z0-9_! #$%&'*+/=?`{|}~^. -]+@[a-zA-Z0-9. -]+$")
-                .matcher(email)
-                .matches();
+        return EMAIL_PATTERN.matcher(email).matches();
     }
 }

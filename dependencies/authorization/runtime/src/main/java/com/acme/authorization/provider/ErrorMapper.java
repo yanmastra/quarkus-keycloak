@@ -40,7 +40,10 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
         int status = 500;
 
         MultivaluedMap<String, String> headers = requestContext.getHeaders();
-        if (headers.containsKey(HttpHeaders.ACCEPT) && headers.getFirst(HttpHeaders.ACCEPT).equals(MediaType.APPLICATION_JSON)) {
+        if ((headers.containsKey(HttpHeaders.ACCEPT) && headers.getFirst(HttpHeaders.ACCEPT).equals(MediaType.APPLICATION_JSON)) ||
+                (headers.containsKey(HttpHeaders.CONTENT_TYPE) && headers.getFirst(HttpHeaders.CONTENT_TYPE).equals(MediaType.APPLICATION_JSON)) ||
+                htmlErrorMappers.stream().findAny().isEmpty()
+        ) {
             if (exception instanceof HttpException httpException) {
                 message = httpException.getPayload();
                 status = httpException.getStatusCode();

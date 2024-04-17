@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.acme</groupId>
-    <artifactId>authorization-parent</artifactId>
+    <groupId>org.acme</groupId>
+    <artifactId>microservices-common-parent</artifactId>
     <version>0.0.3</version>
   </parent>
-  <artifactId>authorization</artifactId>
-  <name>Authorization - Runtime</name>
-
-  <properties>
-    <jackson.version>2.15.2</jackson.version>
-  </properties>
-
+  <artifactId>microservices-common</artifactId>
+  <name>Microservices Common - Runtime</name>
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -22,31 +16,49 @@
     </dependency>
 
     <dependency>
+      <groupId>com.acme</groupId>
+      <artifactId>authorization</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-reactive</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-reactive-panache</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
     </dependency>
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jsonb</artifactId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-oidc</artifactId>
+      <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version>
     </dependency>
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-keycloak-authorization</artifactId>
+      <artifactId>quarkus-junit5</artifactId>
+      <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.acme.authorization</groupId>
-      <artifactId>json</artifactId>
-      <version>0.2.0</version>
-    </dependency>
-
   </dependencies>
   <build>
     <plugins>
