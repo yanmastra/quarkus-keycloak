@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.acme</groupId>
-    <artifactId>microservices-common-parent</artifactId>
+    <artifactId>microservices-common-reactive-parent</artifactId>
     <version>0.0.3</version>
   </parent>
-  <artifactId>microservices-common-deployment</artifactId>
+  <artifactId>microservices-common-reactive-deployment</artifactId>
   <name>Microservices - Deployment</name>
   <dependencies>
     <dependency>
@@ -23,17 +23,17 @@
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-hibernate-orm-panache-deployment</artifactId>
+      <artifactId>quarkus-hibernate-reactive-deployment</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-agroal-deployment</artifactId>
+      <artifactId>quarkus-hibernate-reactive-panache-deployment</artifactId>
     </dependency>
 
     <!-- JDBC driver dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql-deployment</artifactId>
+      <artifactId>quarkus-reactive-pg-client-deployment</artifactId>
     </dependency>
 
     <dependency>
@@ -53,7 +53,7 @@
 
     <dependency>
       <groupId>org.acme</groupId>
-      <artifactId>microservices-common</artifactId>
+      <artifactId>microservices-common-reactive</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

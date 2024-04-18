@@ -1,4 +1,4 @@
-package org.acme.microservices.common.crud;
+package org.acme.microservices.common.reactive.crud;
 
 import com.acme.authorization.security.UserPrincipal;
 import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
@@ -20,20 +20,57 @@ import org.jboss.logging.Logger;
 
 import java.util.*;
 
-public abstract class CrudEndpoint<Entity extends CrudableEntity, Dao> {
+/**
+ * You can extend this abstract class to your Resource class to implement CRUD (Create Read Update and Delete) activity with reactive approach,
+ * you should provide 2 generic class parameter
+ * @param <Entity> is entity class that extend CrudableEntity
+ * @param <Dao> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
+ */
+public abstract class CrudableEndpointResourceReactive<Entity extends CrudableEntity, Dao> {
+
+    /**
+     * Implement this method and return a Repository object of Entity
+     * @return Repository class that extend PanacheRepositoryBase
+     */
     protected abstract PanacheRepositoryBase<Entity, String> getRepository();
+
+    /**
+     * Implement this method to convert Entity object to Dao object
+     * @param entity is object of Entity
+     * @return object of Dao
+     */
     protected abstract Dao fromEntity(Entity entity);
+
+    /**
+     * Implement this method to convert Dao object to Entity object
+     * @param dao is object of Dao
+     * @return object of Entity
+     */
     protected abstract Entity toEntity(Dao dao);
+
+    /**
+     * Implement this method to pass new attributes value to existed Entity,
+     * @param entity is existed entity that ever been persisted before
+     * @param dao is a Dao object that contain the data received from request body json
+     * @return Uni.createFrom().item(Entity object from parameter)
+     */
     protected abstract Uni<Entity> update(Entity entity, Dao dao);
 
+    /**
+     * Override this method to provide which columns that can be searched by ``?keyword=`` query parameter
+     * <br/>
+     * For example, if you have an Entity with column name, category, and description, and you need to search some data based on name or category,
+     * you can return Set.of("name", "category");
+     * @return Set of String column names;
+     */
     protected Set<String> searchAbleColumn() {
         return new HashSet<>();
     }
 
-    protected Class<?> searchAbleColumnClass(String columnName) {
-        return String.class;
-    }
-
+    /**
+     * Override this method to customize the sorting method
+     * @return an object of Sort
+     */
     protected Sort getSort() {
         return Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
     }

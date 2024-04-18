@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import io.quarkus.test.QuarkusUnitTest;
 
-public class CrudEndpointTest {
+public class CrudableEndpointResourceReactiveTest {
 
     // Start unit test with your extension loaded
     @RegisterExtension

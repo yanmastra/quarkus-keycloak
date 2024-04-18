@@ -16,9 +16,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIncludeProperties(value = {"credential", "id", "username", "email", "name", "authorities", "company_access"})
+@JsonIncludeProperties(value = {"credential", "id", "username", "email", "profile_name", "authorities", "company_access"})
 public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential, Serializable {
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
+    private static final String sub = "sub";
+    private static final String preferredClaim = "preferred_username";
 
     public UserPrincipal(JwtClaims claims, TokenCredential credential) {
         super(claims, credential);
@@ -30,12 +32,17 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
 
     @JsonProperty("id")
     public String getUserId() {
-        return super.getClaims().getClaimValueAsString("sub");
+        return super.getClaims().getClaimValueAsString(sub);
     }
 
     @JsonProperty("username")
     public String getUsername() {
-        return super.getClaims().getClaimValueAsString("preferred_username");
+        return getName();
+    }
+
+    @JsonProperty("name")
+    public String getName() {
+        return super.getClaims().getClaimValueAsString(preferredClaim);
     }
 
     @JsonProperty("email")
@@ -43,8 +50,8 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
         return super.getClaims().getClaimValueAsString("email");
     }
 
-    @JsonProperty("name")
-    public String getName() {
+    @JsonProperty("profile_name")
+    public String getProfileName() {
         return super.getClaims().getClaimValueAsString("name");
     }
 
@@ -64,7 +71,18 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
         }
     }
 
+    public String getSessionState() {
+        return super.getClaims().getClaimValueAsString("session_state");
+    }
+
     public static UserPrincipal from(OidcJwtCallerPrincipal principal) {
         return new UserPrincipal(principal.getClaims(), principal.getCredential());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof UserPrincipal upObj)) return false;
+        return getUserId().equals(upObj.getUserId()) && getSessionState().equals(upObj.getSessionState());
     }
 }

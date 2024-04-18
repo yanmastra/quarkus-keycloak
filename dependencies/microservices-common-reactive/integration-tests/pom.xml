@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.acme</groupId>
-    <artifactId>microservices-common-parent</artifactId>
+    <artifactId>microservices-common-reactive-parent</artifactId>
     <version>0.0.3</version>
   </parent>
-  <artifactId>microservices-common-integration-tests</artifactId>
+  <artifactId>microservices-common-reactive-integration-tests</artifactId>
   <name>Crud Endpoint - Integration Tests</name>
   <properties>
     <skipITs>true</skipITs>
@@ -15,7 +15,7 @@
   <dependencies>
     <dependency>
       <groupId>org.acme</groupId>
-      <artifactId>microservices-common</artifactId>
+      <artifactId>microservices-common-reactive</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

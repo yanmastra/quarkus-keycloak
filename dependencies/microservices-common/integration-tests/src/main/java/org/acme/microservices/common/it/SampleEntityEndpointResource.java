@@ -1,10 +1,9 @@
 package org.acme.microservices.common.it;
 
-import io.quarkus.hibernate.reactive.panache.PanacheRepositoryBase;
-import io.smallrye.mutiny.Uni;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
-import org.acme.microservices.common.crud.CrudEndpoint;
+import org.acme.microservices.common.crud.CrudableEndpointResource;
 import org.acme.microservices.common.it.entity.SampleEntity;
 import org.acme.microservices.common.it.json.SampleEntityJson;
 import org.acme.microservices.common.it.repo.SampleEntityRepository;
@@ -14,7 +13,7 @@ import java.util.Set;
 
 @Path("/api/v1/sampleEntity")
 @SecurityRequirement(name = "Keycloak")
-public class SampleEntityEndpoint extends CrudEndpoint<SampleEntity, SampleEntityJson> {
+public class SampleEntityEndpointResource extends CrudableEndpointResource<SampleEntity, SampleEntityJson> {
 
     @Inject
     SampleEntityRepository sampleEntityRepo;
@@ -35,14 +34,11 @@ public class SampleEntityEndpoint extends CrudEndpoint<SampleEntity, SampleEntit
     }
 
     @Override
-    protected Uni<SampleEntity> update(SampleEntity entity, SampleEntityJson sampleEntityJson) {
-        return Uni.createFrom().item(sampleEntityJson)
-                .map(json -> {
-                    entity.name = json.name;
-                    entity.category = json.category;
-                    entity.price = json.price;
-                    return entity;
-                });
+    protected SampleEntity update(SampleEntity entity, SampleEntityJson json) {
+        entity.name = json.name;
+        entity.category = json.category;
+        entity.price = json.price;
+        return entity;
     }
 
     @Override
