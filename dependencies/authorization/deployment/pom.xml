@@ -4,7 +4,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.acme</groupId>
+        <groupId>io.yanmastra</groupId>
         <artifactId>authorization-parent</artifactId>
         <version>0.0.3</version>
     </parent>
@@ -16,7 +16,7 @@
             <artifactId>quarkus-arc-deployment</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.acme</groupId>
+            <groupId>io.yanmastra</groupId>
             <artifactId>authorization</artifactId>
             <version>${project.version}</version>
         </dependency>
