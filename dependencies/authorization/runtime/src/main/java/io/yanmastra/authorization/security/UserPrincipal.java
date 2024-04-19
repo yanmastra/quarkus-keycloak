@@ -7,13 +7,17 @@ import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import io.quarkus.security.credential.Credential;
 import io.quarkus.security.credential.TokenCredential;
 import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import org.jboss.logging.Logger;
 import org.jose4j.jwt.JwtClaims;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIncludeProperties(value = {"credential", "id", "username", "email", "profile_name", "authorities", "company_access"})
@@ -21,6 +25,8 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
     private static final String sub = "sub";
     private static final String preferredClaim = "preferred_username";
+
+    private Set<String> authorities = null;
 
     public UserPrincipal(JwtClaims claims, TokenCredential credential) {
         super(claims, credential);
@@ -57,17 +63,50 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
 
     @JsonProperty("authorities")
     public Set<String> getAuthorities() {
-        return super.getGroups();
+        if (authorities != null) return authorities;
+
+        authorities = new HashSet<>(super.getGroups());
+        Map<String, Object> claimMaps = super.getClaims().getClaimsMap();
+
+        if (claimMaps.containsKey("realm_access") && claimMaps.get("realm_access") instanceof JsonObject realmAccess && realmAccess.containsKey("roles")) {
+            try {
+                authorities.addAll(realmAccess.getJsonArray("roles").stream().map(v -> {
+                    if (v instanceof JsonString sValue) return sValue.getString();
+                    return null;
+                }).filter(Objects::nonNull).collect(Collectors.toSet()));
+            } catch (Exception e) {
+                log.warn(e.getMessage(), new RuntimeException(e));
+            }
+        }
+
+        if (claimMaps.containsKey("resource_access") && claimMaps.get("resource_access") instanceof JsonObject resAccess) {
+            try {
+                if (!resAccess.isEmpty()) {
+                    for (String key: resAccess.keySet()) {
+                        if (resAccess.get(key) instanceof JsonObject roleAccChild && roleAccChild.containsKey("roles")) {
+                            authorities.add(key);
+                            authorities.addAll(roleAccChild.getJsonArray("roles").stream().map(v -> {
+                                if (v instanceof JsonString sValue) return sValue.getString();
+                                return null;
+                            }).filter(Objects::nonNull).collect(Collectors.toSet()));
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn(e.getMessage(), new RuntimeException(e));
+            }
+        }
+        return authorities;
     }
 
     @JsonProperty("company_access")
     public Set<String> companyAccess() {
         try {
             JsonArray value = (JsonArray) super.getClaims().getClaimValue("company_access");
-            return new HashSet<>(value.getValuesAs(jsonValue -> ((JsonString) jsonValue).getString()));
+            return value == null ? Set.of() : new HashSet<>(value.getValuesAs(jsonValue -> ((JsonString) jsonValue).getString()));
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return new HashSet<>();
+            log.warn(e.getMessage(), e);
+            return Set.of();
         }
     }
 
