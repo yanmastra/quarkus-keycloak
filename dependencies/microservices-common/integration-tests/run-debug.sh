@@ -6,16 +6,21 @@ docker compose -f docker-compose.yml up postgres -d
 docker compose -f docker-compose.yml up zookeeper kafka -d
 
 cd dependencies/authorization || exit
-mvn clean
+mvn clean install -DskipTests
+echo "Building authorization is complete"
 sleep 1
-mvn install -DskipTests
-sleep 3
+
+cd ../../
+cd dependencies/common-class || exit
+mvn clean install -DskipTests
+echo "Building common-class is complete"
+sleep 1
+
 cd ../../
 cd dependencies/microservices-common || exit
-mvn clean
+mvn clean install -DskipTests
+echo "Building microservices-common is complete"
 sleep 1
-mvn install -DskipTests
-sleep 3
 
 cd $DIR || exit
 

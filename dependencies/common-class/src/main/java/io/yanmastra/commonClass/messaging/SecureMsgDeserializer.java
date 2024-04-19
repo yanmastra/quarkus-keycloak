@@ -1,4 +1,4 @@
-package io.yanmastra.securedMessaging.serialiDeserializer;
+package io.yanmastra.commonClass.messaging;
 
 import io.quarkus.security.credential.TokenCredential;
 import io.vertx.core.json.JsonObject;

@@ -8,6 +8,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
+import io.yanmastra.commonClass.utils.CrudQueryFilterUtils;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -77,6 +78,9 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
 
     @Inject
     Logger logger;
+    @Inject
+    CrudQueryFilterUtils queryFilterUtils;
+
 
     @RunOnVirtualThread
     @GET
@@ -106,7 +110,7 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
             entityQuery = getRepository().findAll(sort);
         } else {
             Map<String, Object> queryParams = new HashMap<>();
-            String query = createFilterQuery(keyword, otherQueries, queryParams);
+            String query = queryFilterUtils.createFilterQuery(keyword, otherQueries, queryParams, searchAbleColumn());
 
             logger.debug("query:"+query+", params="+queryParams);
             entityQuery = getRepository().find(
@@ -131,36 +135,6 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
         );
     }
 
-    String createFilterQuery(String keyword, Map<String, String> otherQueries, Map<String, Object> queryParams) {
-        String where = "where ";
-        StringBuilder sbQuery = new StringBuilder(where);
-        if (StringUtils.isNotBlank(keyword)) {
-            queryParams.put("keyword", "%"+keyword+"%");
-            Set<String> searchKey = new HashSet<>();
-            sbQuery.append("(");
-            for (String column: searchAbleColumn()) {
-                searchKey.add("cast(" + column + " as string) like :keyword");
-            }
-            sbQuery.append(String.join(" or ", searchKey)).append(")");
-        }
-
-        if (StringUtils.isNotBlank(keyword) && !otherQueries.isEmpty()) {
-            sbQuery.append(" and ");
-        }
-
-        if (!otherQueries.isEmpty()) {
-            Iterator<String> keyQueries = otherQueries.keySet().iterator();
-            while (keyQueries.hasNext()) {
-                String key = keyQueries.next();
-                queryParams.put(key, otherQueries.get(key));
-
-                sbQuery.append(key).append("=:").append(key);
-                if (keyQueries.hasNext()) sbQuery.append(" and ");
-            }
-        }
-        return sbQuery.toString();
-    }
-
     @RunOnVirtualThread
     @GET
     @Path("{id}")
@@ -181,10 +155,15 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
     @Transactional
     public ResponseJson<Dao> create(Dao dao, @Context SecurityContext context) throws Exception {
         Entity entity = toEntity(dao);
-        Entity existed = getRepository().findById(entity.getId());
-        if (existed != null) {
-            throw new HttpException(HttpStatus.SC_CONFLICT, "Same entity already exists!");
+
+        if (StringUtils.isNotBlank(entity.getId())) {
+            Entity existed = getRepository().findById(entity.getId());
+            if (existed != null) {
+                throw new HttpException(HttpStatus.SC_CONFLICT, "Same entity already exists!");
+            }
         }
+
+        getRepository().persist(entity);
         Dao dao1 = fromEntity(entity);
         onWriteSuccess(dao1, (UserPrincipal) context.getUserPrincipal(), WriteType.CREATE);
 

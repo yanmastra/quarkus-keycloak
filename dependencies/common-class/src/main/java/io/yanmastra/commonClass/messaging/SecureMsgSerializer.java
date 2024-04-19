@@ -1,4 +1,4 @@
-package io.yanmastra.securedMessaging.serialiDeserializer;
+package io.yanmastra.commonClass.messaging;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.yanmastra.authorization.utils.JsonUtils;

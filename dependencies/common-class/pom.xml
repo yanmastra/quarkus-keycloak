@@ -5,8 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.yanmastra</groupId>
-  <artifactId>secured-messaging-serial-deserializer</artifactId>
+  <artifactId>common-class</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>secured-messaging-serial-deserializer</name>
   <url>http://www.example.com</url>
