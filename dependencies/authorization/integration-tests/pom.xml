@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.yanmastra</groupId>
         <artifactId>authorization-parent</artifactId>
-        <version>0.0.3</version>
+        <version>0.1.1</version>
     </parent>
     <artifactId>authorization-integration-tests</artifactId>
     <name>Authorization - Integration Tests</name>
@@ -14,10 +14,6 @@
         <skipITs>true</skipITs>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
-        </dependency>
         <dependency>
             <groupId>io.yanmastra</groupId>
             <artifactId>authorization</artifactId>

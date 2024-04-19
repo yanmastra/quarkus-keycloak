@@ -1,2 +1,2 @@
-/Users/onebyone/mastra/projects/quarkus-learning-keycloak/dependencies/authorization/integration-tests/src/main/java/com/acme/authorization/it/AuthResource.java
-/Users/onebyone/mastra/projects/quarkus-learning-keycloak/dependencies/authorization/integration-tests/src/main/java/com/acme/authorization/it/AuthorizationResource.java
+/Users/onebyone/mastra/projects/quarkus-learning-keycloak/dependencies/authorization/integration-tests/src/main/java/io/yanmastra/authorization/it/AuthorizationResource.java
+/Users/onebyone/mastra/projects/quarkus-learning-keycloak/dependencies/authorization/integration-tests/src/main/java/io/yanmastra/authorization/it/AuthResource.java

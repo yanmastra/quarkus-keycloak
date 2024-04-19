@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>authorization-parent</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.1</version>
   </parent>
   <artifactId>authorization</artifactId>
   <name>Authorization - Runtime</name>
@@ -23,7 +23,7 @@
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
+      <artifactId>quarkus-rest-jackson</artifactId>
     </dependency>
 
     <dependency>
@@ -37,14 +37,9 @@
     </dependency>
 
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-keycloak-authorization</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.14.0</version>
     </dependency>
 
   </dependencies>
