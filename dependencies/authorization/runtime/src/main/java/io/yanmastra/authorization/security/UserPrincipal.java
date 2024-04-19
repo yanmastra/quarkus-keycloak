@@ -25,7 +25,6 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
     private static final String sub = "sub";
     private static final String preferredClaim = "preferred_username";
-
     private Set<String> authorities = null;
 
     public UserPrincipal(JwtClaims claims, TokenCredential credential) {
