@@ -1,4 +1,4 @@
-package io.yanmastra.microservices.common.it;
+package io.yanmastra.microservices.restSample;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;

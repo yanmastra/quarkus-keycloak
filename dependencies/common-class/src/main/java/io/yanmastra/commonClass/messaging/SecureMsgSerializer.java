@@ -1,10 +1,13 @@
 package io.yanmastra.commonClass.messaging;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import io.yanmastra.authorization.utils.JsonUtils;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.io.StringReader;
 import java.util.Map;
 
 public class SecureMsgSerializer implements Serializer<MessageQuote> {
@@ -21,15 +24,26 @@ public class SecureMsgSerializer implements Serializer<MessageQuote> {
 
     @Override
     public byte[] serialize(String s, MessageQuote tMessageQuote) {
-        String json = JsonUtils.toJson(Map.of(
-                "claims", tMessageQuote.getPrincipal().getClaims().getClaimsMap(),
-                "cred", Map.of(
-                        "token", "[hidden]",
-                        "type", tMessageQuote.getPrincipal().getCredential().getType()
-                ),
-                "data", tMessageQuote.getDataObject(new TypeReference<Map<String, Object>>() {})
-        ));
-        return stringSerializer.serialize(s, json);
+        Map<String, Object> claimsMap = tMessageQuote.getPrincipal().getClaims().getClaimsMap();
+        JsonObjectBuilder claims = Json.createObjectBuilder();
+        for (String key: claimsMap.keySet()) {
+            if (claimsMap.get(key) instanceof JsonValue jsonValue)
+                claims.add(key, jsonValue);
+            else if (claimsMap.get(key) instanceof JsonObject jObj) {
+                claims.add(key, Json.createObjectBuilder(jObj));
+            }
+        }
+
+        JsonObject json = Json.createObjectBuilder()
+                .add("claims", claims)
+                .add("cred",
+                        Json.createObjectBuilder()
+                        .add("token", "[hidden]")
+                        .add("type", tMessageQuote.getPrincipal().getCredential().getType())
+                )
+                .add("data", Json.createReader(new StringReader(tMessageQuote.getDataJson())).readValue())
+                .build();
+        return stringSerializer.serialize(s, json.toString());
     }
 
     @Override

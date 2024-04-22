@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>microservices-common-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.2</version>
   </parent>
   <artifactId>microservices-common-deployment</artifactId>
   <name>Microservices - Deployment</name>
@@ -34,16 +34,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-postgresql-deployment</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson-deployment</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
     </dependency>
 
     <dependency>

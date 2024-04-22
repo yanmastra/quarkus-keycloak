@@ -1,8 +1,8 @@
-package io.yanmastra.microservices.common.it.json;
+package io.yanmastra.microservices.restSample.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.yanmastra.microservices.common.it.entity.SampleEntity;
+import io.yanmastra.microservices.restSample.entity.SampleEntity;
 
 import java.math.BigDecimal;
 

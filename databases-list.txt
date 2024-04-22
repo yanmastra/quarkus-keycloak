@@ -2,3 +2,4 @@ db_authentication
 db_integration_test
 db_inventories
 db_orders
+db_sample

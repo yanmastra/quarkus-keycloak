@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.yanmastra</groupId>
   <artifactId>microservices-common-parent</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.2</version>
   <packaging>pom</packaging>
   <name>Crud Endpoint - Parent</name>
   <modules>

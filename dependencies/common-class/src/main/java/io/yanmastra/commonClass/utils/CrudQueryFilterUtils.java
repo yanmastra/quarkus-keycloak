@@ -12,12 +12,12 @@ import java.util.Set;
 public class CrudQueryFilterUtils {
 
     public String createFilterQuery(String keyword, Map<String, String> otherQueries, Map<String, Object> queryParams, Set<String> searchableColumn) {
-        String where = "where ";
+        String where = "where deletedAt is null";
         StringBuilder sbQuery = new StringBuilder(where);
         if (StringUtils.isNotBlank(keyword)) {
             queryParams.put("keyword", "%"+keyword+"%");
             Set<String> searchKey = new HashSet<>();
-            sbQuery.append("(");
+            sbQuery.append(" and (");
             for (String column: searchableColumn) {
                 searchKey.add("cast(" + column + " as string) like :keyword");
             }

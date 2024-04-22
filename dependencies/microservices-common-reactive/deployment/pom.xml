@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>microservices-common-reactive-parent</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.2</version>
   </parent>
   <artifactId>microservices-common-reactive-deployment</artifactId>
   <name>Microservices - Deployment</name>
@@ -18,6 +18,12 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>authorization-deployment</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.yanmastra</groupId>
+      <artifactId>microservices-common-reactive</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -38,24 +44,9 @@
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson-deployment</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-reactive-messaging-kafka-deployment</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>io.yanmastra</groupId>
-      <artifactId>microservices-common-reactive</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5-internal</artifactId>

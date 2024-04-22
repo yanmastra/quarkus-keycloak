@@ -32,6 +32,11 @@ public class MessageQuote {
         return JsonUtils.fromJson(data, tClass, true);
     }
 
+    @JsonIgnore
+    public String getDataJson() {
+        return data;
+    }
+
     @NotNull
     @JsonIgnore
     public UserPrincipal getPrincipal() {

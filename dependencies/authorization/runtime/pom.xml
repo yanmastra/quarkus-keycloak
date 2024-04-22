@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>authorization-parent</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
   </parent>
   <artifactId>authorization</artifactId>
   <name>Authorization - Runtime</name>
@@ -40,6 +40,16 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>3.14.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-keycloak-authorization</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
 
   </dependencies>

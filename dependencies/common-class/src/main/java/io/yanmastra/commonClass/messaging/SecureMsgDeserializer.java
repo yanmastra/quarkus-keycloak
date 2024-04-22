@@ -1,13 +1,15 @@
 package io.yanmastra.commonClass.messaging;
 
 import io.quarkus.security.credential.TokenCredential;
-import io.vertx.core.json.JsonObject;
 import io.yanmastra.authorization.security.UserPrincipal;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.jose4j.jwt.JwtClaims;
 
-import java.util.Iterator;
+import java.io.StringReader;
 import java.util.Map;
 
 public class SecureMsgDeserializer implements Deserializer<MessageQuote> {
@@ -25,12 +27,10 @@ public class SecureMsgDeserializer implements Deserializer<MessageQuote> {
     @Override
     public MessageQuote deserialize(String s, byte[] bytes) {
         String message = stringDeserializer.deserialize(s, bytes);
-        JsonObject msgObj = new JsonObject(message);
+        JsonObject msgObj = Json.createReader(new StringReader(message)).readObject();
 
         JwtClaims claims = new JwtClaims();
-        Iterator<Map.Entry<String, Object>> claimIterator = msgObj.getJsonObject("claims").stream().iterator();
-        while (claimIterator.hasNext()) {
-            Map.Entry<String, Object> entry = claimIterator.next();
+        for (Map.Entry<String, JsonValue> entry : msgObj.getJsonObject("claims").entrySet()) {
             claims.setClaim(entry.getKey(), entry.getValue());
         }
 

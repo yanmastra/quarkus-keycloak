@@ -45,7 +45,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>authorization</artifactId>
-      <version>0.1.1</version>
+      <version>0.1.2</version>
     </dependency>
 
     <dependency>

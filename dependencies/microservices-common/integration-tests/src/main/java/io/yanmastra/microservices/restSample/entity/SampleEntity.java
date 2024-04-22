@@ -1,4 +1,4 @@
-package io.yanmastra.microservices.common.it.entity;
+package io.yanmastra.microservices.restSample.entity;
 
 import jakarta.persistence.*;
 import io.yanmastra.microservices.common.crud.CrudableEntity;

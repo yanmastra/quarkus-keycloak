@@ -1,4 +1,4 @@
-package io.yanmastra.microservices.common.it;
+package io.yanmastra.microservices.restSample;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 

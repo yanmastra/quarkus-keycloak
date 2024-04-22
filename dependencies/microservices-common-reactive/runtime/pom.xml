@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>microservices-common-reactive-parent</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.2</version>
   </parent>
   <artifactId>microservices-common-reactive</artifactId>
   <name>Microservices Common - Runtime</name>
@@ -22,6 +22,12 @@
     </dependency>
 
     <dependency>
+      <groupId>io.yanmastra</groupId>
+      <artifactId>common-class</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-reactive</artifactId>
     </dependency>
@@ -34,15 +40,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-reactive-pg-client</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
 
     <dependency>

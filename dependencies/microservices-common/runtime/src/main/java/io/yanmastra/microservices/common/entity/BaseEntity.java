@@ -12,25 +12,28 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * This class contains the basic columns that should be defined on every Entity
+ */
 @MappedSuperclass
 public abstract class BaseEntity extends PanacheEntityBase implements Serializable {
     @CreationTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
-    @Column(name = "created_by", length = 64)
+    @Column(name = "created_by", length = 32)
     private String createdBy;
     @UpdateTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private Date updatedAt;
-    @Column(name = "updated_by", length = 64)
+    @Column(name = "updated_by", length = 32)
     private String updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deleted_at")
     private Date deletedAt;
-    @Column(name = "deleted_by", length = 64)
+    @Column(name = "deleted_by", length = 32)
     private String deletedBy;
 
     public Date getCreatedAt() {

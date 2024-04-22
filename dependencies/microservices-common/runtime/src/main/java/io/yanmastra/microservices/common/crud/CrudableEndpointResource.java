@@ -1,5 +1,6 @@
 package io.yanmastra.microservices.common.crud;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.yanmastra.authorization.ResponseJson;
 import io.yanmastra.authorization.security.UserPrincipal;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -16,7 +17,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 import org.jboss.logging.Logger;
 
 import java.util.*;
@@ -107,7 +107,7 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
 
         PanacheQuery<Entity> entityQuery;
         if (StringUtils.isBlank(keyword) && otherQueries.isEmpty()) {
-            entityQuery = getRepository().findAll(sort);
+            entityQuery = getRepository().find("where deletedAt is null", sort, Map.of());
         } else {
             Map<String, Object> queryParams = new HashMap<>();
             String query = queryFilterUtils.createFilterQuery(keyword, otherQueries, queryParams, searchAbleColumn());
@@ -143,11 +143,11 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
             @PathParam("id") String id,
             @Context SecurityContext context
     ) {
-        Entity entity = getRepository().findById(id);
+        Entity entity = getRepository().find("where id = ?1 and deletedAt is null", id).firstResult();
         if (entity != null) {
             return fromEntity(entity);
         }
-        throw new HttpException(HttpStatus.SC_NOT_FOUND, "Unable to find entity with id:"+id);
+        throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
     }
 
     @RunOnVirtualThread
@@ -159,7 +159,7 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
         if (StringUtils.isNotBlank(entity.getId())) {
             Entity existed = getRepository().findById(entity.getId());
             if (existed != null) {
-                throw new HttpException(HttpStatus.SC_CONFLICT, "Same entity already exists!");
+                throw new HttpException(HttpResponseStatus.CONFLICT.code(), "Same entity already exists!");
             }
         }
 
@@ -183,8 +183,8 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
             Dao dao,
             @Context SecurityContext context
     ) throws Exception {
-            Entity existed = getRepository().findById(id);
-            if (existed == null) throw new HttpException(HttpStatus.SC_NOT_FOUND, "Unable to find entity with id:"+id);
+            Entity existed = getRepository().find("where id = ?1 and deletedAt is null", id).firstResult();
+            if (existed == null) throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
             Entity entity = update(existed, dao);
             getRepository().persist(entity);
             Dao dao1 = fromEntity(entity);
@@ -205,8 +205,8 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
             @PathParam("id") String id,
             @Context SecurityContext context
     ) throws Exception {
-        Entity existed = getRepository().findById(id);
-        if (existed == null) throw new HttpException(HttpStatus.SC_NOT_FOUND, "Unable to find entity with id:"+id);
+        Entity existed = getRepository().find("where id = ?1 and deletedAt is null", id).firstResult();
+        if (existed == null) throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
 
         boolean result = getRepository().deleteById(id);
         if (result) {
@@ -214,10 +214,18 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
             onWriteSuccess(dao, (UserPrincipal) context.getUserPrincipal(), WriteType.DELETE);
             return new ResponseJson<>(true, dao.getClass().getSimpleName() + ":"+id+" has been deleted successfully");
         } else {
-            throw new HttpException(HttpStatus.SC_INTERNAL_SERVER_ERROR, "Something wrong when deleting "+existed.getClass().getSimpleName()+":"+id);
+            throw new HttpException(HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), "Something wrong when deleting "+existed.getClass().getSimpleName()+":"+id);
         }
     }
 
+    /**
+     * You can override this method when you need to do something after creating, updating, or deleting the data,
+     * such as sending the data to Message broker os something else,
+     * @param dao is Data Access Object that represent the related entity that has been created or modified
+     * @param principal is user information who done the process
+     * @param type is the type write, it can be CREATE, UPDATE, or DELETE
+     * @throws Exception can be thrown if you need to cancel the process
+     */
     protected void onWriteSuccess(Dao dao, UserPrincipal principal, WriteType type) throws Exception {
     }
 }

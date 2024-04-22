@@ -4,10 +4,8 @@ cd ../../../
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
 
 cd dependencies/authorization || exit
-mvn clean
+mvn clean install -DskipTests
 sleep 1
-mvn install -DskipTests
-sleep 3
 cd $DIR || exit
 
 export DEBUG=15004
