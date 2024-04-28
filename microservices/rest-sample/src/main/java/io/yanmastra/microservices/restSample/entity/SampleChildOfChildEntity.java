@@ -1,14 +1,19 @@
 package io.yanmastra.microservices.restSample.entity;
 
+import io.yanmastra.microservices.common.crud.CrudableEntity;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "tb_sample_child_of_child")
-public class SampleChildOfChildEntity {
+public class SampleChildOfChildEntity extends CrudableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, nullable = false)
     private String id;
+    @Column(precision = 14, scale = 2)
+    private BigDecimal amount;
     @Column(length = 36, name = "column_1")
     private String column1;
     @Column(length = 36, name = "column_2")
@@ -30,13 +35,14 @@ public class SampleChildOfChildEntity {
      */
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
-    private SampleChildOfChildEntity parent;
+    private SampleChildEntity parent;
 
     public SampleChildOfChildEntity() {
     }
 
-    public SampleChildOfChildEntity(String id, String column1, String column2, String column3, String column4, String column5, String column6, String column7) {
+    public SampleChildOfChildEntity(String id, BigDecimal amount, String column1, String column2, String column3, String column4, String column5, String column6, String column7) {
         this.id = id;
+        this.amount = amount;
         this.column1 = column1;
         this.column2 = column2;
         this.column3 = column3;
@@ -110,11 +116,19 @@ public class SampleChildOfChildEntity {
         this.column7 = column7;
     }
 
-    public SampleChildOfChildEntity getParent() {
+    public SampleChildEntity getParent() {
         return parent;
     }
 
-    public void setParent(SampleChildOfChildEntity parent) {
+    public void setParent(SampleChildEntity parent) {
         this.parent = parent;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 }

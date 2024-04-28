@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
 import io.yanmastra.microservices.restSample.entity.SampleParentEntity;
+import org.apache.commons.lang3.StringUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleChildEntityJson {
@@ -28,8 +29,11 @@ public class SampleChildEntityJson {
         json.setId(entity.getId());
         json.setName(entity.getName());
         json.setDescription(entity.getDescription());
-        json.setParentId(entity.getParent().getId());
-        json.setParentName(entity.getParent().getName());
+
+        if (entity.getParent() != null) {
+            json.setParentId(entity.getParent().getId());
+            json.setParentName(entity.getParent().getName());
+        }
         return json;
     }
 
@@ -39,10 +43,12 @@ public class SampleChildEntityJson {
         entity.setName(getName());
         entity.setDescription(getDescription());
 
-        SampleParentEntity parentEntity = new SampleParentEntity();
-        parentEntity.setId(getParentId());
-        parentEntity.setName(getParentName());
-        entity.setParent(parentEntity);
+        if (StringUtils.isNotBlank(getParentId())) {
+            SampleParentEntity parentEntity = new SampleParentEntity();
+            parentEntity.setId(getParentId());
+            parentEntity.setName(getParentName());
+            entity.setParent(parentEntity);
+        }
         return entity;
     }
 

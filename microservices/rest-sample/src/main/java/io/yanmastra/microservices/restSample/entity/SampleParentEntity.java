@@ -23,7 +23,7 @@ import java.math.BigDecimal;
  *      and should be defining the data type of the parameter
  */
 @Entity
-@Table(name = "tb_parent_simple", indexes = {
+@Table(name = "tb_sample_parent", indexes = {
         @Index(name = "searchable", columnList = "id, name, category"),
         @Index(name = "countable", columnList = "price"),
 })

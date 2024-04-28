@@ -1,5 +1,6 @@
 package io.yanmastra.microservices.common.crud;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -7,33 +8,34 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Paginate<E> {
+    @JsonProperty("data")
     private List<E> data;
     @JsonProperty("current_page")
     private int currentPage;
     @JsonProperty("size")
     private int size;
-    @JsonProperty("is_first")
-    private boolean isFirst;
-    @JsonProperty("is_last")
-    private boolean isLast;
     @JsonProperty("total_data")
     private long totalData;
-    @JsonProperty("total_page")
-    private int totalPage;
 
     public Paginate() {
     }
 
+    @Deprecated
     public Paginate(List<E> data, int currentPage, int size, boolean isFirst, boolean isLast, long totalData, int totalPage) {
         this.data = data;
         this.currentPage = currentPage;
         this.size = size;
-        this.isFirst = isFirst;
-        this.isLast = isLast;
         this.totalData = totalData;
-        this.totalPage = totalPage;
     }
 
+    public Paginate(List<E> data, int currentPage, int size, long totalData) {
+        this.data = data;
+        this.currentPage = currentPage;
+        this.size = size;
+        this.totalData = totalData;
+    }
+
+    @JsonIgnore
     public List<E> getData() {
         return data;
     }
@@ -42,6 +44,7 @@ public class Paginate<E> {
         this.data = data;
     }
 
+    @JsonIgnore
     public int getCurrentPage() {
         return currentPage;
     }
@@ -50,6 +53,7 @@ public class Paginate<E> {
         this.currentPage = currentPage;
     }
 
+    @JsonIgnore
     public int getSize() {
         return size;
     }
@@ -58,22 +62,17 @@ public class Paginate<E> {
         this.size = size;
     }
 
+    @JsonProperty("is_first")
     public boolean isFirst() {
-        return isFirst;
+        return currentPage == 1;
     }
 
-    public void setFirst(boolean first) {
-        isFirst = first;
-    }
-
+    @JsonProperty("is_last")
     public boolean isLast() {
-        return isLast;
+        return ((long) getCurrentPage() * getSize()) >= totalData;
     }
 
-    public void setLast(boolean last) {
-        isLast = last;
-    }
-
+    @JsonIgnore
     public long getTotalData() {
         return totalData;
     }
@@ -82,11 +81,8 @@ public class Paginate<E> {
         this.totalData = totalData;
     }
 
+    @JsonProperty("total_page")
     public int getTotalPage() {
-        return totalPage;
-    }
-
-    public void setTotalPage(int totalPage) {
-        this.totalPage = totalPage;
+        return (int) (totalData / size + (totalData % size == 0 ?  0 : 1));
     }
 }

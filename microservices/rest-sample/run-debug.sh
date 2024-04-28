@@ -28,4 +28,4 @@ export DEBUG=15005
 export QUARKUS_LOG_LEVEL=INFO
 
 mvn clean
-mvn quarkus:dev -Ddebug=$DEBUG
+mvn quarkus:dev -Ddebug=$DEBUG -Djdk.virtualThreadScheduler.parallelism=16 -Djdk.virtualThreadScheduler.maxPoolSize=64

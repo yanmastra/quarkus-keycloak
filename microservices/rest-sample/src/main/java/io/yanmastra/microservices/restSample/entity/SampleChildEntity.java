@@ -4,7 +4,7 @@ import io.yanmastra.microservices.common.crud.CrudableEntity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tb_child_simple")
+@Table(name = "tb_sample_child")
 public class SampleChildEntity extends CrudableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

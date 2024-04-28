@@ -24,7 +24,7 @@ public class CrudQueryFilterUtils {
             sbQuery.append(String.join(" or ", searchKey)).append(")");
         }
 
-        if (StringUtils.isNotBlank(keyword) && !otherQueries.isEmpty()) {
+        if (!otherQueries.isEmpty()) {
             sbQuery.append(" and ");
         }
 
@@ -32,9 +32,10 @@ public class CrudQueryFilterUtils {
             Iterator<String> keyQueries = otherQueries.keySet().iterator();
             while (keyQueries.hasNext()) {
                 String key = keyQueries.next();
-                queryParams.put(key, otherQueries.get(key));
+                String sKey = key.replace(".", "_");
+                queryParams.put(sKey, otherQueries.get(key));
 
-                sbQuery.append(key).append("=:").append(key);
+                sbQuery.append(key).append("=:").append(sKey);
                 if (keyQueries.hasNext()) sbQuery.append(" and ");
             }
         }
