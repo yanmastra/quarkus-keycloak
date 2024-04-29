@@ -1,5 +1,11 @@
 # Practicing to build Quarkus, Quarkus-extension, Keycloak, and SSL integrated
 
+## Requirement 
+1. GraalVM (Community Edition / Oracle) with Java 21
+2. Docker
+> It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
+> [See this to install](https://sdkman.io/install) 
+
 ## How to setup ? 
 Please follow these steps to run this project correctly
 ### 1. Clone the project
@@ -47,7 +53,8 @@ This step is to make our domain works on our local
 1. Open your terminal
 2. Navigate to this project root folder
 3. Type ``./create-local-dns.sh`` and enter
-4. The result would be like this ![image](/docs/img/create-local-dns.png)
+4. The result would be like this 
+   ![image](/docs/img/create-local-dns.png)
 5. To make sure your domain works, type this on terminal, 
    ```
    ping 10.123.123.123
@@ -72,3 +79,7 @@ Certificate is needed to secure our keycloak
    ![image](/docs/img/nginx-certs.png)
 3. And then check on folder ``./docker/keycloak/``, ``server.keystore`` would be there
    ![image](/docs/img/server-keystore.png)
+
+### 6. Run Keycloak and PostgreSQL
+1. On your terminal, please run this ``./compose-up-keycloak-posgress.sh`` 
+2. Please wait until finish, 
