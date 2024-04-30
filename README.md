@@ -63,7 +63,7 @@ This step is to make our domain works on our local
 2. Navigate to this project root folder
 3. Type ``./create-local-dns.sh`` and enter
 4. The result would be like this 
-   ![image](/docs/img/create-local-dns.png)
+![image](/docs/img/create-local-dns.png)
 5. To make sure your domain works, type this on terminal, 
    ```
    ping 10.123.123.123
