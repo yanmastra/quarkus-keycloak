@@ -62,7 +62,7 @@ This step is to make our domain works on our local
 1. Open your terminal
 2. Navigate to this project root folder
 3. Type ``./create-local-dns.sh`` and enter
-4. The result would be like this 
+4. The result would be like this <br/>
 ![image](/docs/img/create-local-dns.png)
 5. To make sure your domain works, type this on terminal, 
    ```
@@ -84,10 +84,11 @@ This step is to make our domain works on our local
 ### 5. Create certificate for keycloak and SSL
 Certificate is needed to secure our keycloak
 1. Run ``./create-certificate.sh`` on your terminal 
-2. After that check on folder ``./nginx/certs``, ``self-signed.crt`` and ``self-signed.key`` files would be there
+2. After that check on folder ``./nginx/certs``, ``self-signed.crt`` and ``self-signed.key`` files would be there <br/>
    ![image](/docs/img/nginx-certs.png)
 3. And then check on folder ``./docker/keycloak/``, ``server.keystore`` would be there
-   ![image](/docs/img/server-keystore.png) (don't worry about Dockerfile, it would be generated letter)
+   ![image](/docs/img/server-keystore.png) <br/>
+   (don't worry about Dockerfile, it would be generated letter)
 
 ### 6. Run Keycloak and PostgreSQL
 1. On your terminal, please run this ``./compose-up-keycloak-posgress.sh`` 
