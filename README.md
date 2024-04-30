@@ -7,14 +7,14 @@ If you are interested, let's see a couple of documentation below.
 
 ## Table of contents
 - [Requirement](#requirement-)
-- [How to Setup ?](#how-to-setup--)
+- [How to Setup ?](#how-to-setup)
   - [1. Clone the Project](#1-clone-the-project)
-  - [2. Localhost Setup](#2-localhost-setup-)
+  - [2. Localhost Setup](#2-localhost-setup)
   - [3. Environment Variables Setup](#3-environment-variables-setup)
-  - [4. Create Local DNS](#4-create-local-dns-)
+  - [4. Create Local DNS](#4-create-local-dns)
   - [5. Create certificate for Keycloak and SLL](#5-create-certificate-for-keycloak-and-ssl)
   - [6. Run Keycloak and PostgreSQL](#6-run-keycloak-and-postgresql)
-  - [7. Setup Keycloak](#7-setup-keycloak-)
+  - [7. Setup Keycloak](#7-setup-keycloak)
 - [How to run a service ?](/docs/how-to-run-a-services.md)
 - [Postman Collection file](/docs/postman/)
 - [Architecture Study Case](/docs/architecture-study-case.md)
@@ -31,15 +31,15 @@ If you are interested, let's see a couple of documentation below.
 
 <hr/>
 
-## How to setup ? 
+## How to setup ?
 Please follow these steps to run this project correctly
 ### 1. Clone the project
 There is no special way to clone this project
 
-### 2. Localhost setup 
+### 2. Localhost setup
 We need to setup our localhost or our Local Machine to make a DNS running on our Local Machine
 
-#### - Linux / MacOS 
+#### - Linux / MacOS
 1. Open your terminal
 2. Type ``sudo vi /etc/hosts`` and input your computer password
 3. Press i on keyboard and type this on new line 
@@ -79,7 +79,7 @@ We need to setup our localhost or our Local Machine to make a DNS running on our
    - ``KEYCLOAK_ADMIN`` and ``KEYCLOAK_ADMIN_PASSWORD`` is a user credential will be used to sign in to keycloak admin console
    - ``KEYCLOAK_KEYSTORE_PASSWORD`` keystore password to secure the keycloak
 
-### 4. Create local DNS 
+### 4. Create local DNS
 This step is to make our domain works on our local
 1. Open your terminal
 2. Navigate to this project root folder
@@ -117,7 +117,7 @@ Certificate is needed to secure our keycloak
 2. Please wait until finish, the result would be like this 
    ![image](/docs/img/compose-up-keycloak-postgress.png) 
 
-### 7. Setup keycloak 
+### 7. Setup keycloak
 1. Open https://keycloak.<your domain\> on your browser 
 2. Please sign in by username and password that you set before on these variables: ``KEYCLOAK_ADMIN`` and ``KEYCLOAK_ADMIN_PASSWORD``
 3. If sign in success, you will be navigated to Keycloak Admin Console page, the first thing we need to do on Keycloak Admin Console is creating a new Realm for our project, 
