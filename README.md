@@ -4,7 +4,7 @@
 1. GraalVM (Community Edition / Oracle) with Java 21
 2. Docker
 > It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
-> [See this to install](https://sdkman.io/install) 
+> [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
 
 ## How to setup ? 
 Please follow these steps to run this project correctly
@@ -19,16 +19,22 @@ We need to setup our localhost or our Local Machine to make a DNS running on our
 2. Type ``sudo vi /etc/hosts`` and input your computer password
 3. Press i on keyboard and type this on new line 
    ```
+   ...
+   
    10.123.123.123 <domain name that you want>
    10.123.123.123 keycloak.<domain name that you want>
    ```
    it would be like 
     ``` 
+   ...
+   
    10.123.123.123 example.com 
    10.123.123.123 keycloak.example.com 
     ```
    or 
     ``` 
+   ...
+   
    10.123.123.123 practicing-quarkus.com
    10.123.123.123 keycloak.practicing-quarkus.com 
     ```
@@ -59,7 +65,7 @@ This step is to make our domain works on our local
    ```
    ping 10.123.123.123
    ```
-   or
+   and
    ```
    ping <your domain>
    ```
@@ -78,8 +84,23 @@ Certificate is needed to secure our keycloak
 2. After that check on folder ``./nginx/certs``, ``self-signed.crt`` and ``self-signed.key`` files would be there
    ![image](/docs/img/nginx-certs.png)
 3. And then check on folder ``./docker/keycloak/``, ``server.keystore`` would be there
-   ![image](/docs/img/server-keystore.png)
+   ![image](/docs/img/server-keystore.png) (don't worry about Dockerfile, it would be generated letter)
 
 ### 6. Run Keycloak and PostgreSQL
 1. On your terminal, please run this ``./compose-up-keycloak-posgress.sh`` 
-2. Please wait until finish, 
+2. Please wait until finish, the result would be like this 
+   ![image](/docs/img/compose-up-keycloak-postgress.png) 
+
+### 7. Setup keycloak 
+1. Open https://keycloak.<your domain> on your browser 
+2. Please sign in by username and password that you set before on these variables: ``KEYCLOAK_ADMIN`` and ``KEYCLOAK_ADMIN_PASSWORD``
+3. If sign in success, you will be navigated to Keyclaok Admin Console page, the first thing we need to do on Keycloak Admin Console is creating a new Realm for our project, 
+so click the dropdown on the top right of screen, and select 'Create realm' button. 
+   ![image](/docs/img/server-keystore.png)
+4. On the realm name field, please input the realm name that you want, example: quarkus-learning, q-learning, or practicing-quarkus, 
+Realm name should be without space, and better if all characters are lowercase
+   ![image](/docs/img/keycloak-new-realm.png)
+5. Click Create
+6. If the realm successfully created, the page should be navigated to new Realm like this. 
+   ![image](/docs/img/new-realm-dashboard.png)
+
