@@ -1,4 +1,4 @@
-# Practicing to build Quarkus, Quarkus-extension, Keycloak, and SSL integrated
+# Practicing to build Microservices with Quarkus, Quarkus-extension, Keycloak, and SSL integrated
 
 ## Requirement 
 1. GraalVM (Community Edition / Oracle) with Java 21
@@ -97,7 +97,7 @@ Certificate is needed to secure our keycloak
 3. If sign in success, you will be navigated to Keycloak Admin Console page, the first thing we need to do on Keycloak Admin Console is creating a new Realm for our project, 
 so click the dropdown on the top right of screen, and select 'Create realm' button. 
    ![image](/docs/img/keycloak-select-realm.png)
-4. On the realm name field, please input the realm name that you want, example: quarkus-learning, q-learning, or practicing-quarkus, 
+4. On the realm name field, please input the realm name that you want, example: quarkus-learning, q-learning, practicing-quarkus, or something else, 
 Realm name should be without space, and better if all characters are lowercase
    ![image](/docs/img/keycloak-new-realm.png)
 5. Click Create
