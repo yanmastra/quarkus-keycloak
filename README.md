@@ -18,6 +18,7 @@ If you are interested, let's see a couple of documentation below.
 - [How to run a service ?](/docs/how-to-run-a-services.md)
 - [Postman Collection file](/docs/postman/)
 - [Architecture Study Case](/docs/architecture-study-case.md)
+- [Performance Test](/docs/peformance-test)
 
 <hr/>
 
@@ -127,7 +128,10 @@ Realm name should be without space, and better if all characters are lowercase
    ![image](/docs/img/keycloak-new-realm.png)
 5. Click Create
 6. If the realm successfully created, the page should be navigated to new Realm like this. 
-   ![image](/docs/img/new-realm-dashboard.png)
+   ![new-realm-dashboard](/docs/img/new-realm-dashboard.png)
 7. Then we need to create new client, click 'Clients' on sidebar and click 'Create clients' button. 
-   ![image](/docs/img/keycloak-add-client.png) 
-8. 
+   ![keycloak-add-client](/docs/img/keycloak-add-client.png) 
+8. Fill the form like the image below and click "Next"<br/>
+     ![keycloak-new-client](/docs/img/keycloak-new-client.png)
+9. Check the following fields like the image bellow and click "Next" <br/>
+    ![keycloak new client backend 2](/docs/img/keycloak-new-client-backend-2.png)
