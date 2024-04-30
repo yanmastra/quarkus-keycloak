@@ -96,7 +96,7 @@ Certificate is needed to secure our keycloak
 2. Please sign in by username and password that you set before on these variables: ``KEYCLOAK_ADMIN`` and ``KEYCLOAK_ADMIN_PASSWORD``
 3. If sign in success, you will be navigated to Keyclaok Admin Console page, the first thing we need to do on Keycloak Admin Console is creating a new Realm for our project, 
 so click the dropdown on the top right of screen, and select 'Create realm' button. 
-   ![image](/docs/img/server-keystore.png)
+   ![image](/docs/img/keycloak-select-realm.png)
 4. On the realm name field, please input the realm name that you want, example: quarkus-learning, q-learning, or practicing-quarkus, 
 Realm name should be without space, and better if all characters are lowercase
    ![image](/docs/img/keycloak-new-realm.png)
