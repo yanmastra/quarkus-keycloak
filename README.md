@@ -1,4 +1,22 @@
 # Practicing to build Microservices with Quarkus, Quarkus-extension, Keycloak, and SSL integrated
+This project was created to practice building Microservices with Quarkus, Securing services with Keycloak and testing the performance of hibernate-orm and hibernate-reactive.
+In this project, there is a sample of the Rest-API project that contains many samples of Endpoint classes and samples of hibernate queries, etc.
+If you are interested, let's see a couple of documentation below. 
+
+## Table of contents
+- [Requirement](#requirement-)
+- [How to Setup ?](#how-to-setup--)
+  - [1. Clone the Project](#1-clone-the-project)
+  - [2. Localhost Setup](#2-localhost-setup-)
+  - [3. Environment Variables Setup](#3-environment-variables-setup)
+  - [4. Create Local DNS](#4-create-local-dns-)
+  - [5. Create certificate for Keycloak and SLL](#5-create-certificate-for-keycloak-and-ssl)
+  - [6. Run Keycloak and PostgreSQL](#6-run-keycloak-and-postgresql)
+  - [7. Setup Keycloak](#7-setup-keycloak-)
+- [How to run a service ?](/docs/HowToRunAService.md)
+- [Postman Collection file]()
+- [Architecture Study Case]()
+- 
 
 ## Requirement 
 1. GraalVM (Community Edition / Oracle) with Java 21
@@ -47,7 +65,7 @@ We need to setup our localhost or our Local Machine to make a DNS running on our
 #### - Windows 
 - Coming soon
 
-### 3. Environment Setup
+### 3. Environment Variables Setup
 1. Please copy ``docker_env.env.example`` to ``docker_env.env`` 
 2. Fill in these variable first
    - ``SERVER_HOST`` is the domain name that you have added before to ``/etc/hosts`` 
