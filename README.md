@@ -3,6 +3,8 @@ This project was created to practice building Microservices with Quarkus, Securi
 In this project, there is a sample of the Rest-API project that contains many samples of Endpoint classes and samples of hibernate queries, etc.
 If you are interested, let's see a couple of documentation below. 
 
+<hr/>
+
 ## Table of contents
 - [Requirement](#requirement-)
 - [How to Setup ?](#how-to-setup--)
@@ -13,10 +15,11 @@ If you are interested, let's see a couple of documentation below.
   - [5. Create certificate for Keycloak and SLL](#5-create-certificate-for-keycloak-and-ssl)
   - [6. Run Keycloak and PostgreSQL](#6-run-keycloak-and-postgresql)
   - [7. Setup Keycloak](#7-setup-keycloak-)
-- [How to run a service ?](/docs/HowToRunAService.md)
-- [Postman Collection file]()
-- [Architecture Study Case]()
-- 
+- [How to run a service ?](/docs/how-to-run-a-services.md)
+- [Postman Collection file](/docs/postman/)
+- [Architecture Study Case](/docs/architecture-study-case.md)
+
+<hr/>
 
 ## Requirement 
 1. GraalVM (Community Edition / Oracle) with Java 21
