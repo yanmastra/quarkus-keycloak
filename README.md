@@ -5,7 +5,7 @@
 2. Docker
 
 > :warning: It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
-> :warning: [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
+> <br/> [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
 
 <hr/>
 
@@ -106,4 +106,6 @@ Realm name should be without space, and better if all characters are lowercase
 5. Click Create
 6. If the realm successfully created, the page should be navigated to new Realm like this. 
    ![image](/docs/img/new-realm-dashboard.png)
-
+7. Then we need to create new client, click 'Clients' on sidebar and click 'Create clients' button. 
+   ![image](/docs/img/keycloak-add-client.png) 
+8. 
