@@ -3,8 +3,11 @@
 ## Requirement 
 1. GraalVM (Community Edition / Oracle) with Java 21
 2. Docker
-> It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
-> [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
+
+> :warning: It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
+> :warning: [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
+
+<hr/>
 
 ## How to setup ? 
 Please follow these steps to run this project correctly
