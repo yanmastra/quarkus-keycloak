@@ -129,9 +129,13 @@ Realm name should be without space, and better if all characters are lowercase
 5. Click Create
 6. If the realm successfully created, the page should be navigated to new Realm like this. 
    ![new-realm-dashboard](/docs/img/new-realm-dashboard.png)
-7. Then we need to create new client, click 'Clients' on sidebar and click 'Create clients' button. 
+7. Then we need to create two clients, one for backend and one for frontend, click 'Clients' on sidebar and click 'Create clients' button. 
    ![keycloak-add-client](/docs/img/keycloak-add-client.png) 
 8. Fill the form like the image below and click "Next"<br/>
      ![keycloak-new-client](/docs/img/keycloak-new-client.png)
 9. Check the following fields like the image bellow and click "Next" <br/>
     ![keycloak new client backend 2](/docs/img/keycloak-new-client-backend-2.png)
+10. Then fill the "Valid Redirect URIs" field like image below and click "Save" <br/>
+    ![keycloak valid redirect image setting](/docs/img/keycloak-new-client-backend-3.png)
+11. Backend client is successfully created, now we need to create one more client for frontend, 
+    let's click "Clients" on Sidebar and click "Create Client" again
