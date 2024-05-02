@@ -147,9 +147,9 @@ Realm name should be without space, and better if all characters are lowercase
 14. Then, fill the form like the image below, and then click "Next"
     ![Create new client for frontend](/docs/img/keycloak-new-client-frontend.png)
 15. Don't change anything on this form, and then click "Next" 
-    ![Create new client for frontend](/docs/img/keycloak-new-client-backend-2.png)
+    ![Create new client for frontend](/docs/img/keycloak-new-client-frontend-2.png)
 16. Fill the Valid redirect URIs like the image below and keep the other fields empty, and then click "Save" 
-    ![Create valid redirect uris for client frontend](/docs/img/keycloak-new-client-backend-3.png)
+    ![Create valid redirect uris for client frontend](/docs/img/keycloak-new-client-frontend-3.png)
 17. "Frontend" client is successfully created, now we have two clients 
     ![Keycloak client list](/docs/img/keycloak-client-list.png)
 18. Then we need to fill a-few more environment variables based on our Keycloak config, so edit the ``docker_env.env`` file 
