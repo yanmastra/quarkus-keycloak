@@ -67,3 +67,5 @@ KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://quarkus-practice.com:39092
 ```
 22. To make us able to call any API on this project, we need create a user first, and the use it to log in to get an access token.
     Please see the Keycloak documentation to create a user and login to keycloak by API
+
+[Back](../README.md#7-setup-keycloak) 
