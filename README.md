@@ -6,8 +6,8 @@ If you are interested, let's see a couple of documentation below.
 <hr/>
 
 ## Table of contents
-- [Introduction](#)
-- [Requirement](#requirement-)
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
 - [How to Setup ?](#how-to-setup)
   - [1. Clone the Project](#1-clone-the-project)
   - [2. Localhost Setup](#2-localhost-setup)
@@ -23,9 +23,36 @@ If you are interested, let's see a couple of documentation below.
 
 <hr/>
 
-## Requirement 
-1. GraalVM (Community Edition / Oracle) with Java 21
-2. Docker
+## Introduction
+This project is build by Quarkus, you can see what is Quarkus on their [official website](https://quarkus.io). 
+Goals of this project is <strong>"to learn and find a better way how to build a Microservices System Architecture using Quarkus"</strong>, 
+so the description on the ``README.md`` file will be changed periodically following updates of this project. <br/>
+There are some important things you should know about this project
+1. Root Folder description
+   - `dependencies` contains a couple of "Quarkus-extensions" and dependency projects will be used on each service.
+   - `docker` contains files that needed to build Container of Keycloak and PostgresQL
+   - `docs` contains image assets and markdown (`.md`) files of project documentation
+   - `microservices` is a parent project of all Micro-service project,
+   - `nginx` contains files that needed to run the Nginx
+2. Incomplete parts
+   1. ``microservices/rest-sample`` is not completed because need to add some more sample there. 
+   2. ``microservices/rest-sample-reactive`` is totally not created yet, this is same like Rest Sample but using Reactive approach
+   3. Performance test with JMeter is totally not created yet. 
+   This part will test some API endpoint from Rest Sample and Rest-Sample Reactive services to compare their performance
+   4. Real microservices sample, it will consist of several examples of backend services needed to build an e-commerce application
+   This part will use Kafka for message broker.
+3. This project is developed and tested on MacOS, it might not be working properly on Windows OS
+
+<hr/>
+
+## Prerequisites
+To follow this guide, you need:
+1. Understand Java
+2. Understand Object Oriented Programming
+3. Understand Docker
+4. GraalVM 21+ (Community Edition / Oracle) installed
+5. Apache Maven 3.9.6 or newer
+6. Docker
 
 > :warning: It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
 > <br/> [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
@@ -119,7 +146,8 @@ Certificate is needed to secure our keycloak
    ![image](/docs/img/compose-up-keycloak-postgress.png) 
 
 ### [7. Setup keycloak](/docs/keycloak-setup.md) 
-Click [here](/docs/keycloak-setup.md)
+Click [the title](/docs/keycloak-setup.md) to see the complete instruction
 
+### 8. Complete
 Now, our setup to run this project is complete, so you can run [Rest Sample](/microservices/rest-sample) project by 
 open the terminal and enter to [microservices/rest-sample](/microservices/rest-sample) folder and then run ``./run-debug.sh`` script
