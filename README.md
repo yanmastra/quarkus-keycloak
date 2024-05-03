@@ -41,6 +41,7 @@ There are some important things you should know about this project
    This part will test some API endpoint from Rest Sample and Rest-Sample Reactive services to compare their performance
    4. Real microservices sample, it will consist of several examples of backend services needed to build an e-commerce application
    This part will use Kafka for message broker.
+   5. Documentation of the Architecture
 3. This project is developed and tested on MacOS, it might not be working properly on Windows OS
 
 <hr/>
