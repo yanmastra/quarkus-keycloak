@@ -21,3 +21,4 @@ echo "$host, $request_uri, $remote_addr, $scheme"
 envsubst  < ./nginx/nginx.conf.template > ./nginx/nginx.conf
 docker compose -f ./docker-compose.yml up nginx-proxy -d
 sleep 3
+open ${KEYCLOAK_BASE_URL}

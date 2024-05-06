@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.yanmastra</groupId>
   <artifactId>microservices-common-parent</artifactId>
-  <version>0.1.2</version>
+  <version>0.2.0</version>
   <packaging>pom</packaging>
   <name>Crud Endpoint - Parent</name>
   <modules>
@@ -21,6 +21,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.version>3.9.4</quarkus.version>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <auth.version>0.1.2</auth.version>
   </properties>
   <dependencyManagement>
     <dependencies>

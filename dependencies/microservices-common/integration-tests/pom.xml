@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>microservices-common-parent</artifactId>
-    <version>0.1.2</version>
+    <version>0.2.0</version>
   </parent>
   <artifactId>microservices-common-integration-tests</artifactId>
   <name>Crud Endpoint - Integration Tests</name>

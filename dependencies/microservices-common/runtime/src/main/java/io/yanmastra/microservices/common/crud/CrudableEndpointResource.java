@@ -94,44 +94,22 @@ public abstract class CrudableEndpointResource<Entity extends CrudableEntity, Da
         if (size == null || size < 5) size = 5;
         logger.debug("req: page="+page+", size="+size+", params="+context.getUriInfo().getQueryParameters());
 
-        String keyword = context.getUriInfo().getQueryParameters().getFirst("keyword");
-        Map<String, String> otherQueries = new HashMap<>();
-        context.getUriInfo().getQueryParameters().entrySet().stream()
-                .filter(entry -> !entry.getKey().equals("keyword") && !entry.getKey().equals("page") && !entry.getKey().equals("size"))
-                .forEach(entry -> otherQueries.put(entry.getKey(), entry.getValue().get(0)));
-
         Page objPage = Page.of(page - 1, size);
         Sort sort = getSort();
 
-        logger.debug("req: page="+page+", size="+size+", keyword="+keyword);
+        Map<String, Object> queryParams = new HashMap<>();
+        String hql = queryFilterUtils.createFilterQuery(context.getUriInfo().getQueryParameters(), queryParams, searchAbleColumn());
+        logger.debug("created hql:"+hql);
 
-        PanacheQuery<Entity> entityQuery;
-        if (StringUtils.isBlank(keyword) && otherQueries.isEmpty()) {
-            entityQuery = getRepository().find("where deletedAt is null", sort, Map.of());
-        } else {
-            Map<String, Object> queryParams = new HashMap<>();
-            String query = queryFilterUtils.createFilterQuery(keyword, otherQueries, queryParams, searchAbleColumn());
-
-            logger.debug("query:"+query+", params="+queryParams);
-            entityQuery = getRepository().find(
-                    query,
-                    sort,
-                    queryParams
-            );
-        }
-
+        PanacheQuery<Entity> entityQuery = getRepository().find(hql, sort, queryParams);
         long totalCount = entityQuery.count();
-        long totalPage = totalCount / objPage.size + (totalCount % objPage.size == 0 ?  0 : 1);
 
         List<Entity> result = entityQuery.page(objPage).list();
         return new Paginate<>(
                 result.stream().map(this::fromEntity).toList(),
                 objPage.index+1,
                 objPage.size,
-                objPage.index == 0,
-                (totalPage * objPage.size) >= totalCount,
-                totalCount,
-                (int) totalPage
+                totalCount
         );
     }
 

@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "tb_sample_child_of_child")
+@Table(name = "tb_sample_child_of_child", indexes = {
+        @Index(name = "_search", columnList = "id, amount, column_1, column_2, created_at, updated_at")
+})
 public class SampleChildOfChildEntity extends CrudableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

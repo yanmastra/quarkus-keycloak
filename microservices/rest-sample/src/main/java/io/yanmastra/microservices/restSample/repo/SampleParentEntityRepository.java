@@ -31,6 +31,18 @@ public class SampleParentEntityRepository implements PanacheRepositoryBase<Sampl
                 "(select sum(CC.amount) from " + SampleChildOfChildEntity.class.getSimpleName() + " CC where CC.parent.parent.id = P.id and CC.deletedAt is null)) " +
                 "from " + SampleParentEntity.class.getSimpleName() + " P where P.deletedAt is null order by P.createdAt DESC";
 
+//        sql = "select new "+SampleParentSummaryJson.class.getName()+"("+
+//                "P.id, P.name, " +
+//                "(select count(*) from "+SampleChildEntity.class.getSimpleName() + " C where C.parent = P and C.deletedAt is null) as cCount, " +
+//                "count(CC), " +
+//                "sum(CC.amount)) " +
+//                "from " + SampleParentEntity.class.getSimpleName() + " P " +
+////                "left join " + SampleChildEntity.class.getSimpleName() + " C on (C.parent = P) " +
+//                "left join " + SampleChildOfChildEntity.class.getSimpleName() + " CC on (CC.parent.parent = P) " +
+//                "where (P.deletedAt is null and CC.deletedAt is null) " +
+//                "group by P.id " +
+//                "order by P.createdAt DESC";
+
         long count = findAll().filter("deletedAppFilter", Parameters.with("isDeleted", false))
                 .count();
 

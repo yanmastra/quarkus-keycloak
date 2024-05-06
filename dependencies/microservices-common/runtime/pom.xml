@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>microservices-common-parent</artifactId>
-    <version>0.1.2</version>
+    <version>0.2.0</version>
   </parent>
   <artifactId>microservices-common</artifactId>
   <name>Microservices Common - Runtime</name>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>authorization</artifactId>
-      <version>${project.version}</version>
+      <version>${auth.version}</version>
     </dependency>
 
     <dependency>
@@ -44,7 +44,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>common-class</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.2.0</version>
     </dependency>
 
     <dependency>

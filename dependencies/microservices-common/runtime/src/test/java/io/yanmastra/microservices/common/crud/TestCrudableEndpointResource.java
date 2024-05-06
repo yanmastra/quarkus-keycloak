@@ -4,7 +4,8 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.common.constraint.Assert;
 import io.yanmastra.commonClass.utils.CrudQueryFilterUtils;
-import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,11 +15,11 @@ import java.util.Set;
 @QuarkusTest
 public class TestCrudableEndpointResource {
 
-    @Inject
-    CrudQueryFilterUtils crudQueryFilterUtils;
 
     @Test
     public void testSearchQueryBuilder() {
+        CrudQueryFilterUtils crudQueryFilterUtils = new CrudQueryFilterUtils();
+
         CrudableEndpointResource<SimpleEntity, SimpleEntity> crudableEndpointResourceReactive = new CrudableEndpointResource<>() {
             @Override
             protected PanacheRepositoryBase<SimpleEntity, String> getRepository() {
@@ -47,10 +48,11 @@ public class TestCrudableEndpointResource {
         };
 
         Map<String, Object> queryParams = new HashMap<>();
-        String query = crudQueryFilterUtils.createFilterQuery("something", Map.of(
-                "name", "something1",
-                "phone", "something2"
-        ), queryParams, crudableEndpointResourceReactive.searchAbleColumn());
+        MultivaluedMap<String,String> params = new MultivaluedHashMap<>();
+        params.add("keyword", "something");
+        params.add("phone", "something1");
+        params.add("name", "something2");
+        String query = crudQueryFilterUtils.createFilterQuery(params, queryParams, crudableEndpointResourceReactive.searchAbleColumn());
 
         System.out.println(query);
         Assert.assertTrue(query.equals("where (name=:keyword or phone=:keyword) and name=:name and phone=:phone") ||
@@ -58,15 +60,18 @@ public class TestCrudableEndpointResource {
                 query.equals("where (phone=:keyword or name=:keyword) and phone=:phone and name=:name") ||
                 query.equals("where (name=:keyword or phone=:keyword) and phone=:phone and name=:name"));
 
-        query = crudQueryFilterUtils.createFilterQuery("", Map.of(
-                "name", "something1",
-                "phone", "something2"
-        ), queryParams, crudableEndpointResourceReactive.searchAbleColumn());
+        params = new MultivaluedHashMap<>(params);
+        params.add("phone", "something1");
+        params.add("name", "something2");
+        query = crudQueryFilterUtils.createFilterQuery(params, queryParams, crudableEndpointResourceReactive.searchAbleColumn());
 
         System.out.println(query);
         Assert.assertTrue(query.equals("where name=:name and phone=:phone") || query.equals("where phone=:phone and name=:name"));
 
-        query = crudQueryFilterUtils.createFilterQuery("something", new HashMap<>(), queryParams, crudableEndpointResourceReactive.searchAbleColumn());
+        params = new MultivaluedHashMap<>(params);
+        params.add("phone", "something1");
+        params.add("name", "something2");
+        query = crudQueryFilterUtils.createFilterQuery(params, queryParams, crudableEndpointResourceReactive.searchAbleColumn());
         System.out.println(query);
         Assert.assertTrue(query.equals("where (name=:keyword or phone=:keyword)") || query.equals("where (phone=:keyword or name=:keyword)"));
     }

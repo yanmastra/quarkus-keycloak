@@ -27,5 +27,5 @@ cd $DIR || exit
 export DEBUG=15005
 export QUARKUS_LOG_LEVEL=INFO
 
-mvn clean
-mvn quarkus:dev -Ddebug=$DEBUG -Djdk.virtualThreadScheduler.parallelism=16 -Djdk.virtualThreadScheduler.maxPoolSize=64
+open http://localhost:4001/q/swagger-ui
+mvn clean quarkus:dev -Ddebug=$DEBUG -Djdk.virtualThreadScheduler.parallelism=16 -Djdk.virtualThreadScheduler.maxPoolSize=64
