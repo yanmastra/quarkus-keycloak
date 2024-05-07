@@ -6,22 +6,19 @@ import java.util.Map;
 import java.util.Set;
 
 public class ParamToQueryNotIn extends ParamToQuery{
-    ParamToQueryNotIn(String key, List<String> value) {
-        super(key, value);
-        this.key = key;
+    ParamToQueryNotIn(String key, List<String> value, String alias) {
+        super(key, value, alias);
         this.sKey = key.replace(".", "_");
         for (int i = 1; i < value.size(); i++) {
             this.value.add(value.get(i));
         }
     }
-
-    private final String key;
     private final String sKey;
     private final Set<String> value = new HashSet<>();
 
     @Override
     public String getWhereClause() {
-        return key + " not in (:"+sKey+")";
+        return alias + key + " not in (:"+sKey+")";
     }
 
     @Override

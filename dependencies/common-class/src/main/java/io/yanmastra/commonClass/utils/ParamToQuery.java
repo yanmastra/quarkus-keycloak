@@ -12,12 +12,18 @@ import java.util.Map;
 abstract class ParamToQuery {
     private static final Logger log = Logger.getLogger(ParamToQuery.class.getName());
 
-    ParamToQuery(String key, List<String> value){}
+    protected String key;
+    protected String alias;
+
+    ParamToQuery(String key, List<String> value, String alias){
+        this.key = key;
+        this.alias = alias;
+    }
 
     abstract String getWhereClause();
     abstract void attachValue(Map<String, Object> hibernateQueryParams);
 
-    static ParamToQuery factory(String key, List<String> value) {
+    static ParamToQuery factory(String key, List<String> value, String alias) {
         if (value == null || value.isEmpty()) return null;
 
         log.info("creating query:"+key+", "+value.size()+", items:"+value);
@@ -30,22 +36,22 @@ abstract class ParamToQuery {
         }
 
         if (value.size() == 1)
-            return new ParamToQueryEquals(key, value);
+            return new ParamToQueryEquals(key, value, alias);
         if (value.size() >= 3) {
             if ("range".equals(value.getFirst())) {
-                return new ParamToQueryRange(key, value);
+                return new ParamToQueryRange(key, value, alias);
             } else if ("in".equals(value.getFirst())) {
-                return new ParamToQueryIn(key, value);
+                return new ParamToQueryIn(key, value, alias);
             } else if ("notIn".equals(value.getFirst())) {
-                return new ParamToQueryNotIn(key, value);
+                return new ParamToQueryNotIn(key, value, alias);
             }
         } else {
             if ("greaterThan".equals(value.getFirst())) {
-                return new ParamToQueryGreaterThan(key, value);
+                return new ParamToQueryGreaterThan(key, value, alias);
             } else if ("lessThan".equals(value.getFirst())) {
-                return new ParamToQueryLessThan(key, value);
+                return new ParamToQueryLessThan(key, value, alias);
             } else if ("notEquals".equals(value.getFirst())) {
-                return new ParamToQueryNotEquals(key, value);
+                return new ParamToQueryNotEquals(key, value, alias);
             }
         }
         throw new HttpException(HttpStatus.SC_BAD_REQUEST, "Wrong value supplied to query param");

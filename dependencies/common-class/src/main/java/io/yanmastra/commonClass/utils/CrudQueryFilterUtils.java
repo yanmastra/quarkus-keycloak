@@ -1,5 +1,6 @@
 package io.yanmastra.commonClass.utils;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
@@ -10,7 +11,7 @@ import org.jboss.logging.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//@ApplicationScoped
+@ApplicationScoped
 public class CrudQueryFilterUtils {
 
     @Inject
@@ -19,17 +20,30 @@ public class CrudQueryFilterUtils {
     @Inject
     ContainerRequestContext requestContext;
 
-
     public String getFilterQuery(Map<String, Object> queryParams, Set<String> searchableColumns) {
-        MultivaluedMap<String, String> parameters = requestContext.getUriInfo().getQueryParameters();
-        return createFilterQuery(parameters, queryParams, searchableColumns);
+        return getFilterQuery(queryParams, searchableColumns, "");
     }
 
+    public String getFilterQuery(Map<String, Object> queryParams, Set<String> searchableColumns, String alias) {
+        MultivaluedMap<String, String> parameters = requestContext.getUriInfo().getQueryParameters();
+        return createFilterQuery(parameters, queryParams, searchableColumns, alias);
+    }
+
+    public String getQueryWhereClause(Map<String, Object> queryParams, String alias){
+        return getQueryWhereClause(requestContext.getUriInfo().getQueryParameters(), queryParams, alias);
+    }
+
+    public String getQueryWhereClause(Map<String, Object> queryParams){
+        return getQueryWhereClause(requestContext.getUriInfo().getQueryParameters(), queryParams);
+    }
     public String getQueryWhereClause(MultivaluedMap<String, String> otherQueries, Map<String, Object> queryParams) {
+        return getQueryWhereClause(otherQueries, queryParams, "");
+    }
+    public String getQueryWhereClause(MultivaluedMap<String, String> otherQueries, Map<String, Object> queryParams, String alias) {
         Set<String> whereClauses = otherQueries.entrySet().stream()
                 .filter(stringListEntry -> !Set.of("page", "size", "keyword").contains(stringListEntry.getKey()))
                 .map(entry -> {
-                    ParamToQuery query = ParamToQuery.factory(entry.getKey(), entry.getValue());
+                    ParamToQuery query = ParamToQuery.factory(entry.getKey(), entry.getValue(), alias);
                     log.info("query created:"+query);
                     return query;
                 })
@@ -76,6 +90,10 @@ public class CrudQueryFilterUtils {
     }
 
     public String createFilterQuery(MultivaluedMap<String, String> requestParams, Map<String, Object> sqlParams, Set<String> searchableColumn) {
+        return createFilterQuery(requestParams, sqlParams, searchableColumn, "");
+    }
+
+    public String createFilterQuery(MultivaluedMap<String, String> requestParams, Map<String, Object> sqlParams, Set<String> searchableColumn, String alias) {
         requestParams = new MultivaluedHashMap<>(requestParams);
         requestParams.remove("page");
         requestParams.remove("size");
@@ -84,14 +102,14 @@ public class CrudQueryFilterUtils {
         if (requestParams.containsKey("keyword"))
             keyword = requestParams.remove("keyword").getFirst();
 
-        String where = "where deletedAt is null";
+        String where = "where "+alias+"deletedAt is null";
         StringBuilder sbQuery = new StringBuilder(where);
         if (StringUtils.isNotBlank(keyword)) {
             sqlParams.put("keyword", "%"+keyword+"%");
             Set<String> searchKey = new HashSet<>();
             sbQuery.append(" and (");
             for (String column: searchableColumn) {
-                searchKey.add("cast(" + column + " as string) like :keyword");
+                searchKey.add("cast(" + alias + column + " as string) like :keyword");
             }
             sbQuery.append(String.join(" or ", searchKey)).append(")");
         }

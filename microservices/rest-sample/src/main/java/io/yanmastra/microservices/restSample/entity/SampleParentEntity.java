@@ -8,6 +8,7 @@ import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * This is sample of how to create entity class to define a table scheme,
@@ -65,6 +66,9 @@ public class SampleParentEntity extends CrudableEntity {
     @Column(name = "price", precision = 14, scale = 2)
     private BigDecimal price = BigDecimal.ZERO;
 
+    @OneToMany(mappedBy = "parent")
+    private Set<SampleChildEntity> children;
+
     public SampleParentEntity() {}
 
     @Override
@@ -101,4 +105,7 @@ public class SampleParentEntity extends CrudableEntity {
         this.price = price;
     }
 
+    public Set<SampleChildEntity> getChildren() {
+        return children;
+    }
 }

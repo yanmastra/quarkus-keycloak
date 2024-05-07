@@ -3,6 +3,8 @@ package io.yanmastra.microservices.restSample.entity;
 import io.yanmastra.microservices.common.crud.CrudableEntity;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "tb_sample_child")
 public class SampleChildEntity extends CrudableEntity {
@@ -25,6 +27,9 @@ public class SampleChildEntity extends CrudableEntity {
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id", nullable = false)
     private SampleParentEntity parent;
+
+    @OneToMany(mappedBy = "parent")
+    private Set<SampleChildOfChildEntity> children;
 
     public SampleChildEntity() {
     }
@@ -61,5 +66,9 @@ public class SampleChildEntity extends CrudableEntity {
 
     public void setParent(SampleParentEntity parent) {
         this.parent = parent;
+    }
+
+    public Set<SampleChildOfChildEntity> getChildren() {
+        return children;
     }
 }

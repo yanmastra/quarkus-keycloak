@@ -20,8 +20,6 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.hibernate.query.Page;
 import org.jboss.logging.Logger;
@@ -81,8 +79,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
     @RunOnVirtualThread
     public Paginate<SampleParentSummaryJson> getSummary(
             @QueryParam("page") Integer page,
-            @QueryParam("size") Integer size,
-            @Context ContainerRequestContext context
+            @QueryParam("size") Integer size
     ) {
         if (page == null) page = 1;
         if (size == null) size = 10;
