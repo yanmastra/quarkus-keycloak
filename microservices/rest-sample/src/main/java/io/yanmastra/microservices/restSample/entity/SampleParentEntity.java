@@ -1,7 +1,7 @@
 package io.yanmastra.microservices.restSample.entity;
 
+import io.yanmastra.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import io.yanmastra.microservices.common.crud.CrudableEntity;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
@@ -31,7 +31,7 @@ import java.util.Set;
 @SQLDelete(sql = "UPDATE tb_parent_simple SET deleted_at=NOW() WHERE id=?")
 @Filter(name = "deletedAppFilter", condition = "deleted_at is not null = :isDeleted")
 @FilterDef(name = "deletedAppFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-public class SampleParentEntity extends CrudableEntity {
+public class SampleParentEntity extends BaseEntity {
 
     /**
      * This column will use varchar(36) data type and automatically filled by UUID when the record persisted

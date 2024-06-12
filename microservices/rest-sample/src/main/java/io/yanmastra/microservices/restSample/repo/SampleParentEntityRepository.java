@@ -1,7 +1,7 @@
 package io.yanmastra.microservices.restSample.repo;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.yanmastra.commonClass.utils.CrudQueryFilterUtils;
+import io.yanmastra.commonClasses.utils.CrudQueryFilterUtils;
 import io.yanmastra.microservices.common.crud.Paginate;
 import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
 import io.yanmastra.microservices.restSample.entity.SampleChildOfChildEntity;
@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.hibernate.query.Page;
 import org.jboss.logging.Logger;
 
@@ -26,13 +27,10 @@ public class SampleParentEntityRepository implements PanacheRepositoryBase<Sampl
     @Inject
     Logger log;
 
-    @Inject
-    CrudQueryFilterUtils queryFilterUtils;
-
-    public Paginate<SampleParentSummaryJson> getParentSummary(Page page) {
+    public Paginate<SampleParentSummaryJson> getParentSummary(Page page, MultivaluedMap<String, String> requestQueries) {
 
         Map<String, Object> sqlParams = new HashMap<>();
-        String whereClause = queryFilterUtils.getQueryWhereClause(sqlParams, "P.");
+        String whereClause = CrudQueryFilterUtils.getQueryWhereClause(requestQueries, sqlParams, "P.");
 
         String sql = "select new "+SampleParentSummaryJson.class.getName()+"("+
                 "P.id, P.name, " +

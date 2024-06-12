@@ -23,5 +23,6 @@
 
     <modules>
         <module>rest-sample</module>
+        <module>media-mail-service</module>
     </modules>
 </project>

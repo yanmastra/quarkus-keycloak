@@ -1,6 +1,6 @@
 package io.yanmastra.microservices.restSample.entity;
 
-import io.yanmastra.microservices.common.crud.CrudableEntity;
+import io.yanmastra.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "tb_sample_child_of_child", indexes = {
         @Index(name = "_search", columnList = "id, amount, column_1, column_2, created_at, updated_at")
 })
-public class SampleChildOfChildEntity extends CrudableEntity {
+public class SampleChildOfChildEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, nullable = false)

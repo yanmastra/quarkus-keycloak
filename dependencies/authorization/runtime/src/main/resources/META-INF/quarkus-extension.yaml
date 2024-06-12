@@ -2,7 +2,7 @@ name: Authorization
 #description: Do something useful.
 metadata:
   keywords:
-    - authorization
+    - quarkus-authorization
 #  guide: ... # To create and publish this guide, see https://github.com/quarkiverse/quarkiverse/wiki#documenting-your-extension
 #  categories:
 #    - "miscellaneous"

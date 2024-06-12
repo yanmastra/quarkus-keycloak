@@ -7,7 +7,7 @@ import io.yanmastra.microservices.common.reactive.BeanProvider;
 
 class MicroservicesCommonReactiveProcessor {
 
-    private static final String FEATURE = "microservices-common-reactive";
+    private static final String FEATURE = "quarkus-microservices-common-reactive";
 
     @BuildStep
     FeatureBuildItem feature() {

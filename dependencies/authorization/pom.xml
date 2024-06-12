@@ -4,8 +4,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.yanmastra</groupId>
-    <artifactId>authorization-parent</artifactId>
-    <version>0.1.2</version>
+    <artifactId>quarkus-authorization-parent</artifactId>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Authorization - Parent</name>
     <modules>
@@ -22,7 +22,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.version>3.9.4</quarkus.version>
+        <quarkus.version>3.8.4</quarkus.version>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
     </properties>
     <dependencyManagement>
@@ -74,6 +74,19 @@
                             <arg>-parameters</arg>
                         </compilerArgs>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.smallrye</groupId>
+                    <artifactId>jandex-maven-plugin</artifactId>
+                    <version>3.1.2</version>
+                    <executions>
+                        <execution>
+                            <id>make-index</id>
+                            <goals>
+                                <goal>jandex</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

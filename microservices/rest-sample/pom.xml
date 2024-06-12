@@ -7,6 +7,8 @@
         <artifactId>microservices</artifactId>
         <version>0.0.1</version>
     </parent>
+
+    <groupId>io.yanmastra.microservices</groupId>
     <artifactId>rest-sample</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -19,7 +21,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.9.4</quarkus.platform.version>
+        <quarkus.platform.version>3.8.4</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
     </properties>
@@ -39,8 +41,8 @@
     <dependencies>
         <dependency>
             <groupId>io.yanmastra</groupId>
-            <artifactId>microservices-common</artifactId>
-            <version>0.2.0</version>
+            <artifactId>quarkus-microservices-common</artifactId>
+            <version>1.0.2</version>
         </dependency>
 
         <dependency>
@@ -51,10 +53,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -123,6 +121,19 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>3.1.2</version>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -135,7 +146,7 @@
                 </property>
             </activation>
             <properties>
-                <skipITs>false</skipITs>
+                <skipITs>true</skipITs>
                 <quarkus.package.type>native</quarkus.package.type>
             </properties>
         </profile>

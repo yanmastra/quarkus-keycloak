@@ -1,13 +1,13 @@
 package io.yanmastra.microservices.restSample.entity;
 
-import io.yanmastra.microservices.common.crud.CrudableEntity;
+import io.yanmastra.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "tb_sample_child")
-public class SampleChildEntity extends CrudableEntity {
+public class SampleChildEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(length = 36, nullable = false)

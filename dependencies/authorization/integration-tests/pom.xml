@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.yanmastra</groupId>
-        <artifactId>authorization-parent</artifactId>
-        <version>0.1.2</version>
+        <artifactId>quarkus-authorization-parent</artifactId>
+        <version>1.0.0</version>
     </parent>
-    <artifactId>authorization-integration-tests</artifactId>
+    <artifactId>quarkus-authorization-integration-tests</artifactId>
     <name>Authorization - Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.yanmastra</groupId>
-            <artifactId>authorization</artifactId>
+            <artifactId>quarkus-authorization</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

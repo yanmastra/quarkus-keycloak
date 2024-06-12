@@ -12,7 +12,7 @@ import io.yanmastra.authorization.security.UserSecurityIdentityAugmentor;
 
 class AuthorizationProcessor {
 
-    private static final String FEATURE = "authorization";
+    private static final String FEATURE = "quarkus-authorization";
 
     @BuildStep
     FeatureBuildItem feature() {

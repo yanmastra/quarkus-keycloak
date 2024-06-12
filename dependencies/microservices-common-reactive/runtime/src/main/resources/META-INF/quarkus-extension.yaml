@@ -2,7 +2,7 @@ name: Crud Endpoint
 #description: Do something useful.
 metadata:
   keywords:
-    - microservices-common-reactive
+    - quarkus-microservices-common-reactive
 #  guide: ... # To create and publish this guide, see https://github.com/quarkiverse/quarkiverse/wiki#documenting-your-extension
 #  categories:
 #    - "miscellaneous"
