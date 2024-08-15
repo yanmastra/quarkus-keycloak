@@ -25,7 +25,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!--<dependency>
+    <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-authorization-deployment</artifactId>
       <version>${auth.version}</version>
@@ -36,16 +36,15 @@
       <artifactId>quarkus-hibernate-orm-panache-deployment</artifactId>
     </dependency>
 
-    &lt;!&ndash; JDBC driver dependencies &ndash;&gt;
+    <!-- JDBC driver dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-postgresql-deployment</artifactId>
-    </dependency>-->
+    </dependency>
 
     <dependency>
-      <groupId>io.yanmastra</groupId>
-      <artifactId>quarkus-common-classes-deployment</artifactId>
-      <version>${commonClasses.version}</version>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-reactive-messaging-kafka-deployment</artifactId>
     </dependency>
   </dependencies>
   <build>

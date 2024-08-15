@@ -32,6 +32,16 @@ public class MyMailData extends BaseEntity {
         this.id = id;
     }
 
+    @Override
+    protected <Dto> Dto toDto() {
+        return null;
+    }
+
+    @Override
+    public <Dto> void updateByDto(Dto dto) {
+
+    }
+
     public String getCode() {
         return code;
     }

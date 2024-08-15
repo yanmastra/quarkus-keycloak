@@ -5,20 +5,19 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
 import io.yanmastra.authorization.ResponseJson;
 import io.yanmastra.authorization.security.UserPrincipal;
-import io.yanmastra.commonClasses.utils.CrudQueryFilterUtils;
 import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
-import jakarta.persistence.EntityManager;
+import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.logging.Logger;
 
 import java.util.*;
 
@@ -28,22 +27,63 @@ import java.util.*;
  * @param <Entity> is entity class that extend CrudableEntity
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
-public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
+@RegisterForReflection
+public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
 
-    private EntityManager entityManager;
-    private Set<String> searchAbleColumn;
-    private Sort sort = Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
+    /**
+     * Override this method to provide which columns that can be searched by ``?keyword=`` query parameter
+     * <br/>
+     * For example, if you have an Entity with column name, category, and description, and you need to search some data based on name or category,
+     * you can return Set.of("name", "category");
+     * @return Set of String column names;
+     */
+    protected Set<String> searchAbleColumn() {
+        return new HashSet<>();
+    }
 
+    /**
+     * Override this method to customize the sorting method
+     * @return an object of Sort
+     */
     protected Sort getSort() {
         return Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
     }
+
+
+    /**
+     * Implement this method and return a Repository object of Entity
+     * @return Repository class that extend PanacheRepositoryBase
+     */
+    protected abstract PanacheRepositoryBase<Entity, String> getRepository();
+
+    /**
+     * Implement this method to convert Entity object to Dao object
+     * @param entity is object of Entity
+     * @return object of Dao
+     */
+    protected abstract Dto fromEntity(Entity entity);
+
+    /**
+     * Implement this method to convert Dao object to Entity object
+     * @param dao is object of Dao
+     * @return object of Entity
+     */
+    protected abstract Entity toEntity(Dto dao);
+
+    /**
+     * Implement this method to pass new attributes value to existed Entity,
+     * @param entity is existed entity that ever been persisted before
+     * @param dao is a Dao object that contain the data received from request body json
+     * @return Entity object from parameter
+     */
+    protected abstract Entity update(Entity entity, Dto dao);
 
     @RunOnVirtualThread
     @GET
     @Transactional
     public Paginate<Dto> getList(
-            Integer page,
-            Integer size,
+            @QueryParam("page") Integer page,
+            @QueryParam("page") Integer size,
             @Context ContainerRequestContext context
     ) {
         if (page == null || page <= 0) page = 1;
@@ -53,7 +93,7 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
         Sort sort = getSort();
 
         Map<String, Object> queryParams = new HashMap<>();
-        String hql = CrudQueryFilterUtils.createFilterQuery(context.getUriInfo().getQueryParameters(), queryParams, searchAbleColumn);
+        String hql = CrudQueryFilterUtils.createFilterQuery(context.getUriInfo().getQueryParameters(), queryParams, searchAbleColumn());
 
         PanacheQuery<Entity> entityQuery = getRepository().find(hql, sort, queryParams);
         long totalCount = entityQuery.count();
@@ -71,7 +111,7 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @GET
     @Path("{id}")
     @Transactional
-    public Dao getList(
+    public Dto getList(
             @PathParam("id") String id,
             @Context SecurityContext context
     ) {
@@ -85,7 +125,7 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @RunOnVirtualThread
     @POST
     @Transactional
-    public ResponseJson<Dao> create(Dao dao, @Context SecurityContext context) throws Exception {
+    public ResponseJson<Dto> create(Dto dao, @Context SecurityContext context) throws Exception {
         Entity entity = toEntity(dao);
 
         if (StringUtils.isNotBlank(entity.getId())) {
@@ -96,7 +136,7 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
         }
 
         getRepository().persist(entity);
-        Dao dao1 = fromEntity(entity);
+        Dto dao1 = fromEntity(entity);
         onWriteSuccess(dao1, (UserPrincipal) context.getUserPrincipal(), WriteType.CREATE);
 
         return new ResponseJson<>(
@@ -110,16 +150,16 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @PUT
     @Path("{id}")
     @Transactional
-    public ResponseJson<Dao> update(
+    public ResponseJson<Dto> update(
             @PathParam("id") String id,
-            Dao dao,
+            Dto dao,
             @Context SecurityContext context
     ) throws Exception {
             Entity existed = getRepository().find("where id = ?1 and deletedAt is null", id).firstResult();
             if (existed == null) throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
             Entity entity = update(existed, dao);
             getRepository().persist(entity);
-            Dao dao1 = fromEntity(entity);
+            Dto dao1 = fromEntity(entity);
 
             onWriteSuccess(dao1, (UserPrincipal) context.getUserPrincipal(), WriteType.UPDATE);
 
@@ -133,7 +173,7 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @DELETE
     @Path("{id}")
     @Transactional
-    public ResponseJson<Dao> delete(
+    public ResponseJson<Dto> delete(
             @PathParam("id") String id,
             @Context SecurityContext context
     ) throws Exception {
@@ -142,7 +182,7 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
 
         boolean result = getRepository().deleteById(id);
         if (result) {
-            Dao dao = fromEntity(existed);
+            Dto dao = fromEntity(existed);
             onWriteSuccess(dao, (UserPrincipal) context.getUserPrincipal(), WriteType.DELETE);
             return new ResponseJson<>(true, dao.getClass().getSimpleName() + ":"+id+" has been deleted successfully");
         } else {
@@ -158,6 +198,6 @@ public class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
      * @param type is the types of writing process, they can be CREATED, UPDATE, or DELETE
      * @throws Exception can be thrown if you need to cancel the process
      */
-    protected void onWriteSuccess(Dao dao, UserPrincipal principal, WriteType type) throws Exception {
+    protected void onWriteSuccess(Dto dao, UserPrincipal principal, WriteType type) throws Exception {
     }
 }

@@ -7,9 +7,14 @@ import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
 import io.yanmastra.microservices.restSample.entity.SampleChildOfChildEntity;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SampleChildOfChildEntityJson {
     private String id;
+
+    @JsonProperty("amount")
+    private BigDecimal amount;
     @JsonProperty("column_1")
     private String column1;
     @JsonProperty("column_2")
@@ -39,6 +44,7 @@ public class SampleChildOfChildEntityJson {
 
     public static SampleChildOfChildEntity update(SampleChildOfChildEntity entity, SampleChildOfChildEntityJson json) {
         entity.setId(json.getId());
+        entity.setAmount(json.getAmount());
         entity.setColumn1(json.getColumn1());
         entity.setColumn2(json.getColumn2());
         entity.setColumn3(json.getColumn3());
@@ -60,6 +66,7 @@ public class SampleChildOfChildEntityJson {
     public static SampleChildOfChildEntityJson fromEntity(SampleChildOfChildEntity entity) {
         SampleChildOfChildEntityJson json = new SampleChildOfChildEntityJson();
         json.setId(entity.getId());
+        json.setAmount(entity.getAmount());
         json.setColumn1(entity.getColumn1());
         json.setColumn2(entity.getColumn2());
         json.setColumn3(entity.getColumn3());
@@ -153,5 +160,13 @@ public class SampleChildOfChildEntityJson {
 
     public void setParentName(String parentName) {
         this.parentName = parentName;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 }

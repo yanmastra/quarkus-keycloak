@@ -1,6 +1,6 @@
 package io.yanmastra.microservices.restSample.entity;
 
-import io.yanmastra.microservices.common.entity.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -19,9 +19,11 @@ public class SampleChildEntity extends BaseEntity {
     @Column(name = "description")
     private String description;
 
+
     /**
-     * This is sample of how we relate 2 tables one to many, in this case we need to relate one record of SampleParentEntity
-     * relate to many records of SampleChildEntity
+     * This is sample of how do we make a relation between 2 tables by one to many,
+     * in this case we need to make one record of SampleParentEntity
+     * linked to many records on SampleChildEntity
      * this column would be a foreign key to id of SampleParentEntity,
      */
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -42,6 +44,16 @@ public class SampleChildEntity extends BaseEntity {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    protected <Dto> Dto toDto() {
+        return null;
+    }
+
+    @Override
+    public <Dto> void updateByDto(Dto dto) {
+
     }
 
     public String getName() {

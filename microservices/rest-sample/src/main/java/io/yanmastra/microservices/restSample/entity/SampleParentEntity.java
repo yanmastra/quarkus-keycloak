@@ -1,6 +1,6 @@
 package io.yanmastra.microservices.restSample.entity;
 
-import io.yanmastra.microservices.common.entity.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -79,6 +79,16 @@ public class SampleParentEntity extends BaseEntity {
     @Override
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    protected <Dto> Dto toDto() {
+        return null;
+    }
+
+    @Override
+    public <Dto> void updateByDto(Dto dto) {
+
     }
 
     public String getName() {

@@ -3,11 +3,15 @@ DIR=$(pwd)
 cd ../../
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
 docker compose -f docker-compose.yml up postgres -d
-docker compose -f docker-compose.yml up zookeeper kafka -d
+#docker compose -f docker-compose.yml up zookeeper kafka -d
 
 cd dependencies/authorization || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"
+sleep 1
+cd ../quarkus-microservices-common || exit
+mvn clean install -DskipTests
+echo "Building quarkus-microservices-common is complete"
 sleep 1
 
 cd $DIR || exit

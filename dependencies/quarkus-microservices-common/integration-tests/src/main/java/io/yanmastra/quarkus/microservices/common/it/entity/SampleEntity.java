@@ -29,4 +29,14 @@ public class SampleEntity extends BaseEntity implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    protected <Dto> Dto toDto() {
+        return null;
+    }
+
+    @Override
+    public <Dto> void updateByDto(Dto dto) {
+
+    }
 }

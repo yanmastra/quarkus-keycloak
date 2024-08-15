@@ -11,15 +11,9 @@ echo "Building authorization is complete"
 sleep 1
 
 cd ../../
-cd dependencies/common-class || exit
+cd dependencies/quarkus-microservices-common || exit
 mvn clean install -DskipTests
-echo "Building common-class is complete"
-sleep 1
-
-cd ../../
-cd dependencies/microservices-common || exit
-mvn clean install -DskipTests
-echo "Building microservices-common is complete"
+echo "Building quarkus-microservices-common is complete"
 sleep 1
 
 cd $DIR || exit

@@ -1,10 +1,10 @@
 package io.yanmastra.microservices.restSample;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.yanmastra.microservices.common.crud.CrudableEndpointResource;
 import io.yanmastra.microservices.restSample.entity.SampleChildOfChildEntity;
 import io.yanmastra.microservices.restSample.json.SampleChildOfChildEntityJson;
 import io.yanmastra.microservices.restSample.repo.SampleChildOfChildEntityRepository;
+import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;

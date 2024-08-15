@@ -1,6 +1,6 @@
 package io.yanmastra.microservices.restSample.entity;
 
-import io.yanmastra.microservices.common.entity.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -30,9 +30,11 @@ public class SampleChildOfChildEntity extends BaseEntity {
     private String column6;
     @Column(length = 36, name = "column_7")
     private String column7;
+
     /**
-     * This is sample of how we relate 2 tables one to many, in this case we need to relate one record of SampleChildEntity
-     * relate to many records of SampleChildOfChildEntity
+     * This is sample of how do we make a relation between 2 tables by one to many,
+     * in this case we need to make one record of SampleChildEntity
+     * linked to many records on SampleChildOfChildEntity
      * this column would be a foreign key to id of SampleChildEntity,
      */
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -60,6 +62,16 @@ public class SampleChildOfChildEntity extends BaseEntity {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    protected <Dto> Dto toDto() {
+        return null;
+    }
+
+    @Override
+    public <Dto> void updateByDto(Dto dto) {
+
     }
 
     public String getColumn1() {
