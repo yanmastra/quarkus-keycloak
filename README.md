@@ -32,16 +32,15 @@ There are some important things you should know about this project
    - `dependencies` contains a couple of "Quarkus-extensions" and dependency projects will be used on each service.
    - `docker` contains files that needed to build Container of Keycloak and PostgresQL
    - `docs` contains image assets and markdown (`.md`) files of project documentation
-   - `microservices` is a parent project of all Micro-service project,
+   - `microservices` is a parent project of all Microservices project,
    - `nginx` contains files that needed to run the Nginx
 2. Incomplete parts
    1. ``microservices/rest-sample`` is not completed because need to add some more sample there. 
-   2. ``microservices/rest-sample-reactive`` is totally not created yet, this is same like Rest Sample but using Reactive approach
-   3. Performance test with JMeter is totally not created yet. 
+   2. Performance test with JMeter is totally not created yet. 
    This part will test some API endpoint from Rest Sample and Rest-Sample Reactive services to compare their performance
-   4. Real microservices sample, it will consist of several examples of backend services needed to build an e-commerce application
+   3. Real microservices sample, it will consist of several examples of backend services needed to build an e-commerce application
    This part will use Kafka for message broker.
-   5. Documentation of the Architecture
+   4. Documentation of the Architecture
 3. This project is developed and tested on MacOS, it might not be working properly on Windows OS
 
 <hr/>
