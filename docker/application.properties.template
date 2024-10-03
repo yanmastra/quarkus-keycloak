@@ -9,7 +9,6 @@ quarkus.oidc.credentials.secret=${KEYCLOAK_CLIENT_SECRET}
 quarkus.oidc.authentication.user-info-required=false
 
 # Enable Policy Enforcement
-quarkus.keycloak.devservices.realm-path=realm-sample.json
 quarkus.keycloak.policy-enforcer.enable=true
 ## below configuration will disable '/q/*' endpoint from authentication
 quarkus.keycloak.policy-enforcer.paths.1.path=/q/*
@@ -46,5 +45,3 @@ quarkus.smallrye-openapi.oauth2-implicit-authorization-url=${quarkus.oidc.auth-s
 #quarkus.swagger-ui.oauth2-redirect-url=http://localhost:${quarkus.http.port}/q/swagger-ui/oauth2-redirect.html
 quarkus.swagger-ui.oauth-client-id=${quarkus.oidc.client-id}
 quarkus.swagger-ui.oauth-client-secret=${quarkus.oidc.credentials.secret}
-
-quarkus.smallrye-openapi.info-title=Rest Sample

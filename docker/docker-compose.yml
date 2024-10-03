@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     build:
-      dockerfile: docker/postgres/Dockerfile
+      dockerfile: postgres/Dockerfile
     container_name: 'q-learning-postgres'
     hostname: 'q-learning-postgres'
     ports:
@@ -14,7 +14,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - ./.postgresql:/var/lib/postgresql/data
-      - ./docker/postgres:/docker-entrypoint-initdb.d
+      - ./postgres:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
       timeout: 20s
@@ -25,7 +25,7 @@ services:
 
   keycloak:
     build:
-      dockerfile: ./docker/keycloak/Dockerfile
+      dockerfile: keycloak/Dockerfile
     container_name: 'q-learning-keycloak'
     command:
       - start
@@ -36,7 +36,8 @@ services:
       - --https-key-store-file=/opt/keycloak/conf/server.keystore
       - --https-key-store-password=${KEYCLOAK_KEYSTORE_PASSWORD}
       - --proxy-headers=forwarded
-      - --hostname-url=https://${KEYCLOAK_HOST}
+      - --hostname=${KEYCLOAK_HOST}
+      - -Dkeycloak.import=/opt/keycloak/imports/
     ports:
       - "${KEYCLOAK_EXTERNAL_PORT}:8443"
     depends_on:
@@ -47,7 +48,9 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      JAVA_OPTS_KC_HEAP: "-XX:MaxHeapFreeRatio=30 -XX:MaxRAMPercentage=65"
+      JAVA_OPTS_KC_HEAP: "-XX:MaxHeapFreeRatio=40 -XX:MaxRAMPercentage=65"
+    volumes:
+      - ./keycloak/imports:/opt/keycloak/imports
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "https://localhost:8443/" ]

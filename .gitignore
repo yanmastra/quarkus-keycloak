@@ -13,9 +13,9 @@
 .test
 
 .mysql
-.postgresql
-nginx/certs/**.crt
-nginx/certs/**.key
-nginx/nginx.conf
+docker/.postgresql
+docker/nginx/certs/**.crt
+docker/nginx/certs/**.key
+docker/nginx/nginx.conf
 docker/keycloak/Dockerfile
 docker/keycloak/**.keystore

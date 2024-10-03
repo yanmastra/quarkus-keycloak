@@ -8,7 +8,7 @@ export KEYCLOAK_DB_NAME=db_authentication
 
 docker compose -f ./docker-compose.yml up postgres -d
 
-envsubst  < docker/keycloak/Dockerfile.template > docker/keycloak/Dockerfile
+envsubst  < keycloak/Dockerfile.template > keycloak/Dockerfile
 
 docker compose -f ./docker-compose.yml up keycloak -d
 sleep 3
