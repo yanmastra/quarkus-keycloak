@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>io.yanmastra</groupId>
+    <groupId>io.onebyone</groupId>
     <artifactId>quarkus-microservices-common-parent</artifactId>
     <version>2.0.1</version>
   </parent>
@@ -18,7 +18,7 @@
       <artifactId>quarkus-resteasy-reactive</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.yanmastra</groupId>
+      <groupId>io.onebyone</groupId>
       <artifactId>quarkus-microservices-common</artifactId>
       <version>${project.version}</version>
     </dependency>

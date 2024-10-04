@@ -1680,12 +1680,12 @@
     "auth": "true",
     "port": "587",
     "host": "smtp.gmail.com",
-    "replyTo": "yanmastra59@gmail.com",
+    "replyTo": "onebyone59@gmail.com",
     "from": "system@smplProject.com",
     "fromDisplayName": "smplProject",
     "envelopeFrom": "",
     "ssl": "false",
-    "user": "yanmastra59@gmail.com"
+    "user": "onebyone59@gmail.com"
   },
   "eventsEnabled": false,
   "eventsListeners": [
