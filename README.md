@@ -28,4 +28,4 @@ To follow this guide, you need:
 
 <hr/>
 
-> :smiley: this repo is from [github.com:yanmastra/quarkus-keycloak](https://github.com/yanmastra/quarkus-keycloak)
+> :smiley: this repo is forked from [github.com:yanmastra/quarkus-keycloak](https://github.com/yanmastra/quarkus-keycloak)
