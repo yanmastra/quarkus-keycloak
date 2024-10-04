@@ -1,4 +1,4 @@
-package io.yanmastra.authorization.test;
+package io.onebyone.authorization.test;
 
 import io.quarkus.test.QuarkusUnitTest;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

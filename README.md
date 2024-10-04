@@ -1,7 +1,4 @@
-# Practicing to build Microservices with Quarkus, Quarkus-extension, Keycloak, and SSL integrated
-This project was created to practice building Microservices with Quarkus, Securing services with Keycloak and testing the performance of hibernate-orm and hibernate-reactive.
-In this project, there is a sample of the Rest-API project that contains many samples of Endpoint classes and samples of hibernate queries, etc.
-If you are interested, let's see a couple of documentation below. 
+# QUARKUS BASE PROJECT
 
 <hr/>
 
@@ -22,11 +19,13 @@ To follow this guide, you need:
 1. Understand Java
 2. Understand Object Oriented Programming
 3. Understand Docker
-4. GraalVM 21+ (Community Edition / Oracle) installed
+4. OpenJDK 21+ installed
 5. Apache Maven 3.9.6 or newer
 6. Docker
 
-> :warning: It would be better you install ``sdkman`` on your computer, and then use ``sdkman`` to install GraalVM 
+> :warning: Recommended to use ``sdkman`` to install OpenJDK or GraalVM on your device
 > <br/> [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
 
 <hr/>
+
+> :info: this repo is from [github.com:yanmastra/quarkus-keycloak](https://github.com/yanmastra/quarkus-keycloak)

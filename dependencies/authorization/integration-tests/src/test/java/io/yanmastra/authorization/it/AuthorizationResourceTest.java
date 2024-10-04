@@ -1,4 +1,4 @@
-package io.yanmastra.authorization.it;
+package io.onebyone.authorization.it;
 
 import io.quarkus.test.junit.QuarkusTest;
 

@@ -15,11 +15,11 @@ This directory is to put all our projects that use dependencies from this reposi
 ### 2. Clone the project
 Enter to your new directory, and clone this repository. There is no special way to clone this project other than 
 ```shell
-git clone https://github.com/yanmastra/quarkus-keycloak.git
+git clone https://github.com/onebyone/quarkus-keycloak.git
 ``` 
 or 
 ```shell
-git clone git@github.com:yanmastra/quarkus-keycloak.git
+git clone git@github.com:onebyone/quarkus-keycloak.git
 ```
 
 ### 2. Localhost setup
