@@ -91,16 +91,17 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
     }
 
     private final Random random = new Random();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(100);
     void seeds(@Observes StartupEvent event) {
         long count = sampleEntityRepo.count();
-        if (count <= 10000) {
-            for (int i = 0; i < 10000; i++) {
-
-                final int index = i;
+        log.info("found " + count + " sample entities");
+        if (count <= 5000) {
+            for (int i = 0; i < 5000; i++) {
+                int index = i;
                 executorService.submit(() -> createOneParent(index));
             }
         }
+        executorService.shutdown();
     }
 
     @RunOnVirtualThread
@@ -109,7 +110,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
         Instant start = Instant.now();
         try {
             SampleParentEntity parent = new SampleParentEntity();
-            parent.setName("Parent entity " + i);
+            parent.setName("Parent entity " + UUID.randomUUID());
             parent.setCategory(SampleCategory.values()[random.nextInt(SampleCategory.values().length - 1)]);
             parent.setPrice(BigDecimal.valueOf(random.nextInt(1, 100) * 1000L));
             sampleEntityRepo.persist(parent);
@@ -141,12 +142,16 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
                 }
             }
 
-            log.warn(+sampleChildEntities.size() + " child created!");
+//            log.warn(+sampleChildEntities.size() + " child created!");
             childRepo.persist(sampleChildEntities.stream());
             childOfChildRepo.persist(sampleChildOfChildEntities.stream());
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage(), e);
         }
         log.warn(i +" takes time: "+(Instant.now().toEpochMilli() - start.toEpochMilli())+"ms");
+        if (sampleEntityRepo.count() > 10000) {
+            throw new RuntimeException("Stopping loop");
+        }
     }
 }

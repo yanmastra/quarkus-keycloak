@@ -9,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * This is sample of how to create entity class to define a table scheme,
@@ -37,7 +38,7 @@ public class SampleParentEntity extends BaseEntity {
      * This column will use varchar(36) data type and automatically filled by UUID when the record persisted
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, length = 36)
     private String id;
 
@@ -117,5 +118,12 @@ public class SampleParentEntity extends BaseEntity {
 
     public Set<SampleChildEntity> getChildren() {
         return children;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
     }
 }

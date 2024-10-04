@@ -36,6 +36,7 @@ export VAR_RESOURCE_DIR="\$RESOURCE_DIR"
 envsubst  < ${DIR}/docker/run-debug.sh.template > run-debug.sh
 chmod +x run-debug.sh
 cp ${DIR}/docker/docker_env.env .
+cp ${DIR}/docker/docker_env.env.example .
 envsubst < ${DIR}/docker/pom.xml.template > pom.xml
 cat ${DIR}/docker/application.properties.template > src/main/resources/application.properties
 echo "quarkus.smallrye-openapi.info-title=$ARTIFACT_ID" >> src/main/resources/application.properties

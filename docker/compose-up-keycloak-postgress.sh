@@ -1,11 +1,12 @@
 #!/bin/zsh
 DIR=$(pwd)
+cd ..
+DIR_NAME="${PWD##*/}"
+cd $DIR
 
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
-
 export DB_LIST="$(cat databases-list.txt)"
 export KEYCLOAK_DB_NAME=db_authentication
-
 docker compose -f ./docker-compose.yml up postgres -d
 
 envsubst  < keycloak/Dockerfile.template > keycloak/Dockerfile

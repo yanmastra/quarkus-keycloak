@@ -1,5 +1,5 @@
 ### 7. Setup Keycloak 
-Please follow these steps to setup the Keycloak correctly
+Please follow these steps to set up the Keycloak correctly
 
 1. Open https://keycloak.<your domain\> on your browser
 2. Please sign in by username and password that you set before on these variables: ``KEYCLOAK_ADMIN`` and ``KEYCLOAK_ADMIN_PASSWORD``
