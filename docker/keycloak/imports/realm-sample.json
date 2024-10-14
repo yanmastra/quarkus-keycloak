@@ -98,7 +98,7 @@
       },
       {
         "id": "c5aede11-bfda-450e-879a-51445b54d7e9",
-        "name": "b2b-administrator",
+        "name": "smpl-administrator",
         "description": "",
         "composite": false,
         "clientRole": false,
@@ -473,19 +473,19 @@
     },
     {
       "id": "511c4341-324b-48f7-8341-0f0895f14abc",
-      "name": "company_user",
-      "path": "/company_user",
+      "name": "users",
+      "path": "/users",
       "subGroups": [
         {
           "id": "231e531a-eed9-4409-9861-521e34cb698c",
           "name": "first_company",
-          "path": "/company_user/first_company",
+          "path": "/users/first_company",
           "parentId": "511c4341-324b-48f7-8341-0f0895f14abc",
           "subGroups": [
             {
               "id": "2b33a673-f151-4067-ad55-948107fe4e40",
               "name": "agent",
-              "path": "/company_user/first_company/agent",
+              "path": "/users/first_company/agent",
               "parentId": "231e531a-eed9-4409-9861-521e34cb698c",
               "subGroups": [],
               "attributes": {},
@@ -1674,8 +1674,8 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {
-    "password": "**********",
-    "replyToDisplayName": "Wayan Mastra | System Admin of Sample Project",
+    "password": null,
+    "replyToDisplayName": "Admin | System Admin of Sample Project",
     "starttls": "false",
     "auth": "true",
     "port": "587",
