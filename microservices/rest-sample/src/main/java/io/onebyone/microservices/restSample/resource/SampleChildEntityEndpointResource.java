@@ -2,7 +2,7 @@ package io.onebyone.microservices.restSample.resource;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.onebyone.microservices.restSample.data.entity.SampleChildEntity;
-import io.onebyone.microservices.restSample.data.dto.SampleChildEntityDto;
+import io.onebyone.microservices.restSample.dto.SampleChildEntityDto;
 import io.onebyone.microservices.restSample.data.repository.SampleChildEntityRepository;
 import io.onebyone.microservices.restSample.data.repository.SampleParentEntityRepository;
 import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;

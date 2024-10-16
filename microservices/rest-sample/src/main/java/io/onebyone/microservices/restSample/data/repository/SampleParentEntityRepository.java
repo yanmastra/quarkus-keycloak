@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.onebyone.microservices.restSample.data.entity.SampleChildEntity;
 import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
 import io.onebyone.microservices.restSample.data.entity.SampleParentEntity;
-import io.onebyone.microservices.restSample.data.dto.SampleParentSummaryDto;
+import io.onebyone.microservices.restSample.dto.SampleParentSummaryDto;
 import io.onebyone.quarkus.microservices.common.crud.Paginate;
 import io.onebyone.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import jakarta.enterprise.context.ApplicationScoped;
