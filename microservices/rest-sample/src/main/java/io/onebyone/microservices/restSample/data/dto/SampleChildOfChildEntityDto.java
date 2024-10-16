@@ -1,16 +1,16 @@
-package io.onebyone.microservices.restSample.json;
+package io.onebyone.microservices.restSample.data.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.onebyone.microservices.restSample.entity.SampleChildEntity;
-import io.onebyone.microservices.restSample.entity.SampleChildOfChildEntity;
+import io.onebyone.microservices.restSample.data.entity.SampleChildEntity;
+import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleChildOfChildEntityJson {
+public class SampleChildOfChildEntityDto {
     private String id;
 
     @JsonProperty("amount")
@@ -34,7 +34,7 @@ public class SampleChildOfChildEntityJson {
     @JsonProperty("parent_name")
     private String parentName;
 
-    public SampleChildOfChildEntityJson() {
+    public SampleChildOfChildEntityDto() {
     }
 
     public SampleChildOfChildEntity toEntity() {
@@ -42,7 +42,7 @@ public class SampleChildOfChildEntityJson {
         return update(entity, this);
     }
 
-    public static SampleChildOfChildEntity update(SampleChildOfChildEntity entity, SampleChildOfChildEntityJson json) {
+    public static SampleChildOfChildEntity update(SampleChildOfChildEntity entity, SampleChildOfChildEntityDto json) {
         entity.setId(json.getId());
         entity.setAmount(json.getAmount());
         entity.setColumn1(json.getColumn1());
@@ -63,8 +63,8 @@ public class SampleChildOfChildEntityJson {
         return entity;
     }
 
-    public static SampleChildOfChildEntityJson fromEntity(SampleChildOfChildEntity entity) {
-        SampleChildOfChildEntityJson json = new SampleChildOfChildEntityJson();
+    public static SampleChildOfChildEntityDto fromEntity(SampleChildOfChildEntity entity) {
+        SampleChildOfChildEntityDto json = new SampleChildOfChildEntityDto();
         json.setId(entity.getId());
         json.setAmount(entity.getAmount());
         json.setColumn1(entity.getColumn1());

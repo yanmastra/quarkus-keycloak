@@ -6,7 +6,8 @@ docker compose -f docker-compose.yml up postgres -d
 docker compose -f docker-compose.yml up keycloak -d
 docker compose -f docker-compose.yml up nginx -d
 
-cd ..
+cd $DIR || exit
+cd ../../
 cd dependencies/authorization || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"

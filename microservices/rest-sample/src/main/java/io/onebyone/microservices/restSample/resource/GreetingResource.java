@@ -1,4 +1,4 @@
-package io.onebyone.microservices.restSample;
+package io.onebyone.microservices.restSample.resource;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

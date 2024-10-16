@@ -18,6 +18,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import java.util.*;
 
@@ -27,7 +28,6 @@ import java.util.*;
  * @param <Entity> is entity class that extend CrudableEntity
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
-@RegisterForReflection
 public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
 
     /**
@@ -78,6 +78,16 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
      */
     protected abstract Entity update(Entity entity, Dto dao);
 
+    @Operation(summary = "Get Paginate data",
+            description = """
+                    Possible parameters:
+                    <ul>
+                    <li>page: 1, 2, 3, ..., n</li>
+                    <li>size: 10, 20, etc.</li>
+                    <li>field name of entity class</li>
+                    </ul>
+                    """
+    )
     @RunOnVirtualThread
     @GET
     @Transactional

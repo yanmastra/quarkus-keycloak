@@ -1,4 +1,4 @@
-package io.onebyone.microservices.restSample.entity;
+package io.onebyone.microservices.restSample.data.entity;
 
 import io.onebyone.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;

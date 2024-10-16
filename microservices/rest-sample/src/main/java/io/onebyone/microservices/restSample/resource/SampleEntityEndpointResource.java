@@ -1,17 +1,17 @@
-package io.onebyone.microservices.restSample;
+package io.onebyone.microservices.restSample.resource;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.annotation.RunOnVirtualThread;
-import io.onebyone.microservices.restSample.entity.SampleCategory;
-import io.onebyone.microservices.restSample.entity.SampleChildEntity;
-import io.onebyone.microservices.restSample.entity.SampleChildOfChildEntity;
-import io.onebyone.microservices.restSample.entity.SampleParentEntity;
-import io.onebyone.microservices.restSample.json.SampleParentEntityJson;
-import io.onebyone.microservices.restSample.json.SampleParentSummaryJson;
-import io.onebyone.microservices.restSample.repo.SampleChildEntityRepository;
-import io.onebyone.microservices.restSample.repo.SampleChildOfChildEntityRepository;
-import io.onebyone.microservices.restSample.repo.SampleParentEntityRepository;
+import io.onebyone.microservices.restSample.data.entity.SampleCategory;
+import io.onebyone.microservices.restSample.data.entity.SampleChildEntity;
+import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.onebyone.microservices.restSample.data.entity.SampleParentEntity;
+import io.onebyone.microservices.restSample.data.dto.SampleParentEntityDto;
+import io.onebyone.microservices.restSample.data.dto.SampleParentSummaryDto;
+import io.onebyone.microservices.restSample.data.repository.SampleChildEntityRepository;
+import io.onebyone.microservices.restSample.data.repository.SampleChildOfChildEntityRepository;
+import io.onebyone.microservices.restSample.data.repository.SampleParentEntityRepository;
 import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;
 import io.onebyone.quarkus.microservices.common.crud.Paginate;
 import jakarta.enterprise.event.Observes;
@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 
 @Path("/api/v1/sample_entity")
 @SecurityRequirement(name = "Keycloak")
-public class SampleEntityEndpointResource extends CrudableEndpointResource<SampleParentEntity, SampleParentEntityJson> {
+public class SampleEntityEndpointResource extends CrudableEndpointResource<SampleParentEntity, SampleParentEntityDto> {
 
     @Inject
     SampleParentEntityRepository sampleEntityRepo;
@@ -54,17 +54,17 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
     }
 
     @Override
-    protected SampleParentEntityJson fromEntity(SampleParentEntity entity) {
-        return SampleParentEntityJson.fromEntity(entity);
+    protected SampleParentEntityDto fromEntity(SampleParentEntity entity) {
+        return SampleParentEntityDto.fromEntity(entity);
     }
 
     @Override
-    protected SampleParentEntity toEntity(SampleParentEntityJson sampleParentEntityJson) {
-        return sampleParentEntityJson.toEntity();
+    protected SampleParentEntity toEntity(SampleParentEntityDto sampleParentEntityDto) {
+        return sampleParentEntityDto.toEntity();
     }
 
     @Override
-    protected SampleParentEntity update(SampleParentEntity entity, SampleParentEntityJson json) {
+    protected SampleParentEntity update(SampleParentEntity entity, SampleParentEntityDto json) {
         entity.setName(json.name);
         entity.setCategory(json.category);
         entity.setPrice(json.price);
@@ -79,7 +79,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
     @GET
     @Path("summary")
     @RunOnVirtualThread
-    public Paginate<SampleParentSummaryJson> getSummary(
+    public Paginate<SampleParentSummaryDto> getSummary(
             @QueryParam("page") Integer page,
             @QueryParam("size") Integer size,
             @Context ContainerRequestContext requestContext
@@ -89,6 +89,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
 
         return sampleEntityRepo.getParentSummary(Page.page(size, Math.max(0, page -1)), requestContext.getUriInfo().getQueryParameters());
     }
+
 
     private final Random random = new Random();
     private final ExecutorService executorService = Executors.newFixedThreadPool(100);
