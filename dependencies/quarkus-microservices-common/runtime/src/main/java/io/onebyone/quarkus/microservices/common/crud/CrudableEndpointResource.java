@@ -5,7 +5,6 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
 import io.onebyone.authorization.ResponseJson;
@@ -16,6 +15,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
@@ -91,7 +91,7 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @RunOnVirtualThread
     @GET
     @Transactional
-    public Paginate<Dto> getList(
+    public Paginate<Dto> getOne(
             @QueryParam("page") Integer page,
             @QueryParam("page") Integer size,
             @Context ContainerRequestContext context
@@ -99,11 +99,16 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
         if (page == null || page <= 0) page = 1;
         if (size == null || size < 5) size = 5;
 
+        MultivaluedMap<String, String> requestQueries = context.getUriInfo().getQueryParameters();
+        return getList(page, size, requestQueries, context);
+    }
+
+    protected Paginate<Dto> getList(Integer page, Integer size, MultivaluedMap<String, String> requestQueries, ContainerRequestContext context) {
         Page objPage = Page.of(page - 1, size);
         Sort sort = getSort();
 
         Map<String, Object> queryParams = new HashMap<>();
-        String hql = CrudQueryFilterUtils.createFilterQuery(context.getUriInfo().getQueryParameters(), queryParams, searchAbleColumn());
+        String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn());
 
         PanacheQuery<Entity> entityQuery = getRepository().find(hql, sort, queryParams);
         long totalCount = entityQuery.count();
@@ -121,7 +126,7 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @GET
     @Path("{id}")
     @Transactional
-    public Dto getList(
+    public Dto getOne(
             @PathParam("id") String id,
             @Context SecurityContext context
     ) {
