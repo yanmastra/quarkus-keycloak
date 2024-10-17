@@ -472,6 +472,29 @@
       "clientRoles": {}
     },
     {
+      "id": "36114740-398b-4627-a25e-be3b712dd1b2",
+      "name": "service-account",
+      "path": "/service-account",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "query-users",
+          "manage-users",
+          "query-groups"
+        ],
+        "account": [
+          "delete-account",
+          "view-groups",
+          "manage-account",
+          "manage-account-links",
+          "manage-consent"
+        ]
+      }
+    },
+    {
       "id": "511c4341-324b-48f7-8341-0f0895f14abc",
       "name": "users",
       "path": "/users",
@@ -577,6 +600,41 @@
       },
       "notBefore": 0,
       "groups": []
+    },
+    {
+      "id": "4d9494cd-ab85-426e-ab24-315325c7a93f",
+      "username": "service@onebyone.io",
+      "email": "service@onebyone.io",
+      "emailVerified": true,
+      "firstName": "Service",
+      "lastName": "Account",
+      "enabled": true,
+      "totp": false,
+      "requiredActions": [],
+      "createdTimestamp": 1729119707799,
+      "credentials": [
+        {
+          "temporary": false,
+          "type": "password",
+          "value": "admin@2024"
+        }
+      ],
+      "clientRoles": {
+        "backend": [
+          "uma_protection"
+        ]
+      },
+      "notBefore": 0,
+      "groups": [
+        "/service-account"
+      ],
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
     }
   ],
   "clients": [

@@ -88,10 +88,31 @@ public abstract class BaseEntity extends PanacheEntityBase implements Serializab
         this.deletedBy = deletedBy;
     }
 
-    protected abstract  <Dto> Dto toDto();
+    /**
+     * This method is deprecated, please use Helper class to convert Entity to DTO
+     * @return null
+     * @param
+     */
+    @Deprecated
+    protected <Dto> Dto toDto(){
+        return null;
+    }
+
+    /**
+     * This method is deprecated, please use Helper class to convert Entity to DTO
+     * @return
+     * @param dto
+     */
+    @Deprecated
     public static <BE extends BaseEntity, Dto extends BaseDto<BE>> BE fromDto(Dto dto) {
         return dto.toEntity();
     }
-    public abstract <Dto> void updateByDto(Dto dto);
 
+    /**
+     * This method is deprecated, please use Helper class to convert Entity to DTO
+     * @param dto
+     */
+    @Deprecated
+    public <Dto> void updateByDto(Dto dto){
+    }
 }
