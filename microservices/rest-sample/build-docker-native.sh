@@ -1,10 +1,11 @@
 #!/bin/zsh
 DIR=$(pwd)
-cd ../../
+cd ../../docker || exit
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
 #docker compose -f docker-compose.yml up postgres -d
-#docker compose -f docker-compose.yml up zookeeper kafka -d
+#docker compose -f docker-compose.yml up keycloak -d
 
+cd ..
 cd dependencies/authorization || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"
@@ -29,12 +30,13 @@ GROUP_ID=$(mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout) || e
 echo "project groupId: $GROUP_ID"
 
 mvn clean package -Pnative -DskipTests \
-                  -Dquarkus.native.additional-build-args="--verbose, --report-unsupported-elements-at-runtime, -H:+UnlockExperimentalVMOptions" \
+                  -Dquarkus.native.additional-build-args="--verbose, -march=native, --report-unsupported-elements-at-runtime" \
                   -Dquarkus.native.container-build=true \
                   -Dquarkus.container-image.build=true \
-                  -Dquarkus.container-image.group=$GROUP_ID \
-                  -Dquarkus.container-image.name=$ARTIFACT_ID \
-                  -Dquarkus.container-image.tag=$PROJECT_VERSION \
-                  -Dquarkus.native.debug.enabled=true
+                  -Dquarkus.profile=prod
+#                  -Dquarkus.container-image.group=$GROUP_ID \
+#                  -Dquarkus.container-image.name=$ARTIFACT_ID \
+#                  -Dquarkus.container-image.tag=$PROJECT_VERSION \
+#                  -Dquarkus.native.debug.enabled=true
 
 docker tag $GROUP_ID/$ARTIFACT_ID:$PROJECT_VERSION $GROUP_ID/$ARTIFACT_ID:latest
