@@ -91,9 +91,9 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @RunOnVirtualThread
     @GET
     @Transactional
-    public Paginate<Dto> getOne(
+    public Paginate<Dto> getList(
             @QueryParam("page") Integer page,
-            @QueryParam("page") Integer size,
+            @QueryParam("size") Integer size,
             @Context ContainerRequestContext context
     ) {
         if (page == null || page <= 0) page = 1;
