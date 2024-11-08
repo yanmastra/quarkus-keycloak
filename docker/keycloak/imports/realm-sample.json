@@ -500,25 +500,19 @@
       "path": "/users",
       "subGroups": [
         {
-          "id": "231e531a-eed9-4409-9861-521e34cb698c",
-          "name": "first_company",
-          "path": "/users/first_company",
+          "id": "c1873593-4466-4822-bb58-f418042c856b",
+          "name": "cedea",
+          "path": "/users/cedea",
           "parentId": "511c4341-324b-48f7-8341-0f0895f14abc",
           "subGroups": [
             {
-              "id": "2b33a673-f151-4067-ad55-948107fe4e40",
-              "name": "agent",
-              "path": "/users/first_company/agent",
-              "parentId": "231e531a-eed9-4409-9861-521e34cb698c",
+              "id": "f0090bc4-d7d6-4679-bf99-e1a008fa0e4b",
+              "name": "super-admin",
+              "path": "/users/cedea/super-admin",
+              "parentId": "c1873593-4466-4822-bb58-f418042c856b",
               "subGroups": [],
               "attributes": {},
-              "realmRoles": [
-                "smpl_vw_product",
-                "default-roles-project-sample",
-                "smpl_dl_product",
-                "smpl_cr_product",
-                "smpl_up_product"
-              ],
+              "realmRoles": [],
               "clientRoles": {}
             }
           ],

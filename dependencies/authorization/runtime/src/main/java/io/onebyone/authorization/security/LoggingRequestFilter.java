@@ -2,9 +2,11 @@ package io.onebyone.authorization.security;
 
 import io.onebyone.authorization.logging.RequestLogData;
 import io.onebyone.authorization.logging.RequestLoggingListener;
+import io.onebyone.authorization.provider.HtmlErrorMapper;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.container.*;
@@ -14,6 +16,8 @@ import org.jboss.logging.Logger;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @PreMatching
 @Singleton
@@ -23,6 +27,8 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
     Logger logger;
     @Inject
     RoutingContext routingContext;
+    @Inject
+    Instance<RequestLoggingListener> requestLoggingListenerBeans;
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext responseContext) throws IOException {
@@ -50,12 +56,10 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
     }
 
     private RequestLoggingListener getRequestLoggingListener() {
-        try (InstanceHandle<RequestLoggingListener> instance = Arc.container().instance(RequestLoggingListener.class)){
-            if (instance.isAvailable()) {
-                return instance.get();
-            }
+        try (Stream<RequestLoggingListener> errorMapperStream = requestLoggingListenerBeans.stream()) {
+            return errorMapperStream.findFirst().orElse(null);
         } catch (Exception e) {
-            //
+            logger.warn(e.getMessage());
         }
         return null;
     }

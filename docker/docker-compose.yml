@@ -47,8 +47,8 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       JAVA_OPTS_KC_HEAP: "-XX:MaxHeapFreeRatio=40 -XX:MaxRAMPercentage=65"
-    volumes:
-      - ./keycloak/imports:/opt/keycloak/imports
+#    volumes:
+#      - ./keycloak/imports:/opt/keycloak/imports
     healthcheck:
       test:
         [ "CMD", "curl", "-f", "https://localhost:8443/" ]
