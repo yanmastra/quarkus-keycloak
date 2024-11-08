@@ -35,7 +35,7 @@ services:
       - --https-key-store-password=${KEYCLOAK_KEYSTORE_PASSWORD}
       - --proxy-headers=forwarded
       - --hostname=${KEYCLOAK_HOST}
-      - -Dkeycloak.import=/opt/keycloak/imports/
+#      - -Dkeycloak.import=/opt/keycloak/imports/
     ports:
       - "${KEYCLOAK_EXTERNAL_PORT}:8443"
     depends_on:
