@@ -98,7 +98,7 @@
       },
       {
         "id": "c5aede11-bfda-450e-879a-51445b54d7e9",
-        "name": "b2b-administrator",
+        "name": "smpl-administrator",
         "description": "",
         "composite": false,
         "clientRole": false,
@@ -472,30 +472,47 @@
       "clientRoles": {}
     },
     {
+      "id": "36114740-398b-4627-a25e-be3b712dd1b2",
+      "name": "service-account",
+      "path": "/service-account",
+      "subGroups": [],
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "query-users",
+          "manage-users",
+          "query-groups"
+        ],
+        "account": [
+          "delete-account",
+          "view-groups",
+          "manage-account",
+          "manage-account-links",
+          "manage-consent"
+        ]
+      }
+    },
+    {
       "id": "511c4341-324b-48f7-8341-0f0895f14abc",
-      "name": "company_user",
-      "path": "/company_user",
+      "name": "users",
+      "path": "/users",
       "subGroups": [
         {
-          "id": "231e531a-eed9-4409-9861-521e34cb698c",
-          "name": "first_company",
-          "path": "/company_user/first_company",
+          "id": "c1873593-4466-4822-bb58-f418042c856b",
+          "name": "cedea",
+          "path": "/users/cedea",
           "parentId": "511c4341-324b-48f7-8341-0f0895f14abc",
           "subGroups": [
             {
-              "id": "2b33a673-f151-4067-ad55-948107fe4e40",
-              "name": "agent",
-              "path": "/company_user/first_company/agent",
-              "parentId": "231e531a-eed9-4409-9861-521e34cb698c",
+              "id": "f0090bc4-d7d6-4679-bf99-e1a008fa0e4b",
+              "name": "super-admin",
+              "path": "/users/cedea/super-admin",
+              "parentId": "c1873593-4466-4822-bb58-f418042c856b",
               "subGroups": [],
               "attributes": {},
-              "realmRoles": [
-                "smpl_vw_product",
-                "default-roles-project-sample",
-                "smpl_dl_product",
-                "smpl_cr_product",
-                "smpl_up_product"
-              ],
+              "realmRoles": [],
               "clientRoles": {}
             }
           ],
@@ -577,6 +594,41 @@
       },
       "notBefore": 0,
       "groups": []
+    },
+    {
+      "id": "4d9494cd-ab85-426e-ab24-315325c7a93f",
+      "username": "service@onebyone.io",
+      "email": "service@onebyone.io",
+      "emailVerified": true,
+      "firstName": "Service",
+      "lastName": "Account",
+      "enabled": true,
+      "totp": false,
+      "requiredActions": [],
+      "createdTimestamp": 1729119707799,
+      "credentials": [
+        {
+          "temporary": false,
+          "type": "password",
+          "value": "admin@2024"
+        }
+      ],
+      "clientRoles": {
+        "backend": [
+          "uma_protection"
+        ]
+      },
+      "notBefore": 0,
+      "groups": [
+        "/service-account"
+      ],
+      "access": {
+        "manageGroupMembership": true,
+        "view": true,
+        "mapRoles": true,
+        "impersonate": true,
+        "manage": true
+      }
     }
   ],
   "clients": [
@@ -1674,18 +1726,18 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "smtpServer": {
-    "password": "**********",
-    "replyToDisplayName": "Wayan Mastra | System Admin of Sample Project",
+    "password": null,
+    "replyToDisplayName": "Admin | System Admin of Sample Project",
     "starttls": "false",
     "auth": "true",
     "port": "587",
     "host": "smtp.gmail.com",
-    "replyTo": "yanmastra59@gmail.com",
+    "replyTo": "onebyone59@gmail.com",
     "from": "system@smplProject.com",
     "fromDisplayName": "smplProject",
     "envelopeFrom": "",
     "ssl": "false",
-    "user": "yanmastra59@gmail.com"
+    "user": "onebyone59@gmail.com"
   },
   "eventsEnabled": false,
   "eventsListeners": [

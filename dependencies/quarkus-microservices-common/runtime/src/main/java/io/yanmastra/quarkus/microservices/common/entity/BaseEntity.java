@@ -11,6 +11,7 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -21,30 +22,30 @@ public abstract class BaseEntity extends PanacheEntityBase implements Serializab
     @CreationTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
-    private Date createdAt;
+    private ZonedDateTime createdAt;
     @Column(name = "created_by", length = 32)
     private String createdBy;
     @UpdateTimestamp(source = SourceType.DB)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
-    private Date updatedAt;
+    private ZonedDateTime updatedAt;
     @Column(name = "updated_by", length = 32)
     private String updatedBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deleted_at")
-    private Date deletedAt;
+    private ZonedDateTime deletedAt;
     @Column(name = "deleted_by", length = 32)
     private String deletedBy;
 
     public abstract String getId();
     public abstract void setId(String id);
 
-    public Date getCreatedAt() {
+    public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -56,11 +57,11 @@ public abstract class BaseEntity extends PanacheEntityBase implements Serializab
         this.createdBy = createdBy;
     }
 
-    public Date getUpdatedAt() {
+    public ZonedDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -72,11 +73,11 @@ public abstract class BaseEntity extends PanacheEntityBase implements Serializab
         this.updatedBy = updatedBy;
     }
 
-    public Date getDeletedAt() {
+    public ZonedDateTime getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(Date deletedAt) {
+    public void setDeletedAt(ZonedDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 
@@ -88,10 +89,31 @@ public abstract class BaseEntity extends PanacheEntityBase implements Serializab
         this.deletedBy = deletedBy;
     }
 
-    protected abstract  <Dto> Dto toDto();
+    /**
+     * This method is deprecated, please use Helper class to convert Entity to DTO
+     * @return null
+     * @param
+     */
+    @Deprecated
+    protected <Dto> Dto toDto(){
+        return null;
+    }
+
+    /**
+     * This method is deprecated, please use Helper class to convert Entity to DTO
+     * @return
+     * @param dto
+     */
+    @Deprecated
     public static <BE extends BaseEntity, Dto extends BaseDto<BE>> BE fromDto(Dto dto) {
         return dto.toEntity();
     }
-    public abstract <Dto> void updateByDto(Dto dto);
 
+    /**
+     * This method is deprecated, please use Helper class to convert Entity to DTO
+     * @param dto
+     */
+    @Deprecated
+    public <Dto> void updateByDto(Dto dto){
+    }
 }

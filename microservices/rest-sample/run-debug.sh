@@ -6,7 +6,8 @@ docker compose -f docker-compose.yml up postgres -d
 docker compose -f docker-compose.yml up keycloak -d
 docker compose -f docker-compose.yml up nginx -d
 
-cd ..
+cd $DIR || exit
+cd ../../
 cd dependencies/authorization || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"
@@ -21,5 +22,5 @@ cd $DIR || exit
 export DEBUG=15005
 export QUARKUS_LOG_LEVEL=INFO
 
-open http://localhost:4002/q/swagger-ui
+open http://localhost:4001/q/swagger-ui
 mvn clean quarkus:dev -Ddebug=$DEBUG -Djdk.virtualThreadScheduler.parallelism=16 -Djdk.virtualThreadScheduler.maxPoolSize=64

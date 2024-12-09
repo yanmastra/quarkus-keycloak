@@ -5,7 +5,6 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
 import io.yanmastra.authorization.ResponseJson;
@@ -16,8 +15,10 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 import java.util.*;
 
@@ -27,7 +28,6 @@ import java.util.*;
  * @param <Entity> is entity class that extend CrudableEntity
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
-@RegisterForReflection
 public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
 
     /**
@@ -78,22 +78,37 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
      */
     protected abstract Entity update(Entity entity, Dto dao);
 
+    @Operation(summary = "Get Paginate data",
+            description = """
+                    Possible parameters:
+                    <ul>
+                    <li>page: 1, 2, 3, ..., n</li>
+                    <li>size: 10, 20, etc.</li>
+                    <li>field name of entity class</li>
+                    </ul>
+                    """
+    )
     @RunOnVirtualThread
     @GET
     @Transactional
     public Paginate<Dto> getList(
             @QueryParam("page") Integer page,
-            @QueryParam("page") Integer size,
+            @QueryParam("size") Integer size,
             @Context ContainerRequestContext context
     ) {
         if (page == null || page <= 0) page = 1;
         if (size == null || size < 5) size = 5;
 
+        MultivaluedMap<String, String> requestQueries = context.getUriInfo().getQueryParameters();
+        return getList(page, size, requestQueries, context);
+    }
+
+    protected Paginate<Dto> getList(Integer page, Integer size, MultivaluedMap<String, String> requestQueries, ContainerRequestContext context) {
         Page objPage = Page.of(page - 1, size);
         Sort sort = getSort();
 
         Map<String, Object> queryParams = new HashMap<>();
-        String hql = CrudQueryFilterUtils.createFilterQuery(context.getUriInfo().getQueryParameters(), queryParams, searchAbleColumn());
+        String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn());
 
         PanacheQuery<Entity> entityQuery = getRepository().find(hql, sort, queryParams);
         long totalCount = entityQuery.count();
@@ -111,7 +126,7 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
     @GET
     @Path("{id}")
     @Transactional
-    public Dto getList(
+    public Dto getOne(
             @PathParam("id") String id,
             @Context SecurityContext context
     ) {

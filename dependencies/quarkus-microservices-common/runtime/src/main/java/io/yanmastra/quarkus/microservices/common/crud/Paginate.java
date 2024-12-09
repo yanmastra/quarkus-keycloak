@@ -3,6 +3,7 @@ package io.yanmastra.quarkus.microservices.common.crud;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.ws.rs.BadRequestException;
 
 import java.util.List;
 
@@ -10,29 +11,17 @@ import java.util.List;
 public class Paginate<E> {
     @JsonProperty("data")
     private List<E> data;
-    @JsonProperty("current_page")
-    private int currentPage;
-    @JsonProperty("size")
-    private int size;
-    @JsonProperty("total_data")
-    private long totalData;
+    @JsonProperty("meta")
+    private MetaPagination meta;
 
     public Paginate() {
-    }
-
-    @Deprecated
-    public Paginate(List<E> data, int currentPage, int size, boolean isFirst, boolean isLast, long totalData, int totalPage) {
-        this.data = data;
-        this.currentPage = currentPage;
-        this.size = size;
-        this.totalData = totalData;
+        this.meta = new MetaPagination(1, 5, 0L, 0);
     }
 
     public Paginate(List<E> data, int currentPage, int size, long totalData) {
+        if (data == null) throw new BadRequestException("data is null");
         this.data = data;
-        this.currentPage = currentPage;
-        this.size = size;
-        this.totalData = totalData;
+        this.meta = new MetaPagination(currentPage, size, totalData, data.size());
     }
 
     @JsonIgnore
@@ -45,44 +34,26 @@ public class Paginate<E> {
     }
 
     @JsonIgnore
-    public int getCurrentPage() {
-        return currentPage;
+    public MetaPagination getMeta() {
+        return meta;
     }
 
-    public void setCurrentPage(int currentPage) {
-        this.currentPage = currentPage;
+    public void setMeta(MetaPagination meta) {
+        this.meta = meta;
     }
 
-    @JsonIgnore
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    @JsonProperty("is_first")
-    public boolean isFirst() {
-        return currentPage == 1;
-    }
-
-    @JsonProperty("is_last")
-    public boolean isLast() {
-        return ((long) getCurrentPage() * getSize()) >= totalData;
-    }
-
-    @JsonIgnore
-    public long getTotalData() {
-        return totalData;
-    }
-
+    @Deprecated
     public void setTotalData(long totalData) {
-        this.totalData = totalData;
+        if (meta != null) meta.setTotalData(totalData);
     }
 
-    @JsonProperty("total_page")
-    public int getTotalPage() {
-        return (int) (totalData / size + (totalData % size == 0 ?  0 : 1));
+    @Deprecated
+    public void setCurrentPage(Integer currentPage) {
+        if (meta != null) meta.setPage(currentPage);
+    }
+
+    @Deprecated
+    public void setSize(Integer size) {
+        if (meta != null) meta.setSize(size);
     }
 }

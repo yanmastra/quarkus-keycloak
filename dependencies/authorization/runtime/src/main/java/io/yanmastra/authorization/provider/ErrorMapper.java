@@ -17,12 +17,14 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.spi.AsyncExceptionMapperContext;
 import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveAsyncExceptionMapper;
+import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveExceptionMapper;
+import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Singleton
-public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Exception> {
+public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Exception>, ResteasyReactiveExceptionMapper<Exception> {
 
     @Inject
     Logger logger;
@@ -34,6 +36,12 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
 
     @Override
     public void asyncResponse(Exception exception, AsyncExceptionMapperContext context) {
+        Response response = this.toResponse(exception, context.serverRequestContext());
+        context.setResponse(response);
+    }
+
+    @Override
+    public Response toResponse(Exception exception, ServerRequestContext context) {
         logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage(), exception, exception.getCause());
 
         String message = null;
@@ -44,18 +52,23 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                 (headers.containsKey(HttpHeaders.CONTENT_TYPE) && headers.getFirst(HttpHeaders.CONTENT_TYPE).equals(MediaType.APPLICATION_JSON)) ||
                 htmlErrorMappers.stream().findAny().isEmpty()
         ) {
-            if (exception instanceof HttpException httpException) {
-                message = httpException.getPayload();
-                status = httpException.getStatusCode();
-            } else if (exception instanceof ClientErrorException clientError) {
-                message = clientError.getMessage();
-                status = clientError.getResponse().getStatus();
-            } else if (exception instanceof SecurityException securityException) {
-                message = securityException.getMessage();
-                status = 403;
-            } else {
-                Throwable cause = exception.getCause();
-                message = cause == null ? exception.getMessage() : cause.getMessage();
+            switch (exception) {
+                case HttpException httpException -> {
+                    message = httpException.getPayload();
+                    status = httpException.getStatusCode();
+                }
+                case ClientErrorException clientError -> {
+                    message = clientError.getMessage();
+                    status = clientError.getResponse().getStatus();
+                }
+                case SecurityException securityException -> {
+                    message = securityException.getMessage();
+                    status = 403;
+                }
+                default -> {
+                    Throwable cause = exception.getCause();
+                    message = cause == null ? exception.getMessage() : cause.getMessage();
+                }
             }
 
             JsonObjectBuilder job = Json.createObjectBuilder()
@@ -67,17 +80,19 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
             }
             String responsePayload = job.build().toString();
 
-            context.setResponse(Response.status(status)
+            return Response.status(status)
                     .entity(responsePayload)
                     .type(MediaType.APPLICATION_JSON)
-                    .build());
-        } else {
-            try (Stream<HtmlErrorMapper> errorMapperStream = htmlErrorMappers.stream()) {
-                Optional<HtmlErrorMapper> errorMapper = errorMapperStream.findFirst();
-                errorMapper.ifPresent(htmlErrorMapper -> context.setResponse(htmlErrorMapper.getResponse(exception)));
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
+                    .build();
         }
+
+
+        try (Stream<HtmlErrorMapper> errorMapperStream = htmlErrorMappers.stream()) {
+            Optional<HtmlErrorMapper> errorMapper = errorMapperStream.findFirst();
+            return errorMapper.map(mapper -> mapper.getResponse(exception)).orElse(null);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
     }
 }
