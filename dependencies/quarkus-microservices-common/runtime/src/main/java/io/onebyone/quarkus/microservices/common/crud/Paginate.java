@@ -3,7 +3,7 @@ package io.onebyone.quarkus.microservices.common.crud;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.onebyone.authorization.ResponseJson;
+import io.onebyone.authentication.ResponseJson;
 import jakarta.ws.rs.BadRequestException;
 
 import java.util.List;

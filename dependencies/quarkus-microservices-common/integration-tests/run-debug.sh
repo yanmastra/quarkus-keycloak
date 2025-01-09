@@ -1,10 +1,10 @@
 #!/bin/zsh
 DIR=$(pwd)
 cd ../../../
-export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+export $(grep -v "^$" docker/docker_env.env | grep -v "^#" | xargs)
 docker compose -f docker-compose.yml up postgres -d
 
-cd dependencies/authorization || exit
+cd dependencies/authentication || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"
 sleep 1

@@ -1,19 +1,20 @@
-package io.onebyone.authorization.deployment;
+package io.onebyone.authentication.deployment;
 
+import io.onebyone.authentication.provider.ErrorMapper;
+import io.onebyone.authentication.provider.RegisterCustomizeModule;
+import io.onebyone.authentication.security.AuthenticationService;
+import io.onebyone.authentication.security.LoggingRequestFilter;
+import io.onebyone.authentication.security.UserSecurityIdentityAugmentor;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
-import io.onebyone.authorization.provider.ErrorMapper;
-import io.onebyone.authorization.provider.RegisterCustomizeModule;
-import io.onebyone.authorization.security.LoggingRequestFilter;
-import io.onebyone.authorization.security.UserSecurityIdentityAugmentor;
+import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 
-class AuthorizationProcessor {
+class AuthenticationProcessor {
 
-    private static final String FEATURE = "quarkus-authorization";
+    private static final String FEATURE = "quarkus-authentication";
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -44,5 +45,15 @@ class AuthorizationProcessor {
     @BuildStep
     public AdditionalBeanBuildItem createAdditionalBeanBuildItem() {
         return new AdditionalBeanBuildItem(RegisterCustomizeModule.class);
+    }
+
+    @BuildStep
+    public AdditionalBeanBuildItem createJWTCallerPrincipalFactoryBean() {
+        return new AdditionalBeanBuildItem(JWTCallerPrincipalFactory.class);
+    }
+
+    @BuildStep
+    public AdditionalBeanBuildItem createAuthenticationServiceBean() {
+        return new AdditionalBeanBuildItem(AuthenticationService.class);
     }
 }

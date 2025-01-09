@@ -1,8 +1,8 @@
 package io.onebyone.quarkus.microservices.common.utils;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.ext.web.handler.HttpException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 import org.jboss.logging.Logger;
 
 import java.util.Arrays;
@@ -54,6 +54,6 @@ abstract class ParamToQuery {
                 return new ParamToQueryNotEquals(key, value, alias);
             }
         }
-        throw new HttpException(HttpStatus.SC_BAD_REQUEST, "Wrong value supplied to query param");
+        throw new HttpException(HttpResponseStatus.BAD_REQUEST.code(), "Wrong value supplied to query param");
     }
 }
