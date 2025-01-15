@@ -19,6 +19,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.jboss.logging.Logger;
 
 import java.util.*;
 
@@ -29,6 +30,7 @@ import java.util.*;
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
 public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
+    private static final Logger log = Logger.getLogger(CrudableEndpointResource.class);
 
     /**
      * Override this method to provide which columns that can be searched by ``?keyword=`` query parameter
@@ -109,6 +111,8 @@ public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto> {
 
         Map<String, Object> queryParams = new HashMap<>();
         String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn());
+        log.debug("generated hql: "+hql);
+        log.debug("generated hql value: "+queryParams);
 
         PanacheQuery<Entity> entityQuery = getRepository().find(hql, sort, queryParams);
         long totalCount = entityQuery.count();

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.Claims;
 
+import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -34,9 +35,13 @@ public class AuthenticationService {
     private final Map<String, String> sessionStates = new HashMap<>();
 
     public Map<String, Object> createAccessToken(UserTokenPayload userTokenPayload) {
+        return createAccessToken(userTokenPayload, Instant.now().plus(Duration.ofMinutes(30)));
+    }
+
+    public Map<String, Object> createAccessToken(UserTokenPayload userTokenPayload, Instant expiredAt) {
         String sessionId = UUID.randomUUID().toString();
         sessionStates.put(sessionId, userTokenPayload.getId());
-        Instant expiredAt = Instant.now().plus(Duration.ofDays(7));
+        if (expiredAt == null) expiredAt = Instant.now().plus(Duration.ofMinutes(30));
 
         JwtClaimsBuilder jwtClaimsBuilder = Jwt.claims()
                 .preferredUserName(userTokenPayload.getUsername())
@@ -45,8 +50,7 @@ public class AuthenticationService {
                 .subject(userTokenPayload.getId())
                 .issuer(getIssuer())
                 .claim(sessionId, sessionStates.get(sessionId))
-                .claim(permissions, userTokenPayload.getPermission())
-                .expiresAt(expiredAt);
+                .claim(permissions, userTokenPayload.getPermission());
 
         if (userTokenPayload.getAttributes() != null && !userTokenPayload.getAttributes().isEmpty()) {
             for (String key : userTokenPayload.getAttributes().keySet()) {
@@ -67,9 +71,14 @@ public class AuthenticationService {
         return Response.ok(createAccessToken(userTokenPayload)).build();
     }
 
+    public Response createAccessTokenResponse(UserTokenPayload userTokenPayload, Instant expiredAt) {
+        return Response.ok(createAccessToken(userTokenPayload, expiredAt)).build();
+    }
+
     private String getIssuer() {
         if (StringUtils.isBlank(issuer) || "-".equals(issuer)) {
-            return routingContext.request().absoluteURI();
+            URI uri = URI.create(routingContext.request().absoluteURI());
+            return uri.getScheme() + "://" + uri.getAuthority();
         }
         return issuer;
     }

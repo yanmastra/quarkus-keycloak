@@ -1,28 +1,29 @@
 package io.onebyone.quarkus.microservices.common.utils;
 
+import io.quarkus.arc.Unremovable;
+import jakarta.inject.Singleton;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Unremovable
+@Singleton
+@ParamToQueryQualifier(operator = "notIn")
 public class ParamToQueryNotIn extends ParamToQuery{
-    ParamToQueryNotIn(String key, List<String> value, String alias) {
-        super(key, value, alias);
-        this.sKey = key.replace(".", "_");
+
+    @Override
+    public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {
+        Set<String> values = new HashSet<>();
         for (int i = 1; i < value.size(); i++) {
-            this.value.add(value.get(i));
+            values.add(value.get(i));
         }
-    }
-    private final String sKey;
-    private final Set<String> value = new HashSet<>();
-
-    @Override
-    public String getWhereClause() {
-        return alias + key + " not in (:"+sKey+")";
+        return Map.of(getSKey(key), values);
     }
 
     @Override
-    public void attachValue(Map<String, Object> hibernateQueryParams) {
-        hibernateQueryParams.put(sKey, value);
+    public String getWhereClause(String key, List<String> value, String alias) {
+        return alias + key + " not in (:"+getSKey(key)+")";
     }
 }
