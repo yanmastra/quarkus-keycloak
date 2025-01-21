@@ -1,4 +1,4 @@
-package io.onebyone.authentication.security;
+package io.onebyone.authentication.payload;
 
 import java.util.Map;
 import java.util.Set;

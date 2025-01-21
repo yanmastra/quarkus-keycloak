@@ -6,41 +6,42 @@ import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerResponseContext;
-import jakarta.ws.rs.container.ContainerResponseFilter;
-import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.container.*;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 @PreMatching
 @Singleton
-public class LoggingRequestFilter implements ContainerResponseFilter {
+public class LoggingRequestFilter implements ContainerRequestFilter {
 
     @Inject
     Logger logger;
     @Inject
-    RoutingContext routingContext;
-    @Inject
     Instance<RequestLoggingListener> requestLoggingListenerBeans;
-    private ExecutorService executorService = null;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     @Override
-    public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext responseContext) throws IOException {
-        if (executorService == null) executorService = Executors.newFixedThreadPool(2);
-
+    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
         RequestLogData data = new RequestLogData();
         data.timestamp = ZonedDateTime.now();
         data.method = containerRequestContext.getMethod();
-        data.ipAddress = routingContext.request().remoteAddress().toString();
-        data.uri = routingContext.request().uri();
-        data.status = responseContext.getStatus();
+        data.ipAddress = getIP(containerRequestContext);
+        data.uri = containerRequestContext.getUriInfo().getPath();
+        data.status = 0;
         data.userAgent = containerRequestContext.getHeaderString(HttpHeaders.USER_AGENT);
 
         if (containerRequestContext.getSecurityContext().getUserPrincipal() != null) {
@@ -53,15 +54,31 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
                 data.principalName + " <-- " + data.status +
                 ", Agent:" + data.userAgent);
 
+
         RequestLoggingListener loggingListener = getRequestLoggingListener();
         if (loggingListener != null) {
             executorService.submit(() -> {
-                byte[] payloadByte = new byte[routingContext.body().length()];
-                routingContext.body().buffer().getBytes(payloadByte);
-                data.requestPayload = new String(payloadByte);
+                if (containerRequestContext.hasEntity() && MediaType.APPLICATION_JSON.equals(containerRequestContext.getHeaderString(HttpHeaders.CONTENT_TYPE))) {
+                    try {
+                        byte[] payloadByte = containerRequestContext.getEntityStream().readAllBytes();
+                        data.requestPayload = new String(payloadByte);
+
+                        containerRequestContext.setEntityStream(new ByteArrayInputStream(payloadByte));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 loggingListener.onLogging(data);
             });
         }
+    }
+
+    private String getIP(ContainerRequestContext containerRequestContext) {
+        List<String> forwardedFor = containerRequestContext.getHeaders().get("X-Forwarded-For");
+        if (forwardedFor != null && !forwardedFor.isEmpty()) {
+            return forwardedFor.getFirst().split(",")[0].trim();
+        }
+        return containerRequestContext.getUriInfo().getRequestUri().getHost();
     }
 
     private RequestLoggingListener getRequestLoggingListener() {

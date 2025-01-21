@@ -16,8 +16,9 @@
  */
 package io.onebyone.authentication.it;
 
+import io.onebyone.authentication.payload.RefreshTokenPayload;
+import io.onebyone.authentication.payload.UserTokenPayload;
 import io.onebyone.authentication.security.AuthenticationService;
-import io.onebyone.authentication.security.UserTokenPayload;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.jwt.util.KeyUtils;
 import io.smallrye.mutiny.Uni;
@@ -25,6 +26,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
@@ -92,6 +94,8 @@ public class AuthenticationResource {
         }
     }
 
+    private MyUserTokenPayload payload = null;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response hello() {
@@ -110,13 +114,13 @@ public class AuthenticationResource {
 //                ).issuer("http://localhost:4000")
 //                .expiresIn(Duration.ofSeconds(30));
 
-        MyUserTokenPayload payload = new MyUserTokenPayload();
+        payload = new MyUserTokenPayload();
         payload.id = UUID.randomUUID().toString();
         payload.username = "yanmastra";
         payload.email = "yanmastra61@gmail.com";
         payload.fullName = "Wayan Mastra";
         payload.permissions = Set.of(
-//                "view_profile",
+                "view_profile",
                 "manage_users",
                 "manage_user_permission"
         );
@@ -125,6 +129,14 @@ public class AuthenticationResource {
                 "tenant_access", Set.of("mjl", "mrb", "mdn")
         );
         return authenticationService.createAccessTokenResponse(payload);
+    }
+
+    @POST
+    @Path("refresh")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response refresh(RefreshTokenPayload payload) {
+        String sessionId = authenticationService.getSessionFromRefreshToken(payload.refreshToken);
+        return authenticationService.createAccessTokenResponse(this.payload, sessionId, payload.refreshToken);
     }
 
     private PrivateKey getPrivateKey() {
