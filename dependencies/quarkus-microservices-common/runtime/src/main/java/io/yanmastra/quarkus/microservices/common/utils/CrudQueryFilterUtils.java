@@ -38,14 +38,9 @@ public class CrudQueryFilterUtils {
         Set<String> whereClauses = otherQueries.entrySet().stream()
                 .filter(stringListEntry -> !Set.of("page", "size", "keyword").contains(stringListEntry.getKey()))
                 .map(entry -> {
-                    ParamToQuery query = ParamToQuery.factory(entry.getKey(), entry.getValue(), alias);
-                    log.info("query created:"+query);
-                    return query;
-                })
-                .filter(Objects::nonNull)
-                .map(item -> {
-                    item.attachValue(queryParams);
-                   return item.getWhereClause();
+                    ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getValue());
+                    queryParams.putAll(paramToQuery.getFieldAndParams(entry.getKey(), entry.getValue(), alias));
+                    return paramToQuery.getWhereClause(entry.getKey(), entry.getValue(), alias);
                 })
                 .collect(Collectors.toSet());
 
@@ -101,11 +96,11 @@ public class CrudQueryFilterUtils {
         String where = "where "+alias+"deletedAt is null";
         StringBuilder sbQuery = new StringBuilder(where);
         if (StringUtils.isNotBlank(keyword)) {
-            sqlParams.put("keyword", "%"+keyword+"%");
+            sqlParams.put("keyword", "%"+keyword.toLowerCase()+"%");
             Set<String> searchKey = new HashSet<>();
             sbQuery.append(" and (");
             for (String column: searchableColumn) {
-                searchKey.add("cast(" + alias + column + " as string) like :keyword");
+                searchKey.add("lower(cast(" + alias + column + " as string)) like :keyword");
             }
             sbQuery.append(String.join(" or ", searchKey)).append(")");
         }

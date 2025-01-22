@@ -3,34 +3,35 @@ package io.yanmastra.quarkus.microservices.common.crud;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.yanmastra.authentication.ResponseJson;
 import jakarta.ws.rs.BadRequestException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Paginate<E> {
-    @JsonProperty("data")
-    private List<E> data;
+public class Paginate<E> extends ResponseJson<List<E>> {
     @JsonProperty("meta")
     private MetaPagination meta;
 
     public Paginate() {
+        super(new ArrayList<>());
         this.meta = new MetaPagination(1, 5, 0L, 0);
     }
 
     public Paginate(List<E> data, int currentPage, int size, long totalData) {
+        super(data);
         if (data == null) throw new BadRequestException("data is null");
-        this.data = data;
         this.meta = new MetaPagination(currentPage, size, totalData, data.size());
     }
 
     @JsonIgnore
     public List<E> getData() {
-        return data;
+        return super.getData();
     }
 
     public void setData(List<E> data) {
-        this.data = data;
+        super.setData(data);
     }
 
     @JsonIgnore

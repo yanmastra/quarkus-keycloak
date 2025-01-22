@@ -1,10 +1,13 @@
 #!/bin/zsh
 DIR=$(pwd)
-cd ../../../
+cd ../../../docker/
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+export DB_LIST=$(cat databases-list.txt)
+export KEYCLOAK_DB_NAME=db_keycloak
 docker compose -f docker-compose.yml up postgres -d
 
-cd dependencies/authorization || exit
+cd ..
+cd dependencies/quarkus-authentication || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"
 sleep 1

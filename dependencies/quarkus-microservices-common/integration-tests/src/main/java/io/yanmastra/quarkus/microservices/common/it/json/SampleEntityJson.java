@@ -2,12 +2,13 @@ package io.yanmastra.quarkus.microservices.common.it.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.yanmastra.quarkus.microservices.common.dto.BaseDto;
 import io.yanmastra.quarkus.microservices.common.it.entity.SampleEntity;
 
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleEntityJson {
+public class SampleEntityJson implements BaseDto<SampleEntity> {
     @JsonProperty("id")
     public String id;
     @JsonProperty("name")
@@ -36,5 +37,45 @@ public class SampleEntityJson {
         entity.category = this.category;
         entity.price = this.price;
         return entity;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getCreatedBy() {
+        return "";
+    }
+
+    @Override
+    public void setCreatedBy(String createdBy) {
+
+    }
+
+    @Override
+    public String getUpdatedBy() {
+        return "";
+    }
+
+    @Override
+    public void setUpdatedBy(String updatedBy) {
+
+    }
+
+    @Override
+    public String getDeletedBy() {
+        return "";
+    }
+
+    @Override
+    public void setDeletedBy(String deletedBy) {
+
     }
 }

@@ -8,16 +8,16 @@ import java.util.Map;
 
 @Unremovable
 @Singleton
-@ParamToQueryQualifier(operator = "notEquals")
-public class ParamToQueryNotEquals extends ParamToQuery{
+@ParamToQueryQualifier(operator = "isNotNull")
+public class ParamToQueryIsNotNull extends ParamToQuery {
 
     @Override
     public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {
-        return Map.of(getSKey(key), value.get(1));
+        return Map.of();
     }
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return alias + key + " != :"+getSKey(key);
+        return alias + key + " NOT NULL";
     }
 }

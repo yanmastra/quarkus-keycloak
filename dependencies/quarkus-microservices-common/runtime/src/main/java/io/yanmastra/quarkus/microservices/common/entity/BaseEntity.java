@@ -12,7 +12,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 /**
  * This class contains the basic columns that should be defined on every Entity

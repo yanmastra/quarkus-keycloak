@@ -1,25 +1,26 @@
 package io.yanmastra.quarkus.microservices.common.utils;
 
+import io.quarkus.arc.Unremovable;
+import jakarta.inject.Singleton;
+
 import java.util.List;
 import java.util.Map;
 
+@Unremovable
+@Singleton
+@ParamToQueryQualifier(operator = "equals")
 public class ParamToQueryEquals extends ParamToQuery {
-    private final String sKey;
-    private final String value;
 
-    public ParamToQueryEquals(String key, List<String> value, String alias) {
-        super(key, value, alias);
-        this.sKey = key.replace(".", "_");
-        this.value = value.get(0);
+    public ParamToQueryEquals() {
     }
 
     @Override
-    public String getWhereClause() {
-        return "cast(" + alias + key + " as string)=:" + sKey;
+    public String getWhereClause(String key, List<String> value, String alias) {
+        return "cast(" + alias + key + " as string)=:" + getSKey(key);
     }
 
     @Override
-    public void attachValue(Map<String, Object> hibernateQueryParams) {
-        hibernateQueryParams.put(sKey, value);
+    public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {
+        return Map.of(getSKey(key), value.get(0));
     }
 }
