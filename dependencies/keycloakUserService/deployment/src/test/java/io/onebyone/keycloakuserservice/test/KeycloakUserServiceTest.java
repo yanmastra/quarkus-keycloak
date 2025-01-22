@@ -1,4 +1,4 @@
-package io.onebyone.keycloakuserservice.test;
+package io.yanmastra.keycloakuserservice.test;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
