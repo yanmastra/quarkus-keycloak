@@ -1,22 +1,32 @@
 package io.onebyone.quarkus.microservices.common.repository;
 
 import io.onebyone.quarkus.microservices.common.entity.BaseEntity;
+import io.quarkus.arc.Arc;
+import io.quarkus.arc.InjectableBean;
+import io.quarkus.arc.InstanceHandle;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.logging.Logger;
 
 import java.util.stream.Stream;
 
 public abstract class BaseRepository<Entity extends BaseEntity, Id> implements PanacheRepositoryBase<Entity, Id>  {
-
     @Inject
-    SecurityIdentity securityIdentity;
+    Logger log;
 
     protected String getUserIdentity() {
-        if (securityIdentity == null) return null;
-        if (securityIdentity.getPrincipal() == null) return null;
-        return securityIdentity.getPrincipal().getName();
+        try (InstanceHandle<SecurityIdentity> injectableBean = Arc.container().instance(SecurityIdentity.class)) {
+            SecurityIdentity securityIdentity = injectableBean.orElse(null);
+            if (securityIdentity == null) return null;
+            if (securityIdentity.getPrincipal() == null) return null;
+            return securityIdentity.getPrincipal().getName();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return null;
+        }
     }
 
     private void setUserMetadata(Entity entity) {
