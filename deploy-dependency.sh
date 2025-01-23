@@ -9,7 +9,7 @@ cd dependencies || exit
 DIRDPC=$(pwd)
 echo "$DIRDPC"
 
-DEP_LIST="quarkus-authentication quarkus-authorization quarkus-microservices-common"
+DEP_LIST="quarkus-authentication quarkus-authorization quarkus-microservices-common keycloakUserService"
 DEP_CATEGORY="deployment runtime"
 for dep in $DEP_LIST ; do
     echo "deploying : $dep"

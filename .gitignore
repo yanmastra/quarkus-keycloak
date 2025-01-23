@@ -19,3 +19,4 @@ docker/nginx/certs/**.key
 docker/nginx/nginx.conf
 docker/keycloak/Dockerfile
 docker/keycloak/**.keystore
+**/deployed-dependencies/**
