@@ -42,7 +42,7 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
 
     @Override
     public Response toResponse(Exception exception, ServerRequestContext context) {
-        logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage(), exception, exception.getCause());
+        logger.error(requestContext.getUriInfo().getPath() + ":" + exception.getMessage(), exception, exception.getCause());
 
         String message = null;
         int status = 500;

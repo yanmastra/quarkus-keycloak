@@ -38,7 +38,7 @@ public class CrudQueryFilterUtils {
         Set<String> whereClauses = otherQueries.entrySet().stream()
                 .filter(stringListEntry -> !Set.of("page", "size", "keyword").contains(stringListEntry.getKey()))
                 .map(entry -> {
-                    ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getValue());
+                    ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getKey(), entry.getValue());
                     queryParams.putAll(paramToQuery.getFieldAndParams(entry.getKey(), entry.getValue(), alias));
                     return paramToQuery.getWhereClause(entry.getKey(), entry.getValue(), alias);
                 })

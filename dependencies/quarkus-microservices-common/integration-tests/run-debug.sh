@@ -23,5 +23,4 @@ cd $DIR || exit
 export DEBUG=15004
 export QUARKUS_LOG_LEVEL=INFO
 
-mvn clean
-mvn quarkus:dev -Ddebug=$DEBUG
+mvn clean quarkus:dev -Ddebug=$DEBUG

@@ -16,7 +16,7 @@ public class ParamToQueryEquals extends ParamToQuery {
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return "cast(" + alias + key + " as string)=:" + getSKey(key);
+        return alias + key + "=:" + getSKey(key);
     }
 
     @Override
