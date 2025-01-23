@@ -6,7 +6,10 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CrudQueryFilterUtils {
@@ -38,7 +41,7 @@ public class CrudQueryFilterUtils {
         Set<String> whereClauses = otherQueries.entrySet().stream()
                 .filter(stringListEntry -> !Set.of("page", "size", "keyword").contains(stringListEntry.getKey()))
                 .map(entry -> {
-                    ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getValue());
+                    ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getKey(), entry.getValue());
                     queryParams.putAll(paramToQuery.getFieldAndParams(entry.getKey(), entry.getValue(), alias));
                     return paramToQuery.getWhereClause(entry.getKey(), entry.getValue(), alias);
                 })

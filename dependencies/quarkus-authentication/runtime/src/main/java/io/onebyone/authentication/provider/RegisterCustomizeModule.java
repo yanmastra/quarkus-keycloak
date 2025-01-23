@@ -1,5 +1,6 @@
 package io.onebyone.authentication.provider;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,6 +24,10 @@ public class RegisterCustomizeModule implements ObjectMapperCustomizer {
         objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
         objectMapper.setDateFormat(new SimpleDateFormat(DateTimeUtils.ZONED_DATE_TIME_FORMAT));
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.setVisibility(objectMapper.getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
+
         JsonUtils.setObjectMapper(objectMapper);
     }
 }

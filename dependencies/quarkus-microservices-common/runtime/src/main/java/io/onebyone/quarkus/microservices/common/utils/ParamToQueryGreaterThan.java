@@ -13,7 +13,7 @@ public class ParamToQueryGreaterThan extends ParamToQuery{
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return alias + key + " >= :"+getSKey(key);
+        return alias + key + " > :"+getSKey(key);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package io.onebyone.quarkus.microservices.common.utils;
 
 import io.quarkus.arc.Unremovable;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,9 @@ import java.util.Map;
 @ParamToQueryQualifier(operator = "range")
 public class ParamToQueryRange extends ParamToQuery{
 
+    @Inject
+    Logger log;
+
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
         String sKey = getSKey(key);
@@ -19,6 +24,7 @@ public class ParamToQueryRange extends ParamToQuery{
 
     @Override
     public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {
+        log.debug("getFieldAndParams:"+key+","+value+","+alias);
         String sKey = getSKey(key);
         return Map.of(
                 sKey + "_start", value.get(1),
