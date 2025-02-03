@@ -1,9 +1,12 @@
 #!/bin/zsh
 DIR=$(pwd)
-cd ../../../
+cd ../../../docker || exit
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
-
-cd dependencies/authorization || exit
+cd ..
+cd dependencies/quarkus-authentication || exit
+mvn clean install -DskipTests
+sleep 1
+cd ../quarkus-authorization || exit
 mvn clean install -DskipTests
 sleep 1
 cd $DIR || exit
@@ -11,5 +14,4 @@ cd $DIR || exit
 export DEBUG=15004
 export QUARKUS_LOG_LEVEL=INFO
 
-mvn clean
-mvn quarkus:dev -Ddebug=$DEBUG
+mvn clean quarkus:dev -Ddebug=$DEBUG

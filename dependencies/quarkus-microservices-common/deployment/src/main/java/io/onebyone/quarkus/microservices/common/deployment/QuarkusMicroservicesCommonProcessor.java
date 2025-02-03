@@ -26,7 +26,8 @@ class QuarkusMicroservicesCommonProcessor {
         return new AdditionalIndexedClassesBuildItem(
                 BaseRepository.class.getName(),
                 BasePaginationResource.class.getName(),
-                CrudableEndpointResource.class.getName()
+                CrudableEndpointResource.class.getName(),
+                ColonDelimiterQueryParamParser.class.getName()
         );
     }
 

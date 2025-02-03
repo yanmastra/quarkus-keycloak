@@ -1,4 +1,4 @@
-package io.onebyone.authorization;
+package io.onebyone.quarkus.microservices.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

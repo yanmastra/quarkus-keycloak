@@ -18,6 +18,7 @@ public class ParamToQueryFactory {
         log.debug("value: " + value);
 
         try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
+
             QueryParamParser parser = instanceHandle.orElse(null);
             if (parser != null) {
                 List<String> parsed = parser.parse(value);

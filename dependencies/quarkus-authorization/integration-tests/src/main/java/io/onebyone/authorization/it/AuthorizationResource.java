@@ -17,6 +17,7 @@
 package io.onebyone.authorization.it;
 
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -53,14 +54,15 @@ public class AuthorizationResource {
                 .toString();
     }
 
-    @RolesAllowed({"VIEW_ALL"})
+    @RunOnVirtualThread
+    @RolesAllowed({"view-users"})
     @GET
     @Path("user")
-    public Uni<Response> user() {
+    public Response user() {
         logger.info("SecurityPrincipal:"+securityIdentity.getClass().getName());
         Principal principal = securityIdentity.getPrincipal();
         logger.info("Principal:"+principal.getClass().getName());
-        return Uni.createFrom().item(Response.ok(principal).build());
+        return Response.ok(principal).build();
     }
 
     @GET

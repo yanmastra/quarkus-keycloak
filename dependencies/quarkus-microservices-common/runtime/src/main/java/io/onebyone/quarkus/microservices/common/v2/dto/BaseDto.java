@@ -1,13 +1,16 @@
-package io.onebyone.quarkus.microservices.common.dto;
+package io.onebyone.quarkus.microservices.common.v2.dto;
 
-public interface BaseDto<Entity> extends io.onebyone.quarkus.microservices.common.v2.dto.BaseDto<Entity, String> {
+import java.io.Serializable;
+
+public interface BaseDto<Entity, Id> extends Serializable {
     @Deprecated
     default Entity toEntity() {
         return null;
     }
 
-    String getId();
-    void setId(String id);
+
+    Id getId();
+    void setId(Id id);
 
     String getCreatedBy();
 

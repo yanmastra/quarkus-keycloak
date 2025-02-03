@@ -2,6 +2,8 @@ package io.onebyone.authentication.security;
 
 import io.onebyone.authentication.logging.RequestLogData;
 import io.onebyone.authentication.logging.RequestLoggingListener;
+import io.quarkus.arc.Arc;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
@@ -54,23 +56,24 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
                 data.principalName + " <-- " + data.status +
                 ", Agent:" + data.userAgent);
 
-
         RequestLoggingListener loggingListener = getRequestLoggingListener();
         if (loggingListener != null) {
-            executorService.submit(() -> {
-                if (containerRequestContext.hasEntity() && MediaType.APPLICATION_JSON.equals(containerRequestContext.getHeaderString(HttpHeaders.CONTENT_TYPE))) {
-                    try {
-                        byte[] payloadByte = containerRequestContext.getEntityStream().readAllBytes();
-                        data.requestPayload = new String(payloadByte);
-
-                        containerRequestContext.setEntityStream(new ByteArrayInputStream(payloadByte));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                loggingListener.onLogging(data);
-            });
+            executorService.submit(() -> executeOnLogging(data, containerRequestContext, loggingListener));
         }
+    }
+
+    private void executeOnLogging(RequestLogData data, ContainerRequestContext containerRequestContext, RequestLoggingListener loggingListener) {
+        if (containerRequestContext.hasEntity() && MediaType.APPLICATION_JSON.equals(containerRequestContext.getHeaderString(HttpHeaders.CONTENT_TYPE))) {
+            try {
+                byte[] payloadByte = containerRequestContext.getEntityStream().readAllBytes();
+                data.requestPayload = new String(payloadByte);
+
+                containerRequestContext.setEntityStream(new ByteArrayInputStream(payloadByte));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        loggingListener.onLogging(data);
     }
 
     private String getIP(ContainerRequestContext containerRequestContext) {

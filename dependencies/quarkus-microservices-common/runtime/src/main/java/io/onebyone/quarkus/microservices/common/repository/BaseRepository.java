@@ -1,19 +1,24 @@
 package io.onebyone.quarkus.microservices.common.repository;
 
-import io.onebyone.quarkus.microservices.common.entity.BaseEntity;
+import io.onebyone.quarkus.microservices.common.utils.CrudQueryFilterUtils;
+import io.onebyone.quarkus.microservices.common.v2.entity.BaseEntity;
 import io.quarkus.arc.Arc;
-import io.quarkus.arc.InjectableBean;
 import io.quarkus.arc.InstanceHandle;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import io.quarkus.panache.common.Sort;
 import io.quarkus.security.identity.SecurityIdentity;
-import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
-public abstract class BaseRepository<Entity extends BaseEntity, Id> implements PanacheRepositoryBase<Entity, Id>  {
+public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implements PanacheRepositoryBase<Entity, Id>  {
     @Inject
     Logger log;
 
@@ -36,7 +41,11 @@ public abstract class BaseRepository<Entity extends BaseEntity, Id> implements P
         }
 
         if (entity.getDeletedAt() == null) {
-            if (StringUtils.isBlank(entity.getId()) || StringUtils.isBlank(entity.getCreatedBy())) {
+            if (
+                    entity.getId() == null ||
+                    (entity.getId() instanceof CharSequence sId && (StringUtils.isBlank(sId))) ||
+                    StringUtils.isBlank(entity.getCreatedBy())
+            ) {
                 entity.setCreatedBy(getUserIdentity());
             } else {
                 entity.setUpdatedBy(getUserIdentity());
@@ -95,5 +104,18 @@ public abstract class BaseRepository<Entity extends BaseEntity, Id> implements P
             }
         }
         return result;
+    }
+
+    public PanacheQuery<Entity> createPaginationQuery(MultivaluedMap<String, String> requestQueries, Set<String> searchAbleColumn, Sort sort) {
+        Map<String, Object> queryParams = new HashMap<>();
+        String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn);
+        log.debug("generated hql: "+hql);
+        log.debug("generated hql value: "+queryParams);
+
+        return find(hql, sort, queryParams);
+    }
+
+    public Entity findActiveById(Id id) {
+        return find("where id = ?1 and deletedAt is null", id).firstResult();
     }
 }

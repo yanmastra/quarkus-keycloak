@@ -1,17 +1,7 @@
 package io.onebyone.quarkus.microservices.common.crud;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.onebyone.authentication.ResponseJson;
-import io.onebyone.authentication.security.UserPrincipal;
 import io.onebyone.quarkus.microservices.common.dto.BaseDto;
 import io.onebyone.quarkus.microservices.common.entity.BaseEntity;
-import io.smallrye.common.annotation.RunOnVirtualThread;
-import io.vertx.ext.web.handler.HttpException;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.SecurityContext;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * You can extend this abstract class to your Resource class to implement CRUD (Create Read Update and Delete) activity with non-reactive approach,
@@ -19,100 +9,5 @@ import org.apache.commons.lang3.StringUtils;
  * @param <Entity> is entity class that extend CrudableEntity
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
-public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto extends BaseDto<Entity>> extends BasePaginationResource<Entity, Dto> {
-    /**
-     * Implement this method to convert Dao object to Entity object
-     * @param dao is object of Dao
-     * @return object of Entity
-     */
-    protected abstract Entity toEntity(Dto dao);
-
-    /**
-     * Implement this method to pass new attributes value to existed Entity,
-     * @param entity is existed entity that ever been persisted before
-     * @param dao is a Dao object that contain the data received from request body json
-     * @return Entity object from parameter
-     */
-    protected abstract Entity update(Entity entity, Dto dao);
-
-    @RunOnVirtualThread
-    @POST
-    @Transactional
-    public ResponseJson<Dto> create(Dto dao, @Context SecurityContext context) throws Exception {
-        Entity entity = toEntity(dao);
-
-        if (StringUtils.isNotBlank(entity.getId())) {
-            Entity existed = getRepository().findById(entity.getId());
-            if (existed != null) {
-                throw new HttpException(HttpResponseStatus.CONFLICT.code(), "Same entity already exists!");
-            }
-        }
-
-        getRepository().persist(entity);
-        Dto dao1 = fromEntity(entity);
-        dao1.setCreatedBy(null);
-        onWriteSuccess(dao1, (UserPrincipal) context.getUserPrincipal(), WriteType.CREATE);
-
-        return new ResponseJson<>(
-                true,
-                null,
-                dao1
-        );
-    }
-
-    @RunOnVirtualThread
-    @PUT
-    @Path("{id}")
-    @Transactional
-    public ResponseJson<Dto> update(
-            @PathParam("id") String id,
-            Dto dao,
-            @Context SecurityContext context
-    ) throws Exception {
-            Entity existed = getRepository().find("where id = ?1 and deletedAt is null", id).firstResult();
-            if (existed == null) throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
-            Entity entity = update(existed, dao);
-            entity.setCreatedBy(dao.getCreatedBy());
-            getRepository().persist(entity);
-            Dto dao1 = fromEntity(entity);
-
-            onWriteSuccess(dao1, (UserPrincipal) context.getUserPrincipal(), WriteType.UPDATE);
-
-            return new ResponseJson<>(
-                    true, null,
-                    dao1
-            );
-    }
-
-    @RunOnVirtualThread
-    @DELETE
-    @Path("{id}")
-    @Transactional
-    public ResponseJson<Dto> delete(
-            @PathParam("id") String id,
-            @Context SecurityContext context
-    ) throws Exception {
-        Entity existed = getRepository().find("where id = ?1 and deletedAt is null", id).firstResult();
-        if (existed == null) throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
-
-        boolean result = getRepository().deleteById(id);
-        if (result) {
-            Dto dao = fromEntity(existed);
-            onWriteSuccess(dao, (UserPrincipal) context.getUserPrincipal(), WriteType.DELETE);
-            return new ResponseJson<>(true, dao.getClass().getSimpleName() + ":"+id+" has been deleted successfully");
-        } else {
-            throw new HttpException(HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), "Something wrong when deleting "+existed.getClass().getSimpleName()+":"+id);
-        }
-    }
-
-    /**
-     * You can override this method when you need to do something after creating, updating, or deleting the data,
-     * such as sending the data to Message broker os something else,
-     * @param dao is Data Access Object that represent the related entity that has been created or modified
-     * @param principal is user information who done the process
-     * @param type is the types of writing process, they can be CREATED, UPDATE, or DELETE
-     * @throws Exception can be thrown if you need to cancel the process
-     */
-    protected void onWriteSuccess(Dto dao, UserPrincipal principal, WriteType type) throws Exception {
-    }
+public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto extends BaseDto<Entity>> extends io.onebyone.quarkus.microservices.common.v2.crud.CrudableEndpointResource<Entity, Dto, String> {
 }

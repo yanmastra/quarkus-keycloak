@@ -49,6 +49,12 @@
             <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.onebyone</groupId>
+            <artifactId>quarkus-authentication-deployment</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

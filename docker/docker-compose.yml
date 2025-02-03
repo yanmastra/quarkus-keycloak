@@ -1,10 +1,9 @@
-version: '3.8'
-
+name: '${PROJECT_NAME}'
 services:
   postgres:
-    image: '${SERVER_HOST}/postgres:latest'
-    container_name: '${SERVER_HOST}-postgres'
-    hostname: '${SERVER_HOST}-postgres'
+    image: '${PROJECT_NAME}/postgres:latest'
+    container_name: '${PROJECT_NAME}-postgres'
+    hostname: '${PROJECT_NAME}-postgres'
     ports:
       - "${POSTGRES_EXTERNAL_PORT}:5432"
     environment:
@@ -23,12 +22,12 @@ services:
       - main-proxy
 
   keycloak:
-    image: '${SERVER_HOST}/keycloak:latest'
-    container_name: '${SERVER_HOST}-keycloak'
+    image: '${PROJECT_NAME}/keycloak:latest'
+    container_name: '${PROJECT_NAME}-keycloak'
     command:
       - start
       - --optimized
-      - --db-url=jdbc:postgresql://${SERVER_HOST}-postgres:5432/${KEYCLOAK_DB_NAME}?serverTimezone=UTC
+      - --db-url=jdbc:postgresql://${PROJECT_NAME}-postgres:5432/${KEYCLOAK_DB_NAME}?serverTimezone=UTC
       - --db-username=${DATABASE_USERNAME}
       - --db-password=${DATABASE_PASSWORD}
       - --https-key-store-file=/opt/keycloak/conf/server.keystore
@@ -62,7 +61,7 @@ services:
 
   nginx-proxy:
     image: jwilder/nginx-proxy
-    container_name: "${SERVER_HOST}-nginx-proxy"
+    container_name: "${PROJECT_NAME}-nginx-proxy"
     ports:
       - "80:80"
       - "443:443"
@@ -125,5 +124,5 @@ services:
 
 networks:
   main-proxy:
-    name: '${SERVER_HOST}-net-proxy'
+    name: '${PROJECT_NAME}-net-proxy'
     driver: bridge

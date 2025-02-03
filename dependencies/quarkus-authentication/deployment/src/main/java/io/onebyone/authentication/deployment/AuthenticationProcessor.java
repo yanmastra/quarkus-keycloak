@@ -4,12 +4,12 @@ import io.onebyone.authentication.provider.ErrorMapper;
 import io.onebyone.authentication.provider.RegisterCustomizeModule;
 import io.onebyone.authentication.security.AuthenticationService;
 import io.onebyone.authentication.security.LoggingRequestFilter;
-import io.onebyone.authentication.security.UserSecurityIdentityAugmentor;
+import io.onebyone.authentication.security.BaseSecurityIdentityAugmentor;
+import io.quarkus.arc.Arc;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
-import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 
@@ -41,7 +41,7 @@ class AuthenticationProcessor {
 
     @BuildStep
     public AdditionalBeanBuildItem createUserPrincipalBean() {
-        return new AdditionalBeanBuildItem(UserSecurityIdentityAugmentor.class);
+        return new AdditionalBeanBuildItem(BaseSecurityIdentityAugmentor.class);
     }
 
     @BuildStep
