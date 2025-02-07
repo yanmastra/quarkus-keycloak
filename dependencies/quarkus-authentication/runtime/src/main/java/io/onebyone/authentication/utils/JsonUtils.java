@@ -1,10 +1,12 @@
 package io.onebyone.authentication.utils;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jboss.logging.Logger;
 
 import java.text.DateFormat;
@@ -39,9 +41,11 @@ public class JsonUtils {
         objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
-
-        DateFormat dateFormat = new SimpleDateFormat(DateTimeUtils.ZONED_DATE_TIME_FORMAT);
-        objectMapper.setDateFormat(dateFormat);
+        objectMapper.setDateFormat(new SimpleDateFormat(DateTimeUtils.ZONED_DATE_TIME_FORMAT));
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.setVisibility(objectMapper.getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
     }
 
     public static String toJson(Object object, boolean throwException) {

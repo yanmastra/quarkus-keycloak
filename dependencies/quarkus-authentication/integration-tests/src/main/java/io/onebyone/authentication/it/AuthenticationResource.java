@@ -19,6 +19,7 @@ package io.onebyone.authentication.it;
 import io.onebyone.authentication.payload.RefreshTokenPayload;
 import io.onebyone.authentication.payload.UserTokenPayload;
 import io.onebyone.authentication.security.AuthenticationService;
+import io.onebyone.authentication.utils.JsonUtils;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.jwt.util.KeyUtils;
 import io.smallrye.mutiny.Uni;
@@ -30,6 +31,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
@@ -43,6 +46,7 @@ import java.util.UUID;
 @Path("/authentication")
 @ApplicationScoped
 public class AuthenticationResource {
+    private static final Log log = LogFactory.getLog(AuthenticationResource.class);
     // add some rest methods here
     @Inject
     Logger logger;
@@ -177,5 +181,12 @@ public class AuthenticationResource {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @POST
+    @Path("test-post")
+    public Response postSomething(TestPayload payload) {
+        log.debug("payload:"+payload);
+        return Response.ok(JsonUtils.toJson(payload)).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 }

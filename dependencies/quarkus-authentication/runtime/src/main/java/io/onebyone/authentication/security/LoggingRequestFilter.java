@@ -26,55 +26,21 @@ import java.util.stream.Stream;
 
 @PreMatching
 @Singleton
-public class LoggingRequestFilter implements ContainerRequestFilter {
+public class LoggingRequestFilter implements ContainerResponseFilter {
 
     @Inject
     Logger logger;
+    @Inject RoutingContext routingContext;
     @Inject
     Instance<RequestLoggingListener> requestLoggingListenerBeans;
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-    @Override
-    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
-        RequestLogData data = new RequestLogData();
-        data.timestamp = ZonedDateTime.now();
-        data.method = containerRequestContext.getMethod();
-        data.ipAddress = getIP(containerRequestContext);
-        data.uri = containerRequestContext.getUriInfo().getPath();
-        data.status = 0;
-        data.userAgent = containerRequestContext.getHeaderString(HttpHeaders.USER_AGENT);
-
-        if (containerRequestContext.getSecurityContext().getUserPrincipal() != null) {
-            data.principalName = containerRequestContext.getSecurityContext().getUserPrincipal().getName();
-        } else {
-            data.principalName = "Unauthenticated";
-        }
-
-        logger.info(data.ipAddress + "--> " + data.method + " " + data.uri + ", by:" +
-                data.principalName + " <-- " + data.status +
-                ", Agent:" + data.userAgent);
-
-
-        RequestLoggingListener loggingListener = getRequestLoggingListener();
-        if (loggingListener != null) {
-            executorService.submit(() -> {
-                // FIXME: this disabled due to causing an issue
-//                if (containerRequestContext.hasEntity() && MediaType.APPLICATION_JSON.equals(containerRequestContext.getHeaderString(HttpHeaders.CONTENT_TYPE))) {
-//                    try {
-//                        byte[] payloadByte = containerRequestContext.getEntityStream().readAllBytes();
-//                        data.requestPayload = new String(payloadByte);
-//
-//                        containerRequestContext.setEntityStream(new ByteArrayInputStream(payloadByte));
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-                loggingListener.onLogging(data);
-            });
-        }
-    }
-
     private String getIP(ContainerRequestContext containerRequestContext) {
+        String hostAddress = routingContext.request().remoteAddress().hostAddress();
+        if (StringUtils.isNotBlank(hostAddress)) {
+            return hostAddress;
+        }
+
         List<String> forwardedFor = containerRequestContext.getHeaders().get("X-Forwarded-For");
         if (forwardedFor != null && !forwardedFor.isEmpty()) {
             return forwardedFor.getFirst().split(",")[0].trim();
@@ -89,5 +55,31 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
             logger.warn(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
+        RequestLogData data = new RequestLogData();
+        data.timestamp = ZonedDateTime.now();
+        data.method = containerRequestContext.getMethod();
+        data.ipAddress = getIP(containerRequestContext);
+        data.uri = containerRequestContext.getUriInfo().getPath();
+        data.status = containerResponseContext.getStatus();
+        data.userAgent = containerRequestContext.getHeaderString(HttpHeaders.USER_AGENT);
+
+        if (containerRequestContext.getSecurityContext().getUserPrincipal() != null) {
+            data.principalName = containerRequestContext.getSecurityContext().getUserPrincipal().getName();
+        } else {
+            data.principalName = "Unauthenticated";
+        }
+
+        logger.info(data.ipAddress + "--> " + data.method + " " + data.uri + ", by:" +
+                data.principalName + " <-- " + data.status +
+                ", Agent:" + data.userAgent);
+
+        RequestLoggingListener loggingListener = getRequestLoggingListener();
+        if (loggingListener != null) {
+            executorService.submit(() -> loggingListener.onLogging(data));
+        }
     }
 }

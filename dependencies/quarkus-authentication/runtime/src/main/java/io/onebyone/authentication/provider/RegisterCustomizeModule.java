@@ -17,17 +17,6 @@ public class RegisterCustomizeModule implements ObjectMapperCustomizer {
 
     @Override
     public void customize(ObjectMapper objectMapper) {
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        objectMapper.configure(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
-        objectMapper.setDateFormat(new SimpleDateFormat(DateTimeUtils.ZONED_DATE_TIME_FORMAT));
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.setVisibility(objectMapper.getSerializationConfig()
-                .getDefaultVisibilityChecker()
-                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
-
         JsonUtils.setObjectMapper(objectMapper);
     }
 }
