@@ -1,6 +1,7 @@
-#!/bin/zsh
+#!/bin/bash
 DIR=$(pwd)
-cd ../../../docker
+echo "cd ../../../docker"
+cd ../../../docker || exit
 export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
 
 cd $DIR || exit
