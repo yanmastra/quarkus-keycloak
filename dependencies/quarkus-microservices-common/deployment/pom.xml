@@ -25,11 +25,6 @@
       <scope>test</scope>
     </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>io.onebyone</groupId>-->
-<!--      <artifactId>quarkus-authorization-deployment</artifactId>-->
-<!--      <version>${auth.version}</version>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>io.onebyone</groupId>
       <artifactId>quarkus-authentication-deployment</artifactId>
@@ -47,10 +42,6 @@
       <artifactId>quarkus-jdbc-postgresql-deployment</artifactId>
     </dependency>
 
-<!--    <dependency>-->
-<!--      <groupId>io.quarkus</groupId>-->
-<!--      <artifactId>quarkus-smallrye-reactive-messaging-kafka-deployment</artifactId>-->
-<!--    </dependency>-->
   </dependencies>
   <build>
     <plugins>

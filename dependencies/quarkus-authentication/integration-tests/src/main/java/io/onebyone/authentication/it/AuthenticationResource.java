@@ -25,10 +25,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -163,5 +160,22 @@ public class AuthenticationResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> user1(@Context SecurityContext context) {
         return Uni.createFrom().item(Response.ok(context.getUserPrincipal()).build());
+    }
+
+    @GET
+    @Path("error_500")
+    public Response internalError() {
+        Integer integer = Integer.parseInt("2198h12687k");
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("error_400")
+    public Response badRequestError() {
+        try {
+            throw new BadRequestException("Bad request");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

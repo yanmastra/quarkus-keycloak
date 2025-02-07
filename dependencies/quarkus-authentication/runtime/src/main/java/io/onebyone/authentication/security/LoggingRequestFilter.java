@@ -58,16 +58,17 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
         RequestLoggingListener loggingListener = getRequestLoggingListener();
         if (loggingListener != null) {
             executorService.submit(() -> {
-                if (containerRequestContext.hasEntity() && MediaType.APPLICATION_JSON.equals(containerRequestContext.getHeaderString(HttpHeaders.CONTENT_TYPE))) {
-                    try {
-                        byte[] payloadByte = containerRequestContext.getEntityStream().readAllBytes();
-                        data.requestPayload = new String(payloadByte);
-
-                        containerRequestContext.setEntityStream(new ByteArrayInputStream(payloadByte));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                // FIXME: this disabled due to causing an issue
+//                if (containerRequestContext.hasEntity() && MediaType.APPLICATION_JSON.equals(containerRequestContext.getHeaderString(HttpHeaders.CONTENT_TYPE))) {
+//                    try {
+//                        byte[] payloadByte = containerRequestContext.getEntityStream().readAllBytes();
+//                        data.requestPayload = new String(payloadByte);
+//
+//                        containerRequestContext.setEntityStream(new ByteArrayInputStream(payloadByte));
+//                    } catch (IOException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
                 loggingListener.onLogging(data);
             });
         }

@@ -9,7 +9,6 @@ import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
-import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 
