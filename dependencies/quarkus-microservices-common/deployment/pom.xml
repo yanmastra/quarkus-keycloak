@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.onebyone</groupId>
       <artifactId>quarkus-authentication-deployment</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
     </dependency>
 
     <dependency>
