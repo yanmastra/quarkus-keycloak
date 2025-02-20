@@ -16,6 +16,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.SecurityContext;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.logging.Logger;
 
@@ -42,9 +43,10 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
     }
 
     /**
-     * Override this method to customize the sorting method
+     * Deprecated: no longer used because data sorting can be done with the query parameter "?sort=column1:ASC:column2:DESC"
      * @return an object of Sort
      */
+    @Deprecated(forRemoval = true, since = "2.3.x")
     protected Sort getSort() {
         return Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
     }
@@ -65,11 +67,20 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
 
     @Operation(summary = "Get Paginate data",
             description = """
-                    Possible parameters:
+                    You can add some query parameters based on entity field for filtering, use camel-case format for parameter key, example:
                     <ul>
-                    <li>page: 1, 2, 3, ..., n</li>
-                    <li>size: 10, 20, etc.</li>
-                    <li>field name of entity class</li>
+                        <li>?name=John or ?name=notEquals:Jane</li>
+                        <li>?price=lessThan:10000 or ?price=greaterThan:10000 or ?price=range:10000:15000</li>
+                        <li>?categoryId=in:CTG_A:CTG_B:CTG_D:CTG_H or ?categoryId=notIn:CTG_A:CTG_B:CTG_D:CTG_H</li>
+                        <li>?description=isNull or ?description=isNotNull</li>
+                    </ul>
+                    Also you can use "?sort=" query parameter for sorting, example:
+                    <ul>
+                        <li>?sort=name:asc:price:desc</li>
+                    </ul>
+                    And you can combine them, example:
+                    <ul>
+                        <li>?price=range:10000:15000&categoryId=in:CTG_A:CTG_B:CTG_D:CTG_H&description=isNotNull&sort=name:asc:price:desc</li>
                     </ul>
                     """
     )
@@ -90,7 +101,7 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
 
     protected Paginate<Dto> getList(Integer page, Integer size, MultivaluedMap<String, String> requestQueries, ContainerRequestContext context) {
         Page objPage = Page.of(page - 1, size);
-        Sort sort = getSort();
+        Sort sort = CrudQueryFilterUtils.fetchSort(context.getUriInfo().getQueryParameters());
 
         Map<String, Object> queryParams = new HashMap<>();
         String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn());
@@ -123,4 +134,52 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
         }
         throw new HttpException(HttpResponseStatus.NOT_FOUND.code(), "Unable to find entity with id:"+id);
     }
+
+    @Operation(summary = "To count the data by specific filter",
+            description = """
+                    You can add some query parameters based on entity field for filtering, use camel-case format for parameter key, example:
+                    <ul>
+                        <li>?name=John or ?name=notEquals:Jane</li>
+                        <li>?price=lessThan:10000 or ?price=greaterThan:10000 or ?price=range:10000:15000</li>
+                        <li>?categoryId=in:CTG_A:CTG_B:CTG_D:CTG_H or ?categoryId=notIn:CTG_A:CTG_B:CTG_D:CTG_H</li>
+                        <li>?description=isNull or ?description=isNotNull</li>
+                    </ul>
+                    And you can combine them, example:
+                    <ul>
+                        <li>?price=range:10000:15000&categoryId=in:CTG_A:CTG_B:CTG_D:CTG_H&description=isNotNull</li>
+                    </ul>
+                    """
+    )
+    @RunOnVirtualThread
+    @GET
+    @Path("count")
+    public Map<String, Long> getCount(@Context ContainerRequestContext context) {
+        if (getCountQueries().isEmpty()) return Map.of();
+
+        MultivaluedMap<String, String> requestQueries = context.getUriInfo().getQueryParameters();
+        Map<String, Long> result = new HashMap<>();
+
+        for (String key : getCountQueries().keySet()) {
+            Map<String, Object> queryParams = new HashMap<>();
+            String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, this.searchAbleColumn());
+
+            String query =  getCountQueries().get(key);
+            if (StringUtils.isNotBlank(query)) hql += " and " + query;
+
+            Long count = this.getRepository().count(hql);
+            result.put(key, count);
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Implement this method to enable /count endpoint
+     * @return Map<Key String, HQL Query String
+     */
+    protected Map<String, String> getCountQueries() {
+        return Map.of();
+    }
+
 }

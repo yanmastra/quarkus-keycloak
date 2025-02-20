@@ -2,6 +2,7 @@ package io.onebyone.quarkus.microservices.common.deployment;
 
 import io.onebyone.quarkus.microservices.common.crud.BasePaginationResource;
 import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.onebyone.quarkus.microservices.common.crud.SelectablePaginationResource;
 import io.onebyone.quarkus.microservices.common.repository.BaseRepository;
 import io.onebyone.quarkus.microservices.common.utils.*;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -26,6 +27,7 @@ class QuarkusMicroservicesCommonProcessor {
         return new AdditionalIndexedClassesBuildItem(
                 BaseRepository.class.getName(),
                 BasePaginationResource.class.getName(),
+                SelectablePaginationResource.class.getName(),
                 CrudableEndpointResource.class.getName()
         );
     }

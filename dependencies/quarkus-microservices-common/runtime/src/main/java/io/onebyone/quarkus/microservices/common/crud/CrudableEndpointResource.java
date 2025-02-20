@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
  * @param <Entity> is entity class that extend CrudableEntity
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
-public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto extends BaseDto<Entity>> extends BasePaginationResource<Entity, Dto> {
+public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto extends BaseDto<Entity>> extends SelectablePaginationResource<Entity, Dto> {
     /**
      * Implement this method to convert Dao object to Entity object
      * @param dao is object of Dao

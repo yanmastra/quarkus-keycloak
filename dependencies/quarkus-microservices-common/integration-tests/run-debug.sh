@@ -1,13 +1,13 @@
 #!/bin/zsh
 DIR=$(pwd)
-cd ../../../
-export $(grep -v "^$" docker/docker_env.env | grep -v "^#" | xargs)
+cd ../../../docker
+export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
 docker compose -f docker-compose.yml up postgres -d
 
-cd dependencies/authentication || exit
+cd ..
+cd dependencies/quarkus-authentication || exit
 mvn clean install -DskipTests
 echo "Building authorization is complete"
-sleep 1
 
 cd ../../
 cd dependencies/quarkus-microservices-common || exit

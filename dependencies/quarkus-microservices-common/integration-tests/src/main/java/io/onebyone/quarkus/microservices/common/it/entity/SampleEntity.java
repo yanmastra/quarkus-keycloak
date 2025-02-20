@@ -19,6 +19,12 @@ public class SampleEntity extends BaseEntity implements Serializable {
     public String category;
     @Column(name = "price", precision = 14, scale = 2)
     public BigDecimal price = BigDecimal.ZERO;
+    @Column(name = "is_active")
+    public Boolean isActive;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sample_type")
+    public SampleType sampleType;
 
     @Override
     public String getId() {
