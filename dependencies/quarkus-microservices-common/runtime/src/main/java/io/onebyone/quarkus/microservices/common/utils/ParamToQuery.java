@@ -22,6 +22,9 @@ public abstract class ParamToQuery {
     public abstract String getWhereClause(String key, List<String> value, String alias);
     protected String getSKey(String key) {
         if (StringUtils.isBlank(key)) throw new BadRequestException("key is blank in " + this.getClass().getSimpleName());
-        return key.replace(".", "_");
+
+        return key.replace(".", "_")
+                .replace("(", "")
+                .replace(")", "");
     }
 }

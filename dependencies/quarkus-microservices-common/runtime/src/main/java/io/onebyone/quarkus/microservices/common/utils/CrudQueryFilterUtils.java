@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class CrudQueryFilterUtils {
 
     private static final Logger log = Logger.getLogger(CrudQueryFilterUtils.class);
-    private static final Set<String> EXCLUDED_PARAMS = Set.of("page", "size", "sort", "keyword", "count", "order", "index", "sum");
+    private static final Set<String> EXCLUDED_PARAMS = Set.of("page", "size", "sort", "count", "order", "index", "sum");
 
     public static String getFilterQuery(ContainerRequestContext requestContext, Map<String, Object> queryParams, Set<String> searchableColumns) {
         return getFilterQuery(requestContext, queryParams, searchableColumns, "");

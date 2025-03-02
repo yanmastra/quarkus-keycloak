@@ -166,7 +166,7 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
             String query =  getCountQueries().get(key);
             if (StringUtils.isNotBlank(query)) hql += " and " + query;
 
-            Long count = this.getRepository().count(hql);
+            Long count = this.getRepository().count(hql, queryParams);
             result.put(key, count);
         }
 
