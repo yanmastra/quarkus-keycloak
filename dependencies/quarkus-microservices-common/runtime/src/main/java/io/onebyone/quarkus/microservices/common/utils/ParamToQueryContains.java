@@ -71,8 +71,8 @@ public class ParamToQueryContains extends ParamToQuery {
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
         Set<String> clauses = new HashSet<>();
-        for (int i = 2; i < value.size(); i++) {
-            String sKey = ":" + key+(i-2);
+        for (int i = 0; i < getExactValues(value).size(); i++) {
+            String sKey = ":" + key + i;
             clauses.add(sKey + " in elements("+ alias + key + ")");
         }
 
