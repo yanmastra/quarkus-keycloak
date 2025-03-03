@@ -5,13 +5,17 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_simple")
 public class SampleEntity extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 36)
     public String id;
     @Column(name = "name")
     public String name;
@@ -25,6 +29,20 @@ public class SampleEntity extends BaseEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "sample_type")
     public SampleType sampleType;
+
+    @Column(name = "x_date")
+    public Date date;
+
+    @Column(name = "x_date_time")
+    public ZonedDateTime dateTime;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "sample_children",
+            joinColumns = @JoinColumn(name = "sample_id"),
+            inverseJoinColumns = @JoinColumn(name = "child_id"),
+            uniqueConstraints = @UniqueConstraint(name = "_unq_sample_child", columnNames = {"sample_id", "child_id"})
+    )
+    public List<SampleChildEntity> children = new ArrayList<>();
 
     @Override
     public String getId() {

@@ -1,6 +1,8 @@
 package io.onebyone.quarkus.microservices.common.it;
 
+import io.onebyone.quarkus.microservices.common.it.entity.SampleChildEntity;
 import io.onebyone.quarkus.microservices.common.it.entity.SampleType;
+import io.onebyone.quarkus.microservices.common.it.repo.SampleChildEntityRepo;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;
 import io.onebyone.quarkus.microservices.common.it.entity.SampleEntity;
@@ -17,10 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 @Path("/api/v1/sampleEntity")
 @SecurityRequirement(name = "Keycloak")
@@ -28,6 +27,8 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
 
     @Inject
     SampleEntityRepository sampleEntityRepo;
+    @Inject
+    SampleChildEntityRepo childRepo;
 
     @Override
     protected PanacheRepositoryBase<SampleEntity, String> getRepository() {
@@ -36,12 +37,12 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
 
     @Override
     protected SampleEntityJson fromEntity(SampleEntity entity) {
-        return SampleEntityJson.fromJson(entity);
+        return SampleEntityJson.toJson(entity);
     }
 
     @Override
     protected SampleEntity toEntity(SampleEntityJson sampleEntityJson) {
-        return sampleEntityJson.toJson();
+        return sampleEntityJson.toEntity();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
         return Set.of("name", "category", "price");
     }
 
-    private static final Random random = new Random();
+    public static final Random random = new Random();
 
     @RunOnVirtualThread
     @GET
@@ -84,5 +85,18 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
 
         getRepository().persist(generated);
         return Response.ok().build();
+    }
+
+    @RunOnVirtualThread
+    @GET
+    @Path("test-query")
+    public List<SampleEntityJson> query(
+            @QueryParam("child") String ids
+    ){
+        SampleChildEntity child = childRepo.findById("17067fce-01a9-494a-a379-03319ab14fd0");
+        List<SampleEntity> result = sampleEntityRepo.find("where :child in elements(children)",
+                Map.of("child", child)
+        ).list();
+        return result.stream().map(SampleEntityJson::toJson).toList();
     }
 }

@@ -43,7 +43,8 @@ class QuarkusMicroservicesCommonProcessor {
                 AdditionalBeanBuildItem.unremovableOf(ParamToQueryNotIn.class),
                 AdditionalBeanBuildItem.unremovableOf(ParamToQueryRange.class),
                 AdditionalBeanBuildItem.unremovableOf(ParamToQueryIsNull.class),
-                AdditionalBeanBuildItem.unremovableOf(ParamToQueryIsNotNull.class)
+                AdditionalBeanBuildItem.unremovableOf(ParamToQueryIsNotNull.class),
+                AdditionalBeanBuildItem.unremovableOf(ParamToQueryContains.class)
         );
     }
 }

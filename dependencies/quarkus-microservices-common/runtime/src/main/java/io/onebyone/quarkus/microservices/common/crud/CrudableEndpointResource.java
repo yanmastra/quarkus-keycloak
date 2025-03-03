@@ -22,10 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto extends BaseDto<Entity>> extends SelectablePaginationResource<Entity, Dto> {
     /**
      * Implement this method to convert Dao object to Entity object
-     * @param dao is object of Dao
+     *
+     * @param dto is object of Dao
      * @return object of Entity
      */
-    protected abstract Entity toEntity(Dto dao);
+    protected abstract Entity toEntity(Dto dto);
 
     /**
      * Implement this method to pass new attributes value to existed Entity,

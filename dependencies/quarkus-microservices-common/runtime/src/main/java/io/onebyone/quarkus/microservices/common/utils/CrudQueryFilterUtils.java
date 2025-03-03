@@ -195,6 +195,8 @@ public class CrudQueryFilterUtils {
                 return sort;
             }
         }
-        return Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
+        Sort result = Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
+        log.debug("sort used: "+result);
+        return result;
     }
 }

@@ -8,6 +8,7 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
+import io.quarkus.smallrye.openapi.OpenApiFilter;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.logging.Logger;
 
@@ -90,6 +92,7 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
     public Paginate<Dto> getList(
             @QueryParam("page") Integer page,
             @QueryParam("size") Integer size,
+            @QueryParam("sort") String sort,
             @Context ContainerRequestContext context
     ) {
         if (page == null || page <= 0) page = 1;
