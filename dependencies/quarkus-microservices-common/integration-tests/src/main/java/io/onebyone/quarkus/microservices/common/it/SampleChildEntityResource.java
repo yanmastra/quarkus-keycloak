@@ -3,11 +3,10 @@ package io.onebyone.quarkus.microservices.common.it;
 import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;
 import io.onebyone.quarkus.microservices.common.it.entity.SampleChildEntity;
 import io.onebyone.quarkus.microservices.common.it.entity.SampleEntity;
-import io.onebyone.quarkus.microservices.common.it.entity.SampleType;
 import io.onebyone.quarkus.microservices.common.it.json.SampleChildEntityJson;
 import io.onebyone.quarkus.microservices.common.it.repo.SampleChildEntityRepo;
 import io.onebyone.quarkus.microservices.common.it.repo.SampleEntityRepository;
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
+import io.onebyone.quarkus.microservices.common.repository.BaseRepository;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
@@ -17,8 +16,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +38,7 @@ public class SampleChildEntityResource extends CrudableEndpointResource<SampleCh
     }
 
     @Override
-    protected PanacheRepositoryBase<SampleChildEntity, String> getRepository() {
+    protected BaseRepository<SampleChildEntity, String> getRepository() {
         return repo;
     }
 

@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.onebyone</groupId>
     <artifactId>quarkus-microservices-common-parent</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
   </parent>
   <artifactId>quarkus-microservices-common</artifactId>
   <name>Quarkus Microservices Common - Runtime</name>
@@ -28,7 +28,7 @@
     <dependency>
       <groupId>io.onebyone</groupId>
       <artifactId>quarkus-authentication</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
 
     <dependency>
