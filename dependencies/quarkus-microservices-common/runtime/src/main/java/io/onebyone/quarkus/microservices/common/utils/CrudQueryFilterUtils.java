@@ -1,20 +1,23 @@
 package io.onebyone.quarkus.microservices.common.utils;
 
+import io.quarkus.arc.Arc;
+import io.quarkus.arc.InstanceHandle;
+import io.quarkus.panache.common.Sort;
+import io.vertx.ext.web.handler.sockjs.impl.StringEscapeUtils;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CrudQueryFilterUtils {
 
     private static final Logger log = Logger.getLogger(CrudQueryFilterUtils.class);
+    private static final Set<String> EXCLUDED_PARAMS = Set.of("page", "size", "sort", "count", "order", "index", "sum");
 
     public static String getFilterQuery(ContainerRequestContext requestContext, Map<String, Object> queryParams, Set<String> searchableColumns) {
         return getFilterQuery(requestContext, queryParams, searchableColumns, "");
@@ -38,8 +41,9 @@ public class CrudQueryFilterUtils {
     }
 
     public static String getQueryWhereClause(MultivaluedMap<String, String> otherQueries, Map<String, Object> queryParams, String alias) {
+        otherQueries = fetchRequestParams(otherQueries);
         Set<String> whereClauses = otherQueries.entrySet().stream()
-                .filter(stringListEntry -> !Set.of("page", "size", "keyword").contains(stringListEntry.getKey()))
+                .filter(stringListEntry -> !EXCLUDED_PARAMS.contains(stringListEntry.getKey().toLowerCase()))
                 .map(entry -> {
                     ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getKey(), entry.getValue());
                     queryParams.putAll(paramToQuery.getFieldAndParams(entry.getKey(), entry.getValue(), alias));
@@ -116,5 +120,83 @@ public class CrudQueryFilterUtils {
             sbQuery.append(getQueryWhereClause(requestParams, sqlParams));
         }
         return sbQuery.toString();
+    }
+
+    private static MultivaluedMap<String, String> fetchRequestParams(MultivaluedMap<String, String> requestParams) {
+        MultivaluedMap<String, String> newRequestParams = new MultivaluedHashMap<>();
+        try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
+            QueryParamParser parser = instanceHandle.orElse(null);
+            if (parser != null) {
+                for (String key : requestParams.keySet()) {
+                    if (EXCLUDED_PARAMS.contains(key.toLowerCase())) {
+                        newRequestParams.put(key, requestParams.get(key));
+                        continue;
+                    }
+
+                    List<String> value = requestParams.get(key);
+                    log.debug("found key:" + key + ", value: " + value);
+
+                    List<String> parsed = parser.parse(value);
+                    if (parsed != null) {
+                        log.debug("parsed key:" + key + ", value: " + parsed);
+                        newRequestParams.put(key, parsed);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+        return newRequestParams;
+    }
+
+    public static Sort fetchSort(MultivaluedMap<String, String> requestParams) {
+        List<String> sortParams = requestParams.get("sort");
+        if (sortParams != null && !sortParams.isEmpty()) {
+            List<String> keys = new ArrayList<>();
+            Map<String, String> sortMap = new HashMap<>();
+
+            try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
+                QueryParamParser parser = instanceHandle.orElse(null);
+                if (parser != null) {
+                    List<String> parsed = parser.parse(sortParams);
+                    if (parsed != null) {
+                        Iterator<String> iterator = parsed.iterator();
+                        String prevKey = null;
+                        while (iterator.hasNext()) {
+                            String key = iterator.next();
+                            if (StringUtils.isNotBlank (prevKey) && ("asc".equalsIgnoreCase(key) || "desc".equalsIgnoreCase(key))) {
+                                sortMap.put(prevKey, key.toLowerCase());
+                            } else {
+                                sortMap.put(key, "asc");
+                                keys.add(key);
+                            }
+                            prevKey = key;
+                        }
+                    } else {
+                        throw new Exception("Could not parse query param \"sort\": " + sortParams);
+                    }
+                }
+            } catch (Exception e) {
+                log.warn(e.getMessage(), e);
+                throw new BadRequestException("Unable to get sort order parameters due to error: " + e.getMessage(), e);
+            }
+
+            if (!sortMap.isEmpty()) {
+                Sort sort = null;
+                for (String key : keys) {
+                    if (sort == null) {
+                        sort = Sort.by(key, "asc".equals(sortMap.get(key)) ? Sort.Direction.Ascending : Sort.Direction.Descending, Sort.NullPrecedence.NULLS_LAST);
+                    } else {
+                        sort = sort.and(key, "asc".equals(sortMap.get(key)) ? Sort.Direction.Ascending : Sort.Direction.Descending, Sort.NullPrecedence.NULLS_LAST);
+                    }
+                }
+
+                log.debug("keys: "+keys+", sort: "+sortMap);
+                return sort;
+            }
+        }
+        Sort result = Sort.descending("createdAt").and("createdAt", Sort.NullPrecedence.NULLS_LAST);
+        log.debug("sort used: "+result);
+        return result;
     }
 }

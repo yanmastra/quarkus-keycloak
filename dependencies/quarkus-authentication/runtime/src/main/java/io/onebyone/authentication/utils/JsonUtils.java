@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -41,6 +42,7 @@ public class JsonUtils {
         objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
         objectMapper.setDateFormat(new SimpleDateFormat(DateTimeUtils.ZONED_DATE_TIME_FORMAT));
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.setVisibility(objectMapper.getSerializationConfig()
