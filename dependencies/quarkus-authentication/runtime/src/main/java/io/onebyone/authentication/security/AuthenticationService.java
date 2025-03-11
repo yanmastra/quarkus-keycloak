@@ -1,7 +1,7 @@
 package io.onebyone.authentication.security;
 
 import io.onebyone.authentication.payload.UserTokenPayload;
-import io.onebyone.authentication.utils.KeyValueCacheUtils;
+import io.onebyone.quarkusBase.utils.KeyValueCacheUtils;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.build.JwtClaimsBuilder;
 import io.smallrye.jwt.util.KeyUtils;

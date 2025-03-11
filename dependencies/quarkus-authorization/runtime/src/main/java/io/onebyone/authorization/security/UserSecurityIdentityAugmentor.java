@@ -1,7 +1,5 @@
 package io.onebyone.authorization.security;
 
-import io.onebyone.authentication.security.UserPrincipal;
-import io.onebyone.authentication.security.UserSecurityIdentity;
 import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;

@@ -1,8 +1,8 @@
-package io.onebyone.authentication.utils;
+package io.onebyone.quarkusBase.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.quarkus.runtime.util.StringUtil;
 import jakarta.json.Json;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.logging.Logger;
 
@@ -21,10 +21,10 @@ public class KeyValueCacheUtils {
     }
 
     public static synchronized void saveCache(String cacheName, String key, String value) {
-        if (StringUtil.isNullOrEmpty(key))
+        if (StringUtils.isBlank(key))
             throw new IllegalArgumentException("key can't be empty");
 
-        if (StringUtil.isNullOrEmpty(value)) value = "";
+        if (StringUtils.isBlank(value)) value = "";
 
         Map<String, String> mapLine = Map.of("key", key, "value", value);
         String sLine = JsonUtils.toJson(mapLine);
@@ -36,7 +36,7 @@ public class KeyValueCacheUtils {
             String line;
             boolean hasReplaced = false;
             while ((line = reader.readLine()) != null) {
-                if (StringUtil.isNullOrEmpty(line)) continue;
+                if (StringUtils.isBlank(line)) continue;
                 Map<String, String> mapLine1 = JsonUtils.fromJson(line, new TypeReference<>() {
                 });
                 String cKey = mapLine1.get("key");
@@ -44,7 +44,7 @@ public class KeyValueCacheUtils {
                 usedKey.add(cKey);
 
                 if(cKey.equals(key)) {
-                    if (!StringUtil.isNullOrEmpty(value)) {
+                    if (StringUtils.isNotBlank(value)) {
                         cache.append(sLine);
                         cache.append('\n');
                     }
@@ -81,7 +81,7 @@ public class KeyValueCacheUtils {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (!StringUtil.isNullOrEmpty(line) && line.contains(sKey)) {
+                if (StringUtils.isNotBlank(line) && line.contains(sKey)) {
                     Map<String, String> mapLine = JsonUtils.fromJson(line, new TypeReference<>() {
                     });
                     return mapLine.get("value");
@@ -131,8 +131,8 @@ public class KeyValueCacheUtils {
         }catch (Exception e) {
             logger.warn(e.getMessage());
         }
-        if (StringUtil.isNullOrEmpty(cacheDir)) cacheDir = System.getenv("CACHE_DIRECTORY");
-        if (StringUtil.isNullOrEmpty(cacheDir)) cacheDir = System.getenv("user.dir");
+        if (StringUtils.isBlank(cacheDir)) cacheDir = System.getenv("CACHE_DIRECTORY");
+        if (StringUtils.isBlank(cacheDir)) cacheDir = System.getenv("user.dir");
         return cacheDir;
     }
 
@@ -151,7 +151,7 @@ public class KeyValueCacheUtils {
     }
 
     public static String hide(String s) {
-        if (StringUtil.isNullOrEmpty(s)) return null;
+        if (StringUtils.isBlank(s)) return null;
         return Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -219,7 +219,7 @@ public class KeyValueCacheUtils {
             if (maxRemove < take) maxRemove = take;
 
             value = findCache(cacheName, key);
-            if (!StringUtil.isNullOrEmpty(value)) {
+            if (StringUtils.isBlank(value)) {
                 System.out.println("failed to remove " + key);
             }
         }

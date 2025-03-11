@@ -14,6 +14,22 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc-deployment</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-jackson-deployment</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jsonb-deployment</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.onebyone</groupId>
       <artifactId>quarkus-microservices-common</artifactId>
@@ -25,11 +41,11 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>io.onebyone</groupId>
-      <artifactId>quarkus-authentication-deployment</artifactId>
-      <version>1.0.3</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>io.onebyone</groupId>-->
+<!--      <artifactId>quarkus-authentication-deployment</artifactId>-->
+<!--      <version>1.0.3</version>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>io.quarkus</groupId>

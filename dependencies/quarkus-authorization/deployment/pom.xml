@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.onebyone</groupId>
         <artifactId>quarkus-authorization-parent</artifactId>
-        <version>2.0.2</version>
+        <version>3.0.0</version>
     </parent>
     <artifactId>quarkus-authorization-deployment</artifactId>
     <name>Authorization - Deployment</name>
@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson-deployment</artifactId>
+            <artifactId>quarkus-rest-jackson-deployment</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -51,8 +51,8 @@
 
         <dependency>
             <groupId>io.onebyone</groupId>
-            <artifactId>quarkus-authentication-deployment</artifactId>
-            <version>1.0.3</version>
+            <artifactId>quarkus-base</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
     </dependencies>

@@ -1,6 +1,6 @@
 package io.onebyone.quarkus.microservices.common.utils;
 
-import io.onebyone.authentication.utils.DateTimeUtils;
+import io.onebyone.quarkusBase.utils.DateTimeUtils;
 import io.quarkus.arc.Unremovable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;

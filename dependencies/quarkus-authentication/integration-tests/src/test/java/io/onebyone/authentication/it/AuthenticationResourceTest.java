@@ -1,7 +1,6 @@
 package io.onebyone.authentication.it;
 
 import io.onebyone.authentication.utils.JsonUtils;
-import io.quarkus.test.Mock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;

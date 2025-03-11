@@ -1,4 +1,4 @@
-package io.onebyone.authentication.utils;
+package io.onebyone.quarkusBase.utils;
 
 import java.util.Random;
 

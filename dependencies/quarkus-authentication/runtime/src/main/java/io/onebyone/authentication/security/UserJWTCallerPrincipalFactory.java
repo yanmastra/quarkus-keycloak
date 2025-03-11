@@ -5,7 +5,6 @@ import io.quarkus.smallrye.jwt.runtime.auth.JsonWebTokenCredential;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipalFactory;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
-import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 import io.smallrye.jwt.util.KeyUtils;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.annotation.Priority;

@@ -1,4 +1,4 @@
-package io.onebyone.authentication.provider;
+package io.onebyone.authorization.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.onebyone.quarkusBase.utils.JsonUtils;

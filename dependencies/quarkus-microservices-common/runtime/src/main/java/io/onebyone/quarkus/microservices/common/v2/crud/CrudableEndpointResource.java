@@ -1,11 +1,11 @@
 package io.onebyone.quarkus.microservices.common.v2.crud;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.onebyone.authentication.security.UserPrincipal;
 import io.onebyone.quarkus.microservices.common.ResponseJson;
 import io.onebyone.quarkus.microservices.common.crud.WriteType;
 import io.onebyone.quarkus.microservices.common.v2.entity.BaseEntity;
 import io.onebyone.quarkus.microservices.common.v2.dto.BaseDto;
+import io.onebyone.quarkusBase.security.UserPrincipal;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.transaction.Transactional;

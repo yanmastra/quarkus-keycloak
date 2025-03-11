@@ -1,4 +1,4 @@
-package io.onebyone.authentication.security;
+package io.onebyone.authorization.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

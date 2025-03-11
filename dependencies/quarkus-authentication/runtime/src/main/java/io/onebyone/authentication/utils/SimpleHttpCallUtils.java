@@ -1,6 +1,7 @@
 package io.onebyone.authentication.utils;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.onebyone.quarkusBase.utils.JsonUtils;
 import io.quarkus.runtime.util.StringUtil;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.handler.HttpException;

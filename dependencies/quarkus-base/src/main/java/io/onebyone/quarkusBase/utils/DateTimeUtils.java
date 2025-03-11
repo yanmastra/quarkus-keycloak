@@ -1,4 +1,4 @@
-package io.onebyone.authentication.utils;
+package io.onebyone.quarkusBase.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
