@@ -14,8 +14,8 @@ import org.jboss.logging.Logger;
 import java.util.stream.Stream;
 
 public abstract class BaseRepository<Entity extends BaseEntity, Id> implements PanacheRepositoryBase<Entity, Id>  {
-    @Inject
-    Logger log;
+//    @Inject
+//    Logger log;
 
     protected String getUserIdentity() {
         try (InstanceHandle<SecurityIdentity> injectableBean = Arc.container().instance(SecurityIdentity.class)) {
@@ -24,7 +24,7 @@ public abstract class BaseRepository<Entity extends BaseEntity, Id> implements P
             if (securityIdentity.getPrincipal() == null) return null;
             return securityIdentity.getPrincipal().getName();
         } catch (Exception e) {
-            log.warn(e.getMessage());
+//            log.debug(e.getMessage());
             return null;
         }
     }
