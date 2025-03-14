@@ -18,6 +18,6 @@ public class ParamToQueryIsNotNull extends ParamToQuery {
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return alias + key + " NOT NULL";
+        return alias + key + " is not null";
     }
 }
