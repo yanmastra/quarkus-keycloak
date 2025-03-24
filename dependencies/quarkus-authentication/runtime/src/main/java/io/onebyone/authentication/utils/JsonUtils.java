@@ -3,15 +3,14 @@ package io.onebyone.authentication.utils;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jboss.logging.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class JsonUtils {
     private static final Logger logger = Logger.getLogger(JsonUtils.class);
@@ -44,7 +43,11 @@ public class JsonUtils {
         objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
         objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
         objectMapper.setDateFormat(new SimpleDateFormat(DateTimeUtils.ZONED_DATE_TIME_FORMAT));
-        objectMapper.registerModule(new JavaTimeModule());
+
+        SimpleModule module = new JavaTimeModule();
+        module.addDeserializer(Date.class, new DateDeserializer());
+        module.addSerializer(Date.class, new DateSerializer());
+        objectMapper.registerModule(module);
         objectMapper.setVisibility(objectMapper.getSerializationConfig()
                 .getDefaultVisibilityChecker()
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));

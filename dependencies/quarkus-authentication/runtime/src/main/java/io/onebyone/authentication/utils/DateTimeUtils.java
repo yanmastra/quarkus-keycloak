@@ -15,6 +15,7 @@ import java.util.TimeZone;
 
 public interface DateTimeUtils {
     String ZONED_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    String DATE_ONLY = "yyyy-MM-dd";
     DateTimeFormatter zonedDtf = DateTimeFormatter.ofPattern(ZONED_DATE_TIME_FORMAT);
     DateFormat displayableDateTime = new SimpleDateFormat("E, dd-MMM-yyyy HH:mm");
     DateFormat displayableDate = new SimpleDateFormat("E, dd-MMM-yyyy");
@@ -22,6 +23,7 @@ public interface DateTimeUtils {
     DateTimeFormatter displayableDateTimeDtf = DateTimeFormatter.ofPattern("E, dd-MMM-yyyy HH:mm");
     DateTimeFormatter displayableDateDtf = DateTimeFormatter.ofPattern("E, dd-MMM-yyyy");
     DateTimeFormatter utcDateDtf = DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC"));
+    DateFormat sysDateOnly = new SimpleDateFormat(DATE_ONLY);
     Logger logger = Logger.getLogger(DateTimeUtils.class);
     String IS_DATE = "\\d{4}-\\d{2}-\\d{2}";
 
@@ -139,6 +141,24 @@ public interface DateTimeUtils {
             utcDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             return utcDateFormat.parse(date);
         } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    static Date fromDateOnly(String date) {
+        try {
+            return sysDateOnly.parse(date);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    static String toDateOnly(Date date) {
+        try {
+            return sysDateOnly.format(date);
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return null;
         }

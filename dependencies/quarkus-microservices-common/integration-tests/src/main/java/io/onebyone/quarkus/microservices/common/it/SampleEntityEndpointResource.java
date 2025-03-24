@@ -80,6 +80,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
             sampleEntity.price = BigDecimal.valueOf(random.nextInt(99999) * (i%5))
                     .divide(new BigDecimal((random.nextInt(1, 9) * (i%7+1)) + ""), 2, RoundingMode.HALF_EVEN);
             sampleEntity.sampleType = SampleType.values()[random.nextInt(SampleType.values().length)];
+            sampleEntity.date = new Date();
             generated.add(sampleEntity);
         }
 
