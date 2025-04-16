@@ -78,7 +78,7 @@ public abstract class SelectablePaginationResource<Entity extends BaseEntity, Dt
 
     protected Paginate<SelectionDto> getSelection(Integer page, Integer size, MultivaluedMap<String, String> requestQueries, ContainerRequestContext context) {
         Page objPage = Page.of(page - 1, size);
-        Sort sort = CrudQueryFilterUtils.fetchSort(context.getUriInfo().getQueryParameters());
+        Sort sort = CrudQueryFilterUtils.fetchSort(requestQueries);
         Map<String, Object> queryParams = new HashMap<>();
         String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, this.searchAbleColumn());
         log.debug("generated hql: " + hql);

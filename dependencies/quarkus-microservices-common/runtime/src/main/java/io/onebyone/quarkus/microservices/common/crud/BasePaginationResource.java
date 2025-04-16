@@ -104,7 +104,7 @@ public abstract class BasePaginationResource<Entity extends BaseEntity, Dto exte
 
     protected Paginate<Dto> getList(Integer page, Integer size, MultivaluedMap<String, String> requestQueries, ContainerRequestContext context) {
         Page objPage = Page.of(page - 1, size);
-        Sort sort = CrudQueryFilterUtils.fetchSort(context.getUriInfo().getQueryParameters());
+        Sort sort = CrudQueryFilterUtils.fetchSort(requestQueries);
 
         Map<String, Object> queryParams = new HashMap<>();
         String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn());
