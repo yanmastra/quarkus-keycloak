@@ -25,7 +25,13 @@ public interface DateTimeUtils {
     DateTimeFormatter utcDateDtf = DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC"));
     DateFormat sysDateOnly = new SimpleDateFormat(DATE_ONLY);
     Logger logger = Logger.getLogger(DateTimeUtils.class);
-    String IS_DATE = "\\d{4}-\\d{2}-\\d{2}";
+    String IS_DATE = "\\d{4}-\\d{2}-\\d{2}"; //"^(19|20)\\d\\d-(0[1-9]|1[012])-([012]\\d|3[01])";
+    String IS_DATE_TIME = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z)$";
+    String IS_DATE_TIME2 = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z)$";
+    String IS_DATE_TIME1 = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z)$";
+    String IS_DATE_TIME3 = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}+\\d{2}:\\d{2})$";
+    String IS_DATE_TIME4 = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}+\\d{2}:\\d{2})$";
+    String IS_DATE_TIME5 = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}+\\d{2}:\\d{2})$";
 
     static String displayDateTime(Date date) {
         try {
