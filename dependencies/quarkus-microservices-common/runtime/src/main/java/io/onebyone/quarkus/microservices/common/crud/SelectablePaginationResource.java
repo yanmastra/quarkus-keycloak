@@ -9,6 +9,7 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import jakarta.persistence.criteria.Selection;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -86,15 +87,17 @@ public abstract class SelectablePaginationResource<Entity extends BaseEntity, Dt
         long totalCount = entityQuery.count();
         List<Entity> result = entityQuery.page(objPage).list();
         return new Paginate<>(
-                result.stream().map(item -> {
-                    if (item instanceof SelectableEntity selectable) {
-                        return new SelectionDto(selectable.getId(), selectable.getName());
-                    }
-                    throw new ForbiddenException("Not supported selection endpoint");
-                }).toList(),
+                result.stream().map(this::toSelectionDto).toList(),
                 objPage.index + 1,
                 objPage.size,
                 totalCount
         );
+    }
+
+    protected SelectionDto toSelectionDto(Entity entity) {
+        if (entity instanceof SelectableEntity selectable) {
+            return new SelectionDto(selectable.getId(), selectable.getName());
+        }
+        throw new ForbiddenException("Not supported selection endpoint");
     }
 }
