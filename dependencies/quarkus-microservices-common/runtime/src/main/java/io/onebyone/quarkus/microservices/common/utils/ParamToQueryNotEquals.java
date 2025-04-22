@@ -13,7 +13,7 @@ public class ParamToQueryNotEquals extends ParamToQuery{
 
     @Override
     public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {
-        return Map.of(getSKey(key), value.get(1));
+        return Map.of(getSKey(key), getRealValue(value.get(1)));
     }
 
     @Override

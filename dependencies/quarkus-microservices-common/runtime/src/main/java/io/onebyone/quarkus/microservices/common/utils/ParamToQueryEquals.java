@@ -16,9 +16,6 @@ import java.util.Map;
 @ParamToQueryQualifier(operator = "equals")
 public class ParamToQueryEquals extends ParamToQuery {
 
-    @Inject
-    Logger log;
-
     public ParamToQueryEquals() {
     }
 
@@ -41,27 +38,4 @@ public class ParamToQueryEquals extends ParamToQuery {
         return Map.of(getSKey(key), oValue);
     }
 
-    private Object getRealValue(String sValue) {
-        if ("true".equalsIgnoreCase(sValue)) return true;
-        if ("false".equalsIgnoreCase(sValue)) return false;
-
-        if (DateTimeUtils.isDate(sValue)) {
-            return DateTimeUtils.fromUtc(sValue);
-        }
-
-        if (sValue.matches("^[0-9]*$")) {
-            try {
-                return Long.parseLong(sValue);
-            } catch (Throwable e) {
-                log.warn("Parse Long failed " + e.getMessage());
-            }
-
-            try {
-                return new BigDecimal(sValue);
-            } catch (Throwable e) {
-                log.warn("Parse BigDecimal failed " + e.getMessage());
-            }
-        }
-        return sValue;
-    }
 }

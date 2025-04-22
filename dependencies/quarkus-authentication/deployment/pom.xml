@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.onebyone</groupId>
         <artifactId>quarkus-authentication-parent</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
     <artifactId>quarkus-authentication-deployment</artifactId>
     <name>authentication - Deployment</name>

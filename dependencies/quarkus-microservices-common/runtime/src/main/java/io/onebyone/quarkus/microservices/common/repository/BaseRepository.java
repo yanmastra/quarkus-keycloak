@@ -29,7 +29,7 @@ public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implemen
             if (securityIdentity.getPrincipal() == null) return null;
             return securityIdentity.getPrincipal().getName();
         } catch (Exception e) {
-            log.warn(e.getMessage());
+//            log.debug(e.getMessage());
             return null;
         }
     }

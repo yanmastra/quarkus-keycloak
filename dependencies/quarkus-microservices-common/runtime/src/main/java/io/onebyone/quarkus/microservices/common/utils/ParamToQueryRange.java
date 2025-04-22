@@ -27,8 +27,8 @@ public class ParamToQueryRange extends ParamToQuery{
         log.debug("getFieldAndParams:"+key+","+value+","+alias);
         String sKey = getSKey(key);
         return Map.of(
-                sKey + "_start", value.get(1),
-                sKey + "_end", value.get(2)
+                sKey + "_start", getRealValue(value.get(1)),
+                sKey + "_end", getRealValue(value.get(2))
         );
     }
 }
