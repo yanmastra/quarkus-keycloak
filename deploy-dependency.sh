@@ -24,12 +24,14 @@ for dep in $DEP_LIST ; do
 
       cp "./deployment/target/$dep-deployment-$version.jar" "$DIR_DEPLOYED/$dep/deployment.jar"
       cp "./runtime/target/$dep-$version.jar" "$DIR_DEPLOYED/$dep/runtime.jar"
+      cp "./runtime/target/$dep-$version-javadoc.jar" "$DIR_DEPLOYED/$dep/runtime-javadoc.jar"
 
       cp "./deployment/pom.xml" "$DIR_DEPLOYED/$dep/deployment.xml"
       cp "./runtime/pom.xml" "$DIR_DEPLOYED/$dep/runtime.xml"
     else
       cp ./pom.xml "$DIR_DEPLOYED/$dep/runtime.xml"
       cp "./target/$dep-$version.jar" "$DIR_DEPLOYED/$dep/runtime.jar"
+      cp "./target/$dep-$version-javadoc.jar" "$DIR_DEPLOYED/$dep/runtime-javadoc.jar"
     fi
 
     cd $DIRDPC

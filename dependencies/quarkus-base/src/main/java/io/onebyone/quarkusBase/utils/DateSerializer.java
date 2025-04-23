@@ -1,4 +1,4 @@
-package io.onebyone.authentication.utils;
+package io.onebyone.quarkusBase.utils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

@@ -10,16 +10,16 @@ import java.util.List;
 
 @Unremovable
 @Singleton
-public class ColonDelimiterQueryParamParser implements QueryParamParser {
+public class ValueSeparatorQueryParamParser implements QueryParamParser {
 
     @Nullable
     @Override
     public List<String> parse(List<String> values) {
         if (values != null && values.size() == 1) {
             String value = values.getFirst();
-            if (StringUtils.isNotBlank(value) && value.contains(":")) {
+            if (StringUtils.isNotBlank(value) && value.contains("|")) {
 
-                String[] split = value.split(":");
+                String[] split = value.split("\\|");
                 values = Arrays.asList(split);
                 return values;
             }

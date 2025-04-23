@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SelectablePaginationResource<Entity extends BaseEntity<Id>, Dto extends BaseDto<Entity, Id>, Id> extends BasePaginationResource<Entity, Dto, Id> {
+public abstract class SelectablePaginationResource<Entity extends BaseEntity<Id>, Dto extends BaseDto<Entity, Id>, Id> extends CrudableEndpointResource<Entity, Dto, Id> {
     private Boolean isSupportSelection = null;
     private String entityClassName = null;
 
@@ -78,7 +78,7 @@ public abstract class SelectablePaginationResource<Entity extends BaseEntity<Id>
 
     protected Paginate<SelectionDto> getSelection(Integer page, Integer size, MultivaluedMap<String, String> requestQueries, ContainerRequestContext context) {
         Page objPage = Page.of(page - 1, size);
-        Sort sort = CrudQueryFilterUtils.fetchSort(context.getUriInfo().getQueryParameters());
+        Sort sort = CrudQueryFilterUtils.fetchSort(requestQueries);
         Map<String, Object> queryParams = new HashMap<>();
         String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, this.searchAbleColumn());
         log.debug("generated hql: " + hql);
@@ -87,15 +87,17 @@ public abstract class SelectablePaginationResource<Entity extends BaseEntity<Id>
         long totalCount = entityQuery.count();
         List<Entity> result = entityQuery.page(objPage).list();
         return new Paginate<>(
-                result.stream().map(item -> {
-                    if (item instanceof SelectableEntity selectable) {
-                        return new SelectionDto(selectable.getId(), selectable.getName());
-                    }
-                    throw new ForbiddenException("Not supported selection endpoint");
-                }).toList(),
+                result.stream().map(this::toSelectionDto).toList(),
                 objPage.index + 1,
                 objPage.size,
                 totalCount
         );
+    }
+
+    protected SelectionDto toSelectionDto(Entity entity) {
+        if (entity instanceof SelectableEntity selectable) {
+            return new SelectionDto(selectable.getId(), selectable.getName());
+        }
+        throw new ForbiddenException("Not supported selection endpoint");
     }
 }

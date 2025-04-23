@@ -1,6 +1,6 @@
 package io.onebyone.quarkus.microservices.common.utils;
 
-import io.onebyone.authentication.utils.DateTimeUtils;
+import io.onebyone.quarkusBase.utils.DateTimeUtils;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.apache.commons.lang3.StringUtils;
