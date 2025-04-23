@@ -11,6 +11,7 @@
 **/privatekey.pem
 **/publickey.pub
 .test
+**/null/**
 
 .mysql
 docker/.postgresql

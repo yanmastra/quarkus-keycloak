@@ -2,9 +2,9 @@ package io.yanmastra.authentication.security;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.quarkus.smallrye.jwt.runtime.auth.JsonWebTokenCredential;
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipalFactory;
 import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipal;
-import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 import io.smallrye.jwt.util.KeyUtils;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.annotation.Priority;
@@ -25,7 +25,7 @@ import static io.yanmastra.authentication.security.Constant.*;
 @ApplicationScoped
 @Alternative
 @Priority(1)
-public class UserJWTCallerPrincipalFactory extends JWTCallerPrincipalFactory {
+public final class UserJWTCallerPrincipalFactory extends DefaultJWTCallerPrincipalFactory {
     @ConfigProperty(name = PROP_MP_PUBLIC_KEY_LOCATION, defaultValue = "-")
     String publicKeyLocation;
     @ConfigProperty(name = PROP_ALLOWED_JWT_ISSUER, defaultValue = "*")
@@ -34,6 +34,8 @@ public class UserJWTCallerPrincipalFactory extends JWTCallerPrincipalFactory {
     String securityIsEncryptAccessToken;
     @ConfigProperty(name = PROP_SECURITY_TOKEN_ENCRYPTION_SECRET, defaultValue = "-")
     String encryptSecretKey;
+
+    public UserJWTCallerPrincipalFactory(){}
 
     private JwtConsumer jwtConsumer = null;
     private JwtConsumer getJwtConsumer() {

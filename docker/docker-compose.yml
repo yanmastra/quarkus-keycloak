@@ -77,6 +77,5 @@ services:
 
 networks:
   main-proxy:
-    external: true
     name: '${PROJECT_NAME}-net-proxy'
     driver: bridge

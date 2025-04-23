@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.yanmastra</groupId>
         <artifactId>quarkus-authorization-parent</artifactId>
-        <version>2.0.2</version>
+        <version>3.0.0</version>
     </parent>
     <artifactId>quarkus-authorization-integration-tests</artifactId>
     <name>Authorization - Integration Tests</name>

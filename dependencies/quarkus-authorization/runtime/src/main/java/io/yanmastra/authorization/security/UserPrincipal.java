@@ -1,63 +1,69 @@
 package io.yanmastra.authorization.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.quarkus.oidc.runtime.OidcJwtCallerPrincipal;
 import io.quarkus.security.credential.Credential;
 import io.quarkus.security.credential.TokenCredential;
+import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
+import org.eclipse.microprofile.jwt.Claims;
 import org.jboss.logging.Logger;
 import org.jose4j.jwt.JwtClaims;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIncludeProperties(value = {"credential", "id", "username", "email", "profile_name", "authorities", "company_access"})
-public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential, Serializable {
+@JsonIncludeProperties(value = {"id", "username", "name", "email", "profile_name", "current_tenant", "tenant_access", "authorities"})
+public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.security.UserPrincipal, Credential {
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
-    private static final String sub = "sub";
-    private static final String preferredClaim = "preferred_username";
+    public static final String tenantAccess = "tenant_access";
+    public static final String currentTenant = "current_tenant";
+    public static final String sessionState = "session_state";
+    public static final String permissions = "permissions";
     private Set<String> authorities = null;
+    private final JwtClaims claims;
+    private final TokenCredential credential;
+    private Map<String, Object> additionalClaims = null;
 
     public UserPrincipal(JwtClaims claims, TokenCredential credential) {
-        super(claims, credential);
-    }
-
-    public UserPrincipal(JwtClaims claims, TokenCredential credential, String principalClaim) {
-        super(claims, credential, principalClaim);
+        super(credential.getType(), claims);
+        this.claims = claims;
+        this.credential = credential;
     }
 
     @JsonProperty("id")
     public String getUserId() {
-        return super.getClaims().getClaimValueAsString(sub);
+        return claims.getClaimValueAsString(Claims.sub.name());
     }
 
     @JsonProperty("username")
     public String getUsername() {
-        return getName();
+        return claims.getClaimValueAsString(Claims.preferred_username.name());
     }
 
-    @JsonProperty("name")
     public String getName() {
-        return super.getClaims().getClaimValueAsString(preferredClaim);
+        return claims.getClaimValueAsString(Claims.preferred_username.name());
     }
 
     @JsonProperty("email")
     public String getEmail() {
-        return super.getClaims().getClaimValueAsString("email");
+        return claims.getClaimValueAsString(Claims.email.name());
     }
 
     @JsonProperty("profile_name")
     public String getProfileName() {
-        return super.getClaims().getClaimValueAsString("name");
+        return claims.getClaimValueAsString(Claims.full_name.name());
+    }
+
+    @JsonProperty(currentTenant)
+    public String getCurrentTenant() {
+        return claims.getClaimValueAsString(currentTenant);
     }
 
     @JsonProperty("authorities")
@@ -65,7 +71,18 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
         if (authorities != null) return authorities;
 
         authorities = new HashSet<>(super.getGroups());
-        Map<String, Object> claimMaps = super.getClaims().getClaimsMap();
+        Map<String, Object> claimMaps = claims.getClaimsMap();
+
+        if (claimMaps.containsKey(permissions) && claimMaps.get(permissions) instanceof JsonArray arrPermissions) {
+            try {
+                authorities.addAll(arrPermissions.stream().map(v -> {
+                    if (v instanceof JsonString jsonString) return jsonString.getString();
+                    return null;
+                }).filter(Objects::nonNull).collect(Collectors.toSet()));
+            } catch (Exception e) {
+                log.warn(e.getMessage(), new RuntimeException(e));
+            }
+        }
 
         if (claimMaps.containsKey("realm_access") && claimMaps.get("realm_access") instanceof JsonObject realmAccess && realmAccess.containsKey("roles")) {
             try {
@@ -98,23 +115,20 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
         return authorities;
     }
 
-    @JsonProperty("company_access")
-    public Set<String> companyAccess() {
-        try {
-            JsonArray value = (JsonArray) super.getClaims().getClaimValue("company_access");
-            return value == null ? Set.of() : new HashSet<>(value.getValuesAs(jsonValue -> ((JsonString) jsonValue).getString()));
-        } catch (Exception e) {
-            log.warn(e.getMessage(), e);
-            return Set.of();
+    @JsonProperty("tenant_access")
+    public Set<String> tenantAccess() {
+        if (claims.hasClaim(tenantAccess) && claims.getClaimValue(tenantAccess) instanceof JsonArray tenantAccessValue) {
+            return tenantAccessValue.stream().map(tenantCode -> {
+                if (tenantCode instanceof JsonString tenantCodeString) return tenantCodeString.getString();
+                return null;
+            }).filter(Objects::nonNull).collect(Collectors.toSet());
         }
+        return Set.of();
     }
 
+    @JsonIgnore
     public String getSessionState() {
-        return super.getClaims().getClaimValueAsString("session_state");
-    }
-
-    public static UserPrincipal from(OidcJwtCallerPrincipal principal) {
-        return new UserPrincipal(principal.getClaims(), principal.getCredential());
+        return claims.getClaimValueAsString(sessionState);
     }
 
     @Override
@@ -122,5 +136,29 @@ public class UserPrincipal extends OidcJwtCallerPrincipal implements Credential,
         if (obj == null) return false;
         if (!(obj instanceof UserPrincipal upObj)) return false;
         return getUserId().equals(upObj.getUserId()) && getSessionState().equals(upObj.getSessionState());
+    }
+
+    @JsonIgnore
+    public TokenCredential getCredential() {
+        return credential;
+    }
+
+    public Object getAdditionalClaim(String key) {
+        if (additionalClaims == null) fetchAdditionalClaims();
+        return additionalClaims.get(key);
+    }
+
+    private void fetchAdditionalClaims() {
+        Map<String, Object> additionalClaimsMap = new HashMap<>();
+        Set<String> keys = Stream.of(Claims.values()).map(Enum::name)
+                .filter(name -> !Claims.UNKNOWN.name().equals(name))
+                .collect(Collectors.toSet());
+
+        for (String name: claims.getClaimsMap().keySet()) {
+            if (!keys.contains(name)) {
+                additionalClaimsMap.put(name, claims.getClaimValue(name));
+            }
+        }
+        additionalClaims = Collections.unmodifiableMap(additionalClaimsMap);
     }
 }

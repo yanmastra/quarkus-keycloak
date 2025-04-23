@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authorization-parent</artifactId>
-    <version>2.0.2</version>
+    <version>3.0.0</version>
   </parent>
   <artifactId>quarkus-authorization</artifactId>
   <name>Authorization - Runtime</name>
@@ -19,6 +19,12 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.yanmastra</groupId>
+      <artifactId>quarkus-base</artifactId>
+      <version>1.0.1</version>
     </dependency>
 
     <dependency>
@@ -50,6 +56,11 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.yanmastra</groupId>
+      <artifactId>quarkus-authentication</artifactId>
+      <version>1.0.4</version>
     </dependency>
 
   </dependencies>

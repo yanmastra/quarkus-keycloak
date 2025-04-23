@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.yanmastra</groupId>
         <artifactId>quarkus-authentication-parent</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.4</version>
     </parent>
     <artifactId>quarkus-authentication-deployment</artifactId>
     <name>authentication - Deployment</name>
@@ -34,15 +34,6 @@
             <artifactId>quarkus-jsonb-deployment</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>io.quarkus</groupId>-->
-<!--            <artifactId>quarkus-oidc-deployment</artifactId>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>io.quarkus</groupId>-->
-<!--            <artifactId>quarkus-keycloak-authorization-deployment</artifactId>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-jwt-deployment</artifactId>

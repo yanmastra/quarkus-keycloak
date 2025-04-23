@@ -14,7 +14,7 @@ public class UserSecurityIdentityAugmentor implements SecurityIdentityAugmentor 
     public Uni<SecurityIdentity> augment(SecurityIdentity securityIdentity, AuthenticationRequestContext authenticationRequestContext) {
 
         if (securityIdentity.getPrincipal() instanceof OidcJwtCallerPrincipal oidcJwtCallerPrincipal) {
-            UserPrincipal principal = UserPrincipal.from(oidcJwtCallerPrincipal);
+            UserPrincipal principal = new UserPrincipal(oidcJwtCallerPrincipal.getClaims(), oidcJwtCallerPrincipal.getCredential());
             return Uni.createFrom().item(new UserSecurityIdentity(securityIdentity, principal));
         }
         return Uni.createFrom().item(securityIdentity);

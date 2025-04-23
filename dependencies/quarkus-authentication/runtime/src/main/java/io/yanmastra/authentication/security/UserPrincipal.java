@@ -14,17 +14,13 @@ import org.eclipse.microprofile.jwt.Claims;
 import org.jboss.logging.Logger;
 import org.jose4j.jwt.JwtClaims;
 
-import java.io.Serializable;
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eclipse.microprofile.jwt.Claims.*;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIncludeProperties(value = {"id", "username", "name", "email", "profile_name", "current_tenant", "tenant_access", "authorities"})
-public class UserPrincipal extends DefaultJWTCallerPrincipal implements Principal, Credential, Serializable {
+public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.security.UserPrincipal, Credential {
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
     public static final String tenantAccess = "tenant_access";
     public static final String currentTenant = "current_tenant";
@@ -43,26 +39,26 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements Principa
 
     @JsonProperty("id")
     public String getUserId() {
-        return claims.getClaimValueAsString(sub.name());
+        return claims.getClaimValueAsString(Claims.sub.name());
     }
 
     @JsonProperty("username")
     public String getUsername() {
-        return claims.getClaimValueAsString(preferred_username.name());
+        return claims.getClaimValueAsString(Claims.preferred_username.name());
     }
 
     public String getName() {
-        return claims.getClaimValueAsString(preferred_username.name());
+        return claims.getClaimValueAsString(Claims.preferred_username.name());
     }
 
     @JsonProperty("email")
     public String getEmail() {
-        return claims.getClaimValueAsString(email.name());
+        return claims.getClaimValueAsString(Claims.email.name());
     }
 
     @JsonProperty("profile_name")
     public String getProfileName() {
-        return claims.getClaimValueAsString(full_name.name());
+        return claims.getClaimValueAsString(Claims.full_name.name());
     }
 
     @JsonProperty(currentTenant)
@@ -77,9 +73,9 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements Principa
         authorities = new HashSet<>(super.getGroups());
         Map<String, Object> claimMaps = claims.getClaimsMap();
 
-        if (claimMaps.containsKey(permissions) && claimMaps.get(permissions) instanceof JsonArray permissions) {
+        if (claimMaps.containsKey(permissions) && claimMaps.get(permissions) instanceof JsonArray arrPermissions) {
             try {
-                authorities.addAll(permissions.stream().map(v -> {
+                authorities.addAll(arrPermissions.stream().map(v -> {
                     if (v instanceof JsonString jsonString) return jsonString.getString();
                     return null;
                 }).filter(Objects::nonNull).collect(Collectors.toSet()));
@@ -155,7 +151,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements Principa
     private void fetchAdditionalClaims() {
         Map<String, Object> additionalClaimsMap = new HashMap<>();
         Set<String> keys = Stream.of(Claims.values()).map(Enum::name)
-                .filter(name -> !UNKNOWN.name().equals(name))
+                .filter(name -> !Claims.UNKNOWN.name().equals(name))
                 .collect(Collectors.toSet());
 
         for (String name: claims.getClaimsMap().keySet()) {

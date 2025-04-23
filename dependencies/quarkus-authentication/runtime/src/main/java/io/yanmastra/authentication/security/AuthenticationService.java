@@ -1,7 +1,7 @@
 package io.yanmastra.authentication.security;
 
 import io.yanmastra.authentication.payload.UserTokenPayload;
-import io.yanmastra.authentication.utils.KeyValueCacheUtils;
+import io.yanmastra.quarkusBase.utils.KeyValueCacheUtils;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.build.JwtClaimsBuilder;
 import io.smallrye.jwt.util.KeyUtils;

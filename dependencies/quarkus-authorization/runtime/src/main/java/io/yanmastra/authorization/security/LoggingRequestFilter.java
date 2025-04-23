@@ -1,14 +1,14 @@
 package io.yanmastra.authorization.security;
 
 import io.vertx.ext.web.RoutingContext;
-import io.yanmastra.authorization.logging.RequestLogData;
+import io.yanmastra.authentication.logging.RequestLogData;
 import io.yanmastra.authorization.logging.RequestLoggingListener;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.jboss.logging.Logger;

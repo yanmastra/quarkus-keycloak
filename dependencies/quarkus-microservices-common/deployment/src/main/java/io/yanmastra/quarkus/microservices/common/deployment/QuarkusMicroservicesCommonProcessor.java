@@ -6,6 +6,7 @@ import io.quarkus.deployment.builditem.AdditionalIndexedClassesBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.yanmastra.quarkus.microservices.common.crud.BasePaginationResource;
 import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.yanmastra.quarkus.microservices.common.crud.SelectablePaginationResource;
 import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
 import io.yanmastra.quarkus.microservices.common.utils.*;
 
@@ -26,7 +27,11 @@ class QuarkusMicroservicesCommonProcessor {
         return new AdditionalIndexedClassesBuildItem(
                 BaseRepository.class.getName(),
                 BasePaginationResource.class.getName(),
-                CrudableEndpointResource.class.getName()
+                SelectablePaginationResource.class.getName(),
+                CrudableEndpointResource.class.getName(),
+                io.yanmastra.quarkus.microservices.common.v2.crud.BasePaginationResource.class.getName(),
+                io.yanmastra.quarkus.microservices.common.v2.crud.CrudableEndpointResource.class.getName(),
+                io.yanmastra.quarkus.microservices.common.v2.crud.SelectablePaginationResource.class.getName()
         );
     }
 
@@ -41,7 +46,9 @@ class QuarkusMicroservicesCommonProcessor {
                 AdditionalBeanBuildItem.unremovableOf(ParamToQueryNotIn.class),
                 AdditionalBeanBuildItem.unremovableOf(ParamToQueryRange.class),
                 AdditionalBeanBuildItem.unremovableOf(ParamToQueryIsNull.class),
-                AdditionalBeanBuildItem.unremovableOf(ParamToQueryIsNotNull.class)
+                AdditionalBeanBuildItem.unremovableOf(ParamToQueryIsNotNull.class),
+                AdditionalBeanBuildItem.unremovableOf(ParamToQueryContains.class),
+                AdditionalBeanBuildItem.unremovableOf(ValueSeparatorQueryParamParser.class)
         );
     }
 }
