@@ -1,4 +1,5 @@
-export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+#export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+source .env
 export DB_LIST="$(cat databases-list.txt)"
 export KEYCLOAK_DB_NAME=db_authentication
 envsubst  < keycloak/Dockerfile.template > keycloak/Dockerfile
