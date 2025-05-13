@@ -1,18 +1,18 @@
-package io.yanmastra.authentication.security;
+package io.yanmastra.authentication.logging;
 
-import io.yanmastra.authentication.logging.RequestLogData;
-import io.yanmastra.authentication.logging.RequestLoggingListener;
 import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import jakarta.ws.rs.container.*;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
-import java.io.*;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutorService;

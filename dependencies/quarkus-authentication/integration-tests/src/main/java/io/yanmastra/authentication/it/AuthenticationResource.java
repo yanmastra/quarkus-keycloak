@@ -16,12 +16,14 @@
  */
 package io.yanmastra.authentication.it;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.mutiny.Uni;
 import io.yanmastra.authentication.payload.RefreshTokenPayload;
 import io.yanmastra.authentication.payload.UserTokenPayload;
 import io.yanmastra.authentication.security.AuthenticationService;
-import io.quarkus.security.identity.SecurityIdentity;
-import io.smallrye.jwt.util.KeyUtils;
-import io.smallrye.mutiny.Uni;
+import io.yanmastra.authentication.service.UserService;
+import io.yanmastra.authentication.utils.CookieSessionUtils;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -29,16 +31,16 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.Principal;
-import java.security.PrivateKey;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -46,6 +48,7 @@ import java.util.UUID;
 @Path("/authentication")
 @ApplicationScoped
 public class AuthenticationResource {
+    private static final Log log = LogFactory.getLog(AuthenticationResource.class);
     // add some rest methods here
     @Inject
     Logger logger;
@@ -53,12 +56,15 @@ public class AuthenticationResource {
     SecurityIdentity securityIdentity;
     @Inject
     AuthenticationService authenticationService;
+    @Inject
+    UserService userService;
 
 
-    class MyUserTokenPayload implements UserTokenPayload{
+    public static class MyUserTokenPayload implements UserTokenPayload{
         public String id;
         public String username;
         public String email;
+        @JsonProperty("full_name")
         public String fullName;
         public Set<String> permissions;
         public Map<String, Object> attributes;
@@ -98,62 +104,30 @@ public class AuthenticationResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response hello() {
-//        JwtClaimsBuilder claims = Jwt.claims()
-//                .upn("yanmastra")
-//                .preferredUserName("yanmastra")
-//                .subject(UUID.randomUUID().toString())
-//                .claim(Claims.email, "yanmastra61@gmail.com")
-//                .claim(Claims.full_name, "Wayan Mastra")
-//                .claim(sessionState, UUID.randomUUID().toString())
-//                .claim("permissions", Json.createArrayBuilder()
-//                        .add("view_profile")
-//                        .add("manage_users")
-//                        .add("manage_user_permission")
-//                        .build()
-//                ).issuer("http://localhost:4000")
-//                .expiresIn(Duration.ofSeconds(30));
+    public Response getToken() {
 
-        payload = new MyUserTokenPayload();
-        payload.id = UUID.randomUUID().toString();
-        payload.username = "yanmastra";
-        payload.email = "yanmastra61@gmail.com";
-        payload.fullName = "Wayan Mastra";
-        payload.permissions = Set.of(
-                "view_profile",
-                "manage_users",
-                "manage_user_permission"
-        );
-        payload.attributes = Map.of(
-                "jumpcloud_token", UUID.randomUUID().toString(),
-                "tenant_access", Set.of("mjl", "mrb", "mdn")
-        );
-        return authenticationService.createAccessTokenResponse(payload);
+        String sessionId = UUID.randomUUID().toString();
+        payload = (MyUserTokenPayload) userService.getAccessTokenPayload(sessionId);
+
+        Map<String, Object> newAccess = authenticationService.createAccessToken(payload);
+        NewCookie cookie = CookieSessionUtils.createSessionCookie(newAccess);
+        return Response.ok(newAccess)
+                .cookie(cookie)
+                .build();
     }
 
     @POST
     @Path("refresh")
     @Produces(MediaType.APPLICATION_JSON)
     public Response refresh(RefreshTokenPayload payload) {
-        String sessionId = authenticationService.getSessionFromRefreshToken(payload.refreshToken);
-        return authenticationService.createAccessTokenResponse(this.payload, sessionId, payload.refreshToken);
-    }
-
-    private PrivateKey getPrivateKey() {
-        try {
-            return KeyUtils.readPrivateKey("privatekey-2.pem");
-        } catch (IOException | GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        }
+        return authenticationService.createAccessTokenResponse(payload.refreshToken);
     }
 
     @RolesAllowed({"VIEW_ALL"})
     @GET
     @Path("user")
     public Uni<Response> user() {
-        logger.info("SecurityPrincipal:"+securityIdentity.getClass().getName());
         Principal principal = securityIdentity.getPrincipal();
-        logger.info("Principal:"+principal.getClass().getName());
         return Uni.createFrom().item(Response.ok(principal).build());
     }
 
@@ -161,7 +135,10 @@ public class AuthenticationResource {
     @Path("user_get_data")
     @RolesAllowed({"GET_DATA", "manage-users"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> user1(@Context SecurityContext context) {
-        return Uni.createFrom().item(Response.ok(context.getUserPrincipal()).build());
+    public Uni<Response> user1(@Context ContainerRequestContext context) {
+        for (String key: context.getCookies().keySet()) {
+            log.debug("key:"+key+", value:"+context.getCookies().get(key));
+        }
+        return Uni.createFrom().item(Response.ok(context.getSecurityContext().getUserPrincipal()).build());
     }
 }

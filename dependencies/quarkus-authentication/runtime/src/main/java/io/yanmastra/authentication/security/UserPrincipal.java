@@ -76,7 +76,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         if (claimMaps.containsKey(permissions) && claimMaps.get(permissions) instanceof JsonArray arrPermissions) {
             try {
                 authorities.addAll(arrPermissions.stream().map(v -> {
-                    if (v instanceof JsonString jsonString) return jsonString.getString();
+                    if (v instanceof JsonString jsonString) return jsonString.getString().toLowerCase();
                     return null;
                 }).filter(Objects::nonNull).collect(Collectors.toSet()));
             } catch (Exception e) {
@@ -87,7 +87,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         if (claimMaps.containsKey("realm_access") && claimMaps.get("realm_access") instanceof JsonObject realmAccess && realmAccess.containsKey("roles")) {
             try {
                 authorities.addAll(realmAccess.getJsonArray("roles").stream().map(v -> {
-                    if (v instanceof JsonString sValue) return sValue.getString();
+                    if (v instanceof JsonString sValue) return sValue.getString().toLowerCase();
                     return null;
                 }).filter(Objects::nonNull).collect(Collectors.toSet()));
             } catch (Exception e) {
@@ -102,7 +102,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
                         if (resAccess.get(key) instanceof JsonObject roleAccChild && roleAccChild.containsKey("roles")) {
                             authorities.add(key);
                             authorities.addAll(roleAccChild.getJsonArray("roles").stream().map(v -> {
-                                if (v instanceof JsonString sValue) return sValue.getString();
+                                if (v instanceof JsonString sValue) return sValue.getString().toLowerCase();
                                 return null;
                             }).filter(Objects::nonNull).collect(Collectors.toSet()));
                         }
@@ -119,7 +119,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
     public Set<String> tenantAccess() {
         if (claims.hasClaim(tenantAccess) && claims.getClaimValue(tenantAccess) instanceof JsonArray tenantAccessValue) {
             return tenantAccessValue.stream().map(tenantCode -> {
-                if (tenantCode instanceof JsonString tenantCodeString) return tenantCodeString.getString();
+                if (tenantCode instanceof JsonString tenantCodeString) return tenantCodeString.getString().toLowerCase();
                 return null;
             }).filter(Objects::nonNull).collect(Collectors.toSet());
         }

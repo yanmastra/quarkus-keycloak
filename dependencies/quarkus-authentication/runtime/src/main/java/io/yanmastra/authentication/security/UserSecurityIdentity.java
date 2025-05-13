@@ -36,7 +36,8 @@ public class UserSecurityIdentity implements SecurityIdentity {
 
     @Override
     public boolean hasRole(String s) {
-        return principal.getAuthorities().contains(s);
+        if (StringUtils.isBlank(s)) return false;
+        return principal.getAuthorities().contains(s.toLowerCase());
     }
 
     @Override
