@@ -42,7 +42,6 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
 
     @Override
     public Response toResponse(Exception exception, ServerRequestContext context) {
-        logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage(), exception.getCause() == null ? exception : exception.getCause());
 
         String message = null;
         int status = 500;
@@ -52,6 +51,11 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                 (headers.containsKey(HttpHeaders.CONTENT_TYPE) && headers.getFirst(HttpHeaders.CONTENT_TYPE).equals(MediaType.APPLICATION_JSON)) ||
                 htmlErrorMappers.stream().findAny().isEmpty()
         ) {
+            if (requestContext.getUriInfo().getPath().startsWith("/assets")) {
+                logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage());
+            } else
+                logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage(), exception.getCause() == null ? exception : exception.getCause());
+
             switch (exception) {
                 case HttpException httpException -> {
                     message = httpException.getPayload();
@@ -85,7 +89,6 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         }
-
 
         try (Stream<HtmlErrorMapper> errorMapperStream = htmlErrorMappers.stream()) {
             Optional<HtmlErrorMapper> errorMapper = errorMapperStream.findFirst();

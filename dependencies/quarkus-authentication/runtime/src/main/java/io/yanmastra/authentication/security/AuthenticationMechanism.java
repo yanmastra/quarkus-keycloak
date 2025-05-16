@@ -30,7 +30,6 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext authContext, IdentityProviderManager identityProviderManager) {
         String token = getTokenFromCookie(authContext);
-//        log.debug("token from cookie: "+token);
 
         if (StringUtils.isBlank(token)) {
             token = getTokenFromHeader(authContext);

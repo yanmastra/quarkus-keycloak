@@ -40,9 +40,9 @@ public class CookieSessionUtils {
 
         if (cookies != null && cookies.containsKey(AUTH_IDENTIFIER)) {
             String setCookie = AUTH_IDENTIFIER + '=' +
-                    cookies.get(AUTH_IDENTIFIER) + "; Path=/; Max-Age=" + 10800+';';
+                    cookies.get(AUTH_IDENTIFIER) + ";Path=/;Max-Age=" + 10800+';';
 
-            context.response().putHeader(HttpHeaders.SET_COOKIE, setCookie);
+            context.response().putHeader(HttpHeaders.SET_COOKIE, setCookie.trim());
         }
     }
 
@@ -52,7 +52,7 @@ public class CookieSessionUtils {
 
         Map<String, String> authResponse = new HashMap<>();
         for (String cookie : rawCookie.split(";")) {
-            String[] cookieParts = cookie.split("=");
+            String[] cookieParts = cookie.trim().replace(" ", "").split("=", 2);
             if (cookieParts.length == 2) {
                 authResponse.put(cookieParts[0], cookieParts[1]);
             }
@@ -61,7 +61,9 @@ public class CookieSessionUtils {
     }
 
     public static String getSessionValue(String key) {
-        return KeyValueCacheUtils.findCache(COOKIE_SESSION, key);
+        String value = KeyValueCacheUtils.findCache(COOKIE_SESSION, key);
+        log.debug("Found session cookie: " + value);
+        return value;
     }
 
     public static void putSessionToCache(String key, String value) {

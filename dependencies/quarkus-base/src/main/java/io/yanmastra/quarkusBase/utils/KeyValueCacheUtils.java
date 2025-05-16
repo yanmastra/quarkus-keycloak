@@ -72,7 +72,7 @@ public class KeyValueCacheUtils {
         }
     }
 
-    public static synchronized String findCache(String cacheName, String key) {
+    public static String findCache(String cacheName, String key) {
         File file = getCacheFileName(cacheName);
 
         String sKey = JsonUtils.toJson(Map.of("key", key));

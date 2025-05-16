@@ -161,4 +161,14 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         }
         additionalClaims = Collections.unmodifiableMap(additionalClaimsMap);
     }
+
+    @Override
+    public String toString() {
+        return "UserPrincipal{" +
+                "authorities=" + authorities +
+                ", claims=" + claims +
+                ", credential=" + credential +
+                ", additionalClaims=" + additionalClaims +
+                '}';
+    }
 }
