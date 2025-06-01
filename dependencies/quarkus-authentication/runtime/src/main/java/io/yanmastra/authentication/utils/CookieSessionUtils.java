@@ -61,9 +61,7 @@ public class CookieSessionUtils {
     }
 
     public static String getSessionValue(String key) {
-        String value = KeyValueCacheUtils.findCache(COOKIE_SESSION, key);
-        log.debug("Found session cookie: " + value);
-        return value;
+        return KeyValueCacheUtils.findCache(COOKIE_SESSION, key);
     }
 
     public static void putSessionToCache(String key, String value) {

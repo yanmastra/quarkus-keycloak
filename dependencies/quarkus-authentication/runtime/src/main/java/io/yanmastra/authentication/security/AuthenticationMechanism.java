@@ -11,13 +11,16 @@ import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
+import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import io.yanmastra.authentication.utils.CookieSessionUtils;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class AuthenticationMechanism implements HttpAuthenticationMechanism {
@@ -27,8 +30,16 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
     @Inject
     Logger log;
 
+    @Inject
+    Instance<SecurityLifeCycleService> securityLifeCycleService;
+
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext authContext, IdentityProviderManager identityProviderManager) {
+        Optional<SecurityLifeCycleService> opsSecLifeCycleService = securityLifeCycleService.stream().findFirst();
+        if (opsSecLifeCycleService.isPresent() && opsSecLifeCycleService.get().isSkipAuthorisation(authContext.request().path())) {
+            return Uni.createFrom().nullItem();
+        }
+
         String token = getTokenFromCookie(authContext);
 
         if (StringUtils.isBlank(token)) {

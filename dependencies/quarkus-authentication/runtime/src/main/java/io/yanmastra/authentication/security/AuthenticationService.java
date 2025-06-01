@@ -7,7 +7,7 @@ import io.smallrye.jwt.build.JwtClaimsBuilder;
 import io.smallrye.jwt.util.KeyUtils;
 import io.vertx.ext.web.RoutingContext;
 import io.yanmastra.authentication.payload.UserTokenPayload;
-import io.yanmastra.authentication.service.UserService;
+import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import io.yanmastra.authentication.utils.CookieSessionUtils;
 import io.yanmastra.quarkusBase.utils.KeyValueCacheUtils;
 import jakarta.inject.Inject;
@@ -129,10 +129,10 @@ public class AuthenticationService {
             );
         }
 
-        try (InstanceHandle<UserService> reAuthenticateServiceInstanceHandle = Arc.container().instance(UserService.class)) {
+        try (InstanceHandle<SecurityLifeCycleService> reAuthenticateServiceInstanceHandle = Arc.container().instance(SecurityLifeCycleService.class)) {
             if (!reAuthenticateServiceInstanceHandle.isAvailable()) throw new IllegalArgumentException("Please implement User Service");
-            UserService userService = reAuthenticateServiceInstanceHandle.get();
-            payload = userService.getAccessTokenPayload(userId);
+            SecurityLifeCycleService securityLifeCycleService = reAuthenticateServiceInstanceHandle.get();
+            payload = securityLifeCycleService.onCreateAccessTokenPayload(userId);
             return createAccessToken(
                     payload,
                     expiration == 0 ?

@@ -1,7 +1,7 @@
 package io.yanmastra.authentication.it;
 
 import io.yanmastra.authentication.payload.UserTokenPayload;
-import io.yanmastra.authentication.service.UserService;
+import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.Map;
@@ -9,10 +9,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @ApplicationScoped
-public class MyUser implements UserService {
+public class MySecurityLifeCycle implements SecurityLifeCycleService {
 
     @Override
-    public UserTokenPayload getAccessTokenPayload(String userId) {
+    public UserTokenPayload onCreateAccessTokenPayload(String userId) {
         AuthenticationResource.MyUserTokenPayload payload = new AuthenticationResource.MyUserTokenPayload();
         payload.id = UUID.randomUUID().toString();
         payload.username = "yanmastra";
@@ -29,5 +29,15 @@ public class MyUser implements UserService {
                 "tenant_access", Set.of("mjl", "mrb", "mdn")
         );
         return payload;
+    }
+
+    @Override
+    public boolean isSkipAuthorisation(String path) {
+        return path.startsWith("/auth/test");
+    }
+
+    @Override
+    public boolean isSkipLogging(String path) {
+        return isSkipAuthorisation(path);
     }
 }

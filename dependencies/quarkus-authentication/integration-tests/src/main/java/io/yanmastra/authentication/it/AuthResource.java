@@ -18,7 +18,7 @@ public class AuthResource {
     @Inject
     SecurityIdentity identity;
 
-    @RolesAllowed("view_profile")
+//    @RolesAllowed("view_profile")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> index() {

@@ -22,7 +22,7 @@ import io.smallrye.mutiny.Uni;
 import io.yanmastra.authentication.payload.RefreshTokenPayload;
 import io.yanmastra.authentication.payload.UserTokenPayload;
 import io.yanmastra.authentication.security.AuthenticationService;
-import io.yanmastra.authentication.service.UserService;
+import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import io.yanmastra.authentication.utils.CookieSessionUtils;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -57,7 +57,7 @@ public class AuthenticationResource {
     @Inject
     AuthenticationService authenticationService;
     @Inject
-    UserService userService;
+    SecurityLifeCycleService securityLifeCycleService;
 
 
     public static class MyUserTokenPayload implements UserTokenPayload{
@@ -107,7 +107,7 @@ public class AuthenticationResource {
     public Response getToken() {
 
         String sessionId = UUID.randomUUID().toString();
-        payload = (MyUserTokenPayload) userService.getAccessTokenPayload(sessionId);
+        payload = (MyUserTokenPayload) securityLifeCycleService.onCreateAccessTokenPayload(sessionId);
 
         Map<String, Object> newAccess = authenticationService.createAccessToken(payload);
         NewCookie cookie = CookieSessionUtils.createSessionCookie(newAccess);

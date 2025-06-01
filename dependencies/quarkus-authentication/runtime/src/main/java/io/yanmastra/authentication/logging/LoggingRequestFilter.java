@@ -1,6 +1,7 @@
 package io.yanmastra.authentication.logging;
 
 import io.vertx.ext.web.RoutingContext;
+import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -10,11 +11,14 @@ import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -23,11 +27,12 @@ import java.util.stream.Stream;
 @Singleton
 public class LoggingRequestFilter implements ContainerResponseFilter {
 
+    private static final Log log = LogFactory.getLog(LoggingRequestFilter.class);
     @Inject
     Logger logger;
     @Inject RoutingContext routingContext;
     @Inject
-    Instance<RequestLoggingListener> requestLoggingListenerBeans;
+    Instance<SecurityLifeCycleService> securityLifeCycleServiceInstance;
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     private String getIP(ContainerRequestContext containerRequestContext) {
@@ -43,8 +48,8 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
         return containerRequestContext.getUriInfo().getRequestUri().getHost();
     }
 
-    private RequestLoggingListener getRequestLoggingListener() {
-        try (Stream<RequestLoggingListener> errorMapperStream = requestLoggingListenerBeans.stream()) {
+    private SecurityLifeCycleService getRequestLoggingListener() {
+        try (Stream<SecurityLifeCycleService> errorMapperStream = securityLifeCycleServiceInstance.stream()) {
             return errorMapperStream.findFirst().orElse(null);
         } catch (Exception e) {
             logger.warn(e.getMessage());
@@ -54,6 +59,11 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
+        Optional<SecurityLifeCycleService> opsSecLifeCycleService = securityLifeCycleServiceInstance.stream().findFirst();
+        if (opsSecLifeCycleService.isPresent() && opsSecLifeCycleService.get().isSkipLogging(routingContext.request().path())) {
+            return;
+        }
+
         RequestLogData data = new RequestLogData();
         data.timestamp = ZonedDateTime.now();
         data.method = containerRequestContext.getMethod();
@@ -72,7 +82,7 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
                 data.principalName + " <-- " + data.status +
                 ", Agent:" + data.userAgent);
 
-        RequestLoggingListener loggingListener = getRequestLoggingListener();
+        SecurityLifeCycleService loggingListener = getRequestLoggingListener();
         if (loggingListener != null) {
             executorService.submit(() -> loggingListener.onLogging(data));
         }

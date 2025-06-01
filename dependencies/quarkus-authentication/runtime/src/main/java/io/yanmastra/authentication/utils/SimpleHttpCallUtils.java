@@ -41,8 +41,10 @@ public class SimpleHttpCallUtils {
             connection.setRequestMethod(method.name());
             connection.setUseCaches(false);
 
-            for (String key : headers.keySet()) {
-                connection.setRequestProperty(key, headers.get(key));
+            if (headers != null) {
+                for (String key : headers.keySet()) {
+                    connection.setRequestProperty(key, headers.get(key));
+                }
             }
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
@@ -54,7 +56,6 @@ public class SimpleHttpCallUtils {
             }
 
             statusCode = connection.getResponseCode();
-
             if (statusCode == 200) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
                     StringBuilder respContent = new StringBuilder();
