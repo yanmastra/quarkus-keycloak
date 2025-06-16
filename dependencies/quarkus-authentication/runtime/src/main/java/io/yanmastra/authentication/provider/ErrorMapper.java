@@ -4,7 +4,6 @@ import io.quarkus.runtime.util.StringUtil;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
@@ -14,6 +13,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.spi.AsyncExceptionMapperContext;
 import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveAsyncExceptionMapper;
@@ -23,7 +23,7 @@ import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Singleton
+@Provider
 public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Exception>, ResteasyReactiveExceptionMapper<Exception> {
 
     @Inject

@@ -16,6 +16,9 @@ public abstract class ParamToQuery {
     @Inject
     Logger log;
 
+    private static final String REGEX_DECIMAL = "^-?\\d+(\\.\\d+)?$";
+    private static final String REGEX_INTEGER = "^-?\\d+$";
+
     @Deprecated
     public String getWhereClause(){
         throw new UnsupportedOperationException("Not supported yet.");
@@ -49,7 +52,7 @@ public abstract class ParamToQuery {
             return result;
         }
 
-        if (sValue.matches("^[0-9]*$")) {
+        if (sValue.length() <= 20 && sValue.matches(REGEX_INTEGER)) {
             try {
                 return Long.parseLong(sValue);
             } catch (Throwable e) {
@@ -60,6 +63,17 @@ public abstract class ParamToQuery {
                 return new BigDecimal(sValue);
             } catch (Throwable e) {
                 log.warn("Parse BigDecimal failed " + e.getMessage());
+            }
+        }
+
+        if (sValue.matches(REGEX_DECIMAL)) {
+            String[] splitDecimal = sValue.split("\\.");
+            if (splitDecimal.length == 2 && splitDecimal[0].length() <= 20) {
+                try {
+                    return new BigDecimal(sValue);
+                } catch (Throwable e) {
+                    log.warn("Parse BigDecimal failed " + e.getMessage());
+                }
             }
         }
         return sValue;

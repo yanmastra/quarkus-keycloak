@@ -3,7 +3,6 @@ package io.yanmastra.quarkus.microservices.common.utils;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.panache.common.Sort;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -16,7 +15,16 @@ import java.util.stream.Collectors;
 public class CrudQueryFilterUtils {
 
     private static final Logger log = Logger.getLogger(CrudQueryFilterUtils.class);
-    private static final Set<String> EXCLUDED_PARAMS = Set.of("page", "size", "sort", "count", "order", "index", "sum");
+    public static final String PAGE = "page";
+    public static final String SIZE = "size";
+    public static final String SORT = "sort";
+    public static final String COUNT = "count";
+    public static final String ORDER = "order";
+    public static final String INDEX = "index";
+    public static final String SUM = "sum";
+    public static final String KEYWORD = "keyword";
+    private static final Set<String> EXCLUDED_PARAMS = Set.of(PAGE, SIZE, SORT, COUNT, ORDER, INDEX, SUM);
+
 
     public static String getFilterQuery(ContainerRequestContext requestContext, Map<String, Object> queryParams, Set<String> searchableColumns) {
         return getFilterQuery(requestContext, queryParams, searchableColumns, "");
@@ -59,7 +67,7 @@ public class CrudQueryFilterUtils {
         String where = "where deletedAt is null";
         StringBuilder sbQuery = new StringBuilder(where);
         if (StringUtils.isNotBlank(keyword)) {
-            queryParams.put("keyword", "%"+keyword+"%");
+            queryParams.put(KEYWORD, "%"+keyword+"%");
             Set<String> searchKey = new HashSet<>();
             sbQuery.append(" and (");
             for (String column: searchableColumn) {
@@ -92,17 +100,21 @@ public class CrudQueryFilterUtils {
 
     public static String createFilterQuery(MultivaluedMap<String, String> requestParams, Map<String, Object> sqlParams, Set<String> searchableColumn, String alias) {
         requestParams = new MultivaluedHashMap<>(requestParams);
-        requestParams.remove("page");
-        requestParams.remove("size");
+        requestParams.remove(PAGE);
+        requestParams.remove(SIZE);
 
-        String keyword = "";
-        if (requestParams.containsKey("keyword"))
-            keyword = requestParams.remove("keyword").getFirst();
+        String keyword = null;
+        if (requestParams.containsKey(KEYWORD)) {
+            List<String> keywordValues = requestParams.remove(KEYWORD);
+            if (!keywordValues.isEmpty()) {
+                keyword = keywordValues.getFirst();
+            }
+        }
 
         String where = "where "+alias+"deletedAt is null";
         StringBuilder sbQuery = new StringBuilder(where);
         if (StringUtils.isNotBlank(keyword)) {
-            sqlParams.put("keyword", "%"+keyword.toLowerCase()+"%");
+            sqlParams.put(KEYWORD, "%"+keyword.toLowerCase()+"%");
             Set<String> searchKey = new HashSet<>();
             sbQuery.append(" and (");
             for (String column: searchableColumn) {
@@ -122,23 +134,31 @@ public class CrudQueryFilterUtils {
     }
 
     private static MultivaluedMap<String, String> fetchRequestParams(MultivaluedMap<String, String> requestParams) {
-        MultivaluedMap<String, String> newRequestParams = new MultivaluedHashMap<>();
+        return fetchRequestParams(requestParams, null);
+    }
+
+    private static MultivaluedMap<String, String> fetchRequestParams(MultivaluedMap<String, String> requestParams, String specificKey) {
+        MultivaluedMap<String, String> newRequestParams = new MultivaluedHashMap<>(requestParams);
         try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
             QueryParamParser parser = instanceHandle.orElse(null);
             if (parser != null) {
-                for (String key : requestParams.keySet()) {
-                    if (EXCLUDED_PARAMS.contains(key.toLowerCase())) {
-                        newRequestParams.put(key, requestParams.get(key));
-                        continue;
-                    }
-
-                    List<String> value = requestParams.get(key);
-                    log.debug("found key:" + key + ", value: " + value);
-
+                if (StringUtils.isNotBlank(specificKey) && requestParams.containsKey(specificKey)) {
+                    List<String> value = requestParams.get(specificKey);
                     List<String> parsed = parser.parse(value);
                     if (parsed != null) {
-                        log.debug("parsed key:" + key + ", value: " + parsed);
-                        newRequestParams.put(key, parsed);
+                        log.debug("parsed key:" + specificKey + ", value: " + parsed);
+                        newRequestParams.put(specificKey, parsed);
+                    }
+                } else {
+                    for (String key : requestParams.keySet()) {
+                        List<String> value = requestParams.get(key);
+                        log.debug("found key:" + key + ", value: " + value);
+
+                        List<String> parsed = parser.parse(value);
+                        if (parsed != null) {
+                            log.debug("parsed key:" + key + ", value: " + parsed);
+                            newRequestParams.put(key, parsed);
+                        }
                     }
                 }
             }
@@ -149,35 +169,24 @@ public class CrudQueryFilterUtils {
     }
 
     public static Sort fetchSort(MultivaluedMap<String, String> requestParams) {
+        requestParams = fetchRequestParams(requestParams, "sort");
+
         List<String> sortParams = requestParams.get("sort");
         if (sortParams != null && !sortParams.isEmpty()) {
             List<String> keys = new ArrayList<>();
             Map<String, String> sortMap = new HashMap<>();
 
-            try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
-                QueryParamParser parser = instanceHandle.orElse(null);
-                if (parser != null) {
-                    List<String> parsed = parser.parse(sortParams);
-                    if (parsed != null) {
-                        Iterator<String> iterator = parsed.iterator();
-                        String prevKey = null;
-                        while (iterator.hasNext()) {
-                            String key = iterator.next();
-                            if (StringUtils.isNotBlank (prevKey) && ("asc".equalsIgnoreCase(key) || "desc".equalsIgnoreCase(key))) {
-                                sortMap.put(prevKey, key.toLowerCase());
-                            } else {
-                                sortMap.put(key, "asc");
-                                keys.add(key);
-                            }
-                            prevKey = key;
-                        }
-                    } else {
-                        throw new Exception("Could not parse query param \"sort\": " + sortParams);
-                    }
+            Iterator<String> iterator = sortParams.iterator();
+            String prevKey = null;
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                if (StringUtils.isNotBlank (prevKey) && ("asc".equalsIgnoreCase(key) || "desc".equalsIgnoreCase(key))) {
+                    sortMap.put(prevKey, key.toLowerCase());
+                } else {
+                    sortMap.put(key, "asc");
+                    keys.add(key);
                 }
-            } catch (Exception e) {
-                log.warn(e.getMessage(), e);
-                throw new BadRequestException("Unable to get sort order parameters due to error: " + e.getMessage(), e);
+                prevKey = key;
             }
 
             if (!sortMap.isEmpty()) {

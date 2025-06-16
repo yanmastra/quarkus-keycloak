@@ -72,7 +72,15 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
 
     @Override
     public Uni<ChallengeData> getChallenge(RoutingContext context) {
-        return Uni.createFrom().item(new ChallengeData(HttpResponseStatus.UNAUTHORIZED.code(), null, null));
+        ChallengeData challengeData = null;
+
+        Optional<SecurityLifeCycleService> opsSecLifeCycleService = securityLifeCycleService.stream().findFirst();
+        if (opsSecLifeCycleService.isPresent()) {
+            challengeData = opsSecLifeCycleService.get().onUnauthorizedError(context.request().path(), context.request().headers());
+        } else {
+            challengeData = new ChallengeData(HttpResponseStatus.UNAUTHORIZED.code(), null, null);
+        }
+        return Uni.createFrom().item(challengeData);
     }
 
     @Override
