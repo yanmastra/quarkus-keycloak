@@ -115,7 +115,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         return authorities;
     }
 
-    @JsonProperty("tenant_access")
+    @JsonProperty(tenantAccess)
     public Set<String> tenantAccess() {
         if (claims.hasClaim(tenantAccess) && claims.getClaimValue(tenantAccess) instanceof JsonArray tenantAccessValue) {
             return tenantAccessValue.stream().map(tenantCode -> {

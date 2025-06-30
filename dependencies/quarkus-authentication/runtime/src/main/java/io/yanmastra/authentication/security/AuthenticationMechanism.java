@@ -51,7 +51,9 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
                 UserPrincipal principal = (UserPrincipal) jwtParser.parse(token);
                 CookieSessionUtils.repeatCookie(authContext);
                 TokenAuthenticationRequest request = new TokenAuthenticationRequest(principal.getCredential());
-                return identityProviderManager.authenticate(request);
+                return identityProviderManager.authenticate(request)
+                        .onFailure()
+                        .invoke(throwable -> log.error(throwable.getMessage(), throwable));
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }

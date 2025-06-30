@@ -138,7 +138,16 @@ public class CrudQueryFilterUtils {
     }
 
     private static MultivaluedMap<String, String> fetchRequestParams(MultivaluedMap<String, String> requestParams, String specificKey) {
-        MultivaluedMap<String, String> newRequestParams = new MultivaluedHashMap<>(requestParams);
+        MultivaluedMap<String, String> newRequestParams = new MultivaluedHashMap<>();
+        requestParams.keySet().forEach(key -> {
+            List<String> values = requestParams.get(key);
+            if (values != null && !values.isEmpty()) {
+                values = values.stream().filter(StringUtils::isNotBlank).toList();
+            }
+
+            if (values != null && !values.isEmpty()) newRequestParams.put(key, values);
+        });
+
         try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
             QueryParamParser parser = instanceHandle.orElse(null);
             if (parser != null) {

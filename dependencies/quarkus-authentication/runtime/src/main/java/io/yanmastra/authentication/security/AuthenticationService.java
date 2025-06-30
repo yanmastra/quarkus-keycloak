@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.yanmastra.authentication.security.Constant.*;
-import static io.yanmastra.authentication.security.UserPrincipal.permissions;
+import static io.yanmastra.authentication.security.UserPrincipal.*;
 
 @Singleton
 public class AuthenticationService {
@@ -204,6 +204,13 @@ public class AuthenticationService {
                 .issuer(issuer)
                 .claim(permissions, userTokenPayload.getPermission())
                 .expiresAt(expiredAt);
+
+        if (userTokenPayload.getTenantAccess() != null && !userTokenPayload.getTenantAccess().isEmpty()) {
+            jwtClaimsBuilder.claim(tenantAccess, userTokenPayload.getTenantAccess());
+            if (StringUtils.isNotBlank(userTokenPayload.getCurrentTenant())) {
+                jwtClaimsBuilder.claim(currentTenant, userTokenPayload.getCurrentTenant());
+            }
+        }
 
         if (userTokenPayload.getAttributes() != null && !userTokenPayload.getAttributes().isEmpty()) {
             for (String key : userTokenPayload.getAttributes().keySet()) {
