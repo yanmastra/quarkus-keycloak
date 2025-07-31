@@ -6,12 +6,12 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
+import io.yanmastra.authentication.logging.LoggingRequestFilter;
 import io.yanmastra.authentication.provider.ErrorMapper;
 import io.yanmastra.authentication.provider.RegisterCustomizeModule;
 import io.yanmastra.authentication.security.AuthenticationMechanism;
 import io.yanmastra.authentication.security.AuthenticationService;
 import io.yanmastra.authentication.security.BaseSecurityIdentityAugmentor;
-import io.yanmastra.authentication.logging.LoggingRequestFilter;
 
 class AuthenticationProcessor {
 

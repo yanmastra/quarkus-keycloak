@@ -34,6 +34,15 @@ public interface UserPrincipal extends Principal, Serializable {
     Set<String> tenantAccess();
 
     @JsonIgnore
+    default String getTimezone() {
+        return TimeZone.getDefault().getID();
+    }
+
+    default void setTimezone(String timezone){
+
+    }
+
+    @JsonIgnore
     String getSessionState();
 
     Object getAdditionalClaim(String key);

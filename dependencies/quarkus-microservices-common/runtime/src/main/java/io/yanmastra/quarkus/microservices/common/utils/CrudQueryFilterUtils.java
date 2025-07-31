@@ -51,6 +51,12 @@ public class CrudQueryFilterUtils {
         otherQueries = fetchRequestParams(otherQueries);
         Set<String> whereClauses = otherQueries.entrySet().stream()
                 .filter(stringListEntry -> !EXCLUDED_PARAMS.contains(stringListEntry.getKey().toLowerCase()))
+                .filter(stringListEntry -> {
+                    for (String param : stringListEntry.getValue()) {
+                        if (StringUtils.isBlank(param)) return false;
+                    }
+                    return true;
+                })
                 .map(entry -> {
                     ParamToQuery paramToQuery = ParamToQueryFactory.find(entry.getKey(), entry.getValue());
                     queryParams.putAll(paramToQuery.getFieldAndParams(entry.getKey(), entry.getValue(), alias));
@@ -145,7 +151,11 @@ public class CrudQueryFilterUtils {
                 values = values.stream().filter(StringUtils::isNotBlank).toList();
             }
 
-            if (values != null && !values.isEmpty()) newRequestParams.put(key, values);
+            if (values != null && !values.isEmpty()) {
+                if (ParamToQueryRange.KEY.equals(values.getFirst()) && values.size() != 3) return;
+
+                newRequestParams.put(key, values);
+            }
         });
 
         try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {

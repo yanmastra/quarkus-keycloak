@@ -30,9 +30,10 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
     private final JwtClaims claims;
     private final TokenCredential credential;
     private Map<String, Object> additionalClaims = null;
+    private String timezone;
 
     public UserPrincipal(JwtClaims claims, TokenCredential credential) {
-        super(credential.getType(), claims);
+        super(credential == null ? null : credential.getType(), claims);
         this.claims = claims;
         this.credential = credential;
     }
@@ -160,6 +161,16 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
             }
         }
         additionalClaims = Collections.unmodifiableMap(additionalClaimsMap);
+    }
+
+    @Override
+    public String getTimezone() {
+        return timezone;
+    }
+
+    @Override
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 
     @Override

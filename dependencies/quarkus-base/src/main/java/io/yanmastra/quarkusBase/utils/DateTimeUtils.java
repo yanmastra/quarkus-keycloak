@@ -18,7 +18,7 @@ public interface DateTimeUtils {
     String DATE_ONLY = "yyyy-MM-dd";
     DateTimeFormatter zonedDtf = DateTimeFormatter.ofPattern(ZONED_DATE_TIME_FORMAT);
     DateFormat displayableDateTime = new SimpleDateFormat("E, dd-MMM-yyyy HH:mm");
-    DateFormat displayableDate = new SimpleDateFormat("E, dd-MMM-yyyy");
+    SimpleDateFormat displayableDate = new SimpleDateFormat("E, dd-MMM-yyyy");
     DateFormat utcDateFormat =  new SimpleDateFormat(ZONED_DATE_TIME_FORMAT);
     DateTimeFormatter displayableDateTimeDtf = DateTimeFormatter.ofPattern("E, dd-MMM-yyyy HH:mm");
     DateTimeFormatter displayableDateDtf = DateTimeFormatter.ofPattern("E, dd-MMM-yyyy");
@@ -51,9 +51,29 @@ public interface DateTimeUtils {
         }
     }
 
+    static String displayDateTime(ZonedDateTime date, ZoneId zone) {
+        try {
+            return date.format(displayableDateTimeDtf.withZone(zone));
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return "Incorrect date";
+        }
+    }
+
     static String displayDateTime(ZonedDateTime date) {
         try {
             return date.format(displayableDateTimeDtf);
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return "Incorrect date";
+        }
+    }
+
+    static String displayDate(Date date, ZoneId zone) {
+        try {
+            DateFormat df = new SimpleDateFormat(displayableDate.toPattern());
+            df.setTimeZone(TimeZone.getTimeZone(zone));
+            return df.format(date);
         } catch (Exception e){
             logger.error(e.getMessage(), e);
             return "Incorrect date";
@@ -81,6 +101,15 @@ public interface DateTimeUtils {
     static String displayDate(ZonedDateTime date) {
         try {
             return date.format(displayableDateDtf);
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return "Incorrect date";
+        }
+    }
+
+    static String displayDate(ZonedDateTime date, ZoneId zoneId) {
+        try {
+            return date.format(displayableDateDtf.withZone(zoneId));
         } catch (Exception e){
             logger.error(e.getMessage(), e);
             return "Incorrect date";

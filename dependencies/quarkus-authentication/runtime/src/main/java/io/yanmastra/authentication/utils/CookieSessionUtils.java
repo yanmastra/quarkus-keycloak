@@ -18,6 +18,7 @@ import java.util.Map;
 public class CookieSessionUtils {
     public static final String AUTH_IDENTIFIER = "auth-identifier";
     private static final String COOKIE_SESSION = "cookie-session";
+    public static final String TIMEZONE = "timezone";
     private static final Logger log = Logger.getLogger(CookieSessionUtils.class);
 
     public static NewCookie createSessionCookie(Map<String, Object> authResponse) {

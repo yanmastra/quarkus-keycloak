@@ -22,7 +22,7 @@ public abstract class ParamToQuery {
     @Deprecated
     public String getWhereClause(){
         throw new UnsupportedOperationException("Not supported yet.");
-    };
+    }
 
     @Deprecated
     public void attachValue(Map<String, Object> hibernateQueryParams) {
