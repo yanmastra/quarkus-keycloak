@@ -8,6 +8,7 @@ import io.quarkus.panache.common.Sort;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import io.yanmastra.quarkus.microservices.common.v2.entities.BaseEntity;
+import io.yanmastra.quarkusBase.security.UserPrincipal;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -23,13 +24,21 @@ public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implemen
     Logger log;
 
     protected String getUserIdentity() {
+        UserPrincipal principal = getUserPrincipal();
+        if (principal != null) {
+            return principal.getName();
+        }
+        return null;
+    }
+
+    protected UserPrincipal getUserPrincipal() {
         try (InstanceHandle<SecurityIdentity> injectableBean = Arc.container().instance(SecurityIdentity.class)) {
             SecurityIdentity securityIdentity = injectableBean.orElse(null);
             if (securityIdentity == null) return null;
             if (securityIdentity.getPrincipal() == null) return null;
-            return securityIdentity.getPrincipal().getName();
+            return (securityIdentity.getPrincipal() instanceof UserPrincipal userPrincipal) ? userPrincipal : null;
         } catch (Exception e) {
-//            log.debug(e.getMessage());
+            log.error("Security Error: " + e.getMessage());
             return null;
         }
     }
