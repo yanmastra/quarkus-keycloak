@@ -1,7 +1,9 @@
 package io.yanmastra.quarkus.microservices.common.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class SelectionDto {
     @JsonProperty("id")
     public String id;

@@ -2,7 +2,9 @@ package io.yanmastra.quarkus.microservices.common.crud;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class MetaPagination {
     @JsonProperty("page")
     private Integer page = null;

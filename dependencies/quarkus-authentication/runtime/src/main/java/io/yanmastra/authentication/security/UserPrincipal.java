@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.credential.Credential;
 import io.quarkus.security.credential.TokenCredential;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIncludeProperties(value = {"id", "username", "name", "email", "profile_name", "current_tenant", "tenant_access", "authorities"})
 public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.security.UserPrincipal, Credential {

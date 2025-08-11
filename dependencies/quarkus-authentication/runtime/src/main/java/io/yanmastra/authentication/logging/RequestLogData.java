@@ -1,7 +1,10 @@
 package io.yanmastra.authentication.logging;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.time.ZonedDateTime;
 
+@RegisterForReflection
 public class RequestLogData {
     public String userAgent;
     public String method;
