@@ -17,7 +17,6 @@ import org.jboss.logging.Logger;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,14 +35,19 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     private String getIP(ContainerRequestContext containerRequestContext) {
+        String realIp = containerRequestContext.getHeaderString("X-Real-IP");
+        if (StringUtils.isNotBlank(realIp)) {
+            return realIp;
+        }
+
+        String forwardedFor = containerRequestContext.getHeaderString("X-Forwarded-For");
+        if (StringUtils.isNotBlank(forwardedFor)) {
+            return forwardedFor;
+        }
+
         String hostAddress = routingContext.request().remoteAddress().hostAddress();
         if (StringUtils.isNotBlank(hostAddress)) {
             return hostAddress;
-        }
-
-        List<String> forwardedFor = containerRequestContext.getHeaders().get("X-Forwarded-For");
-        if (forwardedFor != null && !forwardedFor.isEmpty()) {
-            return forwardedFor.getFirst().split(",")[0].trim();
         }
         return containerRequestContext.getUriInfo().getRequestUri().getHost();
     }
