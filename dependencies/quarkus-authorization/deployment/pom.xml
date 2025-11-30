@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.yanmastra</groupId>
         <artifactId>quarkus-authorization-parent</artifactId>
-        <version>3.0.0</version>
+        <version>4.0.0</version>
     </parent>
     <artifactId>quarkus-authorization-deployment</artifactId>
     <name>Authorization - Deployment</name>
@@ -24,10 +24,6 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5-internal</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive-jackson-deployment</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

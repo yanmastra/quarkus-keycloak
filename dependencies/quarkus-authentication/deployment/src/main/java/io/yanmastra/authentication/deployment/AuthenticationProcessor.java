@@ -3,7 +3,7 @@ package io.yanmastra.authentication.deployment;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
+import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 import io.yanmastra.authentication.logging.LoggingRequestFilter;
@@ -12,6 +12,7 @@ import io.yanmastra.authentication.provider.RegisterCustomizeModule;
 import io.yanmastra.authentication.security.AuthenticationMechanism;
 import io.yanmastra.authentication.security.AuthenticationService;
 import io.yanmastra.authentication.security.BaseSecurityIdentityAugmentor;
+import io.yanmastra.authentication.service.ThreadPoolExecutorService;
 
 class AuthenticationProcessor {
 
@@ -39,9 +40,11 @@ class AuthenticationProcessor {
     }
 
     @BuildStep
-    public ContainerResponseFilterBuildItem createLoggingRequestFilter() {
-        return new ContainerResponseFilterBuildItem.Builder(LoggingRequestFilter.class.getName())
-                .setRegisterAsBean(true)
+    public ContainerRequestFilterBuildItem createLoggingResponseFilter() {
+        return new ContainerRequestFilterBuildItem.Builder(LoggingRequestFilter.class.getName())
+                .setRegisterAsBean(false)
+                .setNonBlockingRequired(true)
+                .setPreMatching(false)
                 .setPriority(1)
                 .build();
     }
@@ -64,5 +67,10 @@ class AuthenticationProcessor {
     @BuildStep
     public AdditionalBeanBuildItem createAuthenticationServiceBean() {
         return new AdditionalBeanBuildItem(AuthenticationService.class);
+    }
+
+    @BuildStep
+    public AdditionalBeanBuildItem createThreadPoolExecutorBean() {
+        return AdditionalBeanBuildItem.unremovableOf(ThreadPoolExecutorService.class);
     }
 }

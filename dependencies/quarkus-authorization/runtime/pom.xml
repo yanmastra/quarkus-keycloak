@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authorization-parent</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
   </parent>
   <artifactId>quarkus-authorization</artifactId>
   <name>Authorization - Runtime</name>
@@ -25,11 +25,6 @@
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-base</artifactId>
       <version>1.0.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
     </dependency>
 
     <dependency>
