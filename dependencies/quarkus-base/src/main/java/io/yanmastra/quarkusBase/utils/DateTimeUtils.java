@@ -1,4 +1,4 @@
-package io.yanmastra.quarkusBase.quarkusBase.utils;
+package io.yanmastra.quarkusBase.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;

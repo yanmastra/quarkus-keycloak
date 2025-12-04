@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIncludeProperties(value = {"id", "username", "name", "email", "profile_name", "current_tenant", "tenant_access", "authorities"})
-public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.quarkusBase.security.UserPrincipal, Credential {
+public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.security.UserPrincipal, Credential {
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
     public static final String tenantAccess = "tenant_access";
     public static final String currentTenant = "current_tenant";

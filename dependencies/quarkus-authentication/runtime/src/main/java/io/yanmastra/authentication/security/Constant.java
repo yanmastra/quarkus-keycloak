@@ -8,4 +8,5 @@ public interface Constant {
     String PROP_MP_PUBLIC_KEY_LOCATION = "mp.jwt.verify.publickey.location";
     String PROP_SMALLRYE_JWT_ISSUER = "smallrye.jwt.new-token.issuer";
     String PROP_MP_JWT_VERIFY_CLOCK_SKEW = "mp.jwt.verify.clock.skew";
+    String PROP_COOKIE_TOKEN_ENABLED = "cookie.token.enabled";
 }

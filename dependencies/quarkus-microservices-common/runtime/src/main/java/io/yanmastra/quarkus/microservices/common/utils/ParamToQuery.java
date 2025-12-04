@@ -1,6 +1,6 @@
 package io.yanmastra.quarkus.microservices.common.utils;
 
-import io.yanmastra.quarkusBase.quarkusBase.utils.DateTimeUtils;
+import io.yanmastra.quarkusBase.utils.DateTimeUtils;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 import org.apache.commons.lang3.StringUtils;

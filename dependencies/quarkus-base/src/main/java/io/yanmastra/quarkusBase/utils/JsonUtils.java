@@ -1,4 +1,4 @@
-package io.yanmastra.quarkusBase.quarkusBase.utils;
+package io.yanmastra.quarkusBase.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package io.yanmastra.quarkusBase.quarkusBase.utils;
+package io.yanmastra.quarkusBase.utils;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;

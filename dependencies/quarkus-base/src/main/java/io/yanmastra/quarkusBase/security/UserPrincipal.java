@@ -1,4 +1,4 @@
-package io.yanmastra.quarkusBase.quarkusBase.security;
+package io.yanmastra.quarkusBase.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,6 +32,15 @@ public interface UserPrincipal extends Principal, Serializable {
 
     @JsonProperty("tenant_access")
     Set<String> tenantAccess();
+
+    @JsonIgnore
+    default String getTimezone() {
+        return TimeZone.getDefault().getID();
+    }
+
+    default void setTimezone(String timezone){
+
+    }
 
     @JsonIgnore
     String getSessionState();

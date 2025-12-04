@@ -1,6 +1,6 @@
 package io.yanmastra.authentication.it;
 
-import io.yanmastra.authentication.utils.DateTimeUtils;
+import io.yanmastra.quarkusBase.utils.DateTimeUtils;
 
 public class Main {
     public static void main(String[] args) {

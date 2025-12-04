@@ -2,8 +2,8 @@ package io.yanmastra.authentication.it;
 
 import io.yanmastra.authentication.logging.RequestLogData;
 import io.yanmastra.authentication.logging.RequestLoggingListener;
-import io.yanmastra.authentication.utils.JsonUtils;
-import io.yanmastra.authentication.utils.KeyValueCacheUtils;
+import io.yanmastra.quarkusBase.utils.JsonUtils;
+import io.yanmastra.quarkusBase.utils.KeyValueCacheUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;

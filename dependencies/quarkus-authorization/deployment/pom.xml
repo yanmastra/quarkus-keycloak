@@ -48,13 +48,6 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>io.yanmastra</groupId>
-            <artifactId>quarkus-base</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
     </dependencies>
     <build>
         <plugins>

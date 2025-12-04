@@ -3,65 +3,61 @@ package io.yanmastra.authentication.security;
 import io.quarkus.security.credential.Credential;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
-import org.apache.commons.lang3.StringUtils;
 
 import java.security.Permission;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
-public class UserSecurityIdentity implements SecurityIdentity {
-    private final SecurityIdentity securityIdentity;
-    private final UserPrincipal principal;
+public class UnauthorizedSecurityIdentity implements SecurityIdentity {
+    public static final UnauthorizedSecurityIdentity INSTANCE = new UnauthorizedSecurityIdentity();
 
-    public UserSecurityIdentity(SecurityIdentity securityIdentity, UserPrincipal principal) {
-        this.securityIdentity = securityIdentity;
-        this.principal = principal;
-    }
-
+    private Principal principal = null;
     @Override
     public Principal getPrincipal() {
+        if (principal != null) return principal;
+
+        principal = () -> "Unknown";
         return principal;
     }
 
     @Override
     public boolean isAnonymous() {
-        return StringUtils.isBlank(principal.getEmail());
+        return true;
     }
 
     @Override
     public Set<String> getRoles() {
-        return principal.getAuthorities();
+        return Set.of();
     }
 
     @Override
     public boolean hasRole(String s) {
-        if (StringUtils.isBlank(s)) return false;
-        return principal.getAuthorities().contains(s.toLowerCase());
+        return false;
     }
 
     @Override
     public <T extends Credential> T getCredential(Class<T> aClass) {
-        return securityIdentity.getCredential(aClass);
+        return null;
     }
 
     @Override
     public Set<Credential> getCredentials() {
-        return Set.of(principal.getCredential());
+        return Set.of();
     }
 
     @Override
     public <T> T getAttribute(String s) {
-        return securityIdentity.getAttribute(s);
+        return null;
     }
 
     @Override
     public Map<String, Object> getAttributes() {
-        return securityIdentity.getAttributes();
+        return Map.of();
     }
 
     @Override
     public Uni<Boolean> checkPermission(Permission permission) {
-        return securityIdentity.checkPermission(permission);
+        return Uni.createFrom().item(false);
     }
 }

@@ -1,4 +1,4 @@
-package io.yanmastra.quarkusBase.quarkusBase.utils;
+package io.yanmastra.quarkusBase.utils;
 
 import java.util.regex.Pattern;
 

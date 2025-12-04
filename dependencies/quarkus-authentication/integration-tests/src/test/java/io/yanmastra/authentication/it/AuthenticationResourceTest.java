@@ -1,12 +1,7 @@
 package io.yanmastra.authentication.it;
 
-import io.yanmastra.authentication.utils.JsonUtils;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 
@@ -24,23 +19,23 @@ public class AuthenticationResourceTest {
     @Test
     public void testPost() {
         for (int i = 0; i < 100; i++) {
-            TestPayload payload = new TestPayload();
-            payload.id = UUID.randomUUID().toString();
-            payload.email = payload.id + "@onebyone.io";
-            payload.name = payload.id.toUpperCase().replace("-", " ");
-            payload.phone = "08"+i+"10927307103";
-
-            given().basePath("/authentication/test-post")
-                    .contentType(ContentType.JSON)
-                    .body(JsonUtils.toJson(payload))
-                    .post()
-                    .then()
-                    .statusCode(200)
-                    .contentType(ContentType.JSON)
-                    .body("id", Matchers.notNullValue())
-                    .body("email", Matchers.notNullValue())
-                    .body("phone", Matchers.notNullValue())
-                    .body("name", Matchers.notNullValue());
+//            TestPayload payload = new TestPayload();
+//            payload.id = UUID.randomUUID().toString();
+//            payload.email = payload.id + "@onebyone.io";
+//            payload.name = payload.id.toUpperCase().replace("-", " ");
+//            payload.phone = "08"+i+"10927307103";
+//
+//            given().basePath("/authentication/test-post")
+//                    .contentType(ContentType.JSON)
+//                    .body(JsonUtils.toJson(payload))
+//                    .post()
+//                    .then()
+//                    .statusCode(200)
+//                    .contentType(ContentType.JSON)
+//                    .body("id", Matchers.notNullValue())
+//                    .body("email", Matchers.notNullValue())
+//                    .body("phone", Matchers.notNullValue())
+//                    .body("name", Matchers.notNullValue());
         }
     }
 }

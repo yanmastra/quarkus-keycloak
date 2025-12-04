@@ -1,7 +1,7 @@
 package io.yanmastra.authentication.utils;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.yanmastra.quarkusBase.quarkusBase.utils.JsonUtils;
+import io.yanmastra.quarkusBase.utils.JsonUtils;
 import io.quarkus.runtime.util.StringUtil;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.handler.HttpException;

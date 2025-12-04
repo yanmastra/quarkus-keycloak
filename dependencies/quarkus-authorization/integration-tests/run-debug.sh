@@ -1,7 +1,7 @@
 #!/bin/zsh
 DIR=$(pwd)
 cd ../../../docker || exit
-export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+export $(grep -v "^$" .env | grep -v "^#" | xargs)
 cd ..
 cd dependencies/quarkus-authentication || exit
 mvn clean install -DskipTests

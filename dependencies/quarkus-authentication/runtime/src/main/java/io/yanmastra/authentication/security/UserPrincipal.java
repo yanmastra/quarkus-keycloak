@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.quarkus.security.credential.Credential;
 import io.quarkus.security.credential.TokenCredential;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
@@ -18,9 +19,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RegisterForReflection
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIncludeProperties(value = {"id", "username", "name", "email", "profile_name", "current_tenant", "tenant_access", "authorities"})
-public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.quarkusBase.security.UserPrincipal, Credential {
+public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanmastra.quarkusBase.security.UserPrincipal, Credential {
     private static final Logger log = Logger.getLogger(UserPrincipal.class);
     public static final String tenantAccess = "tenant_access";
     public static final String currentTenant = "current_tenant";
@@ -30,9 +32,10 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
     private final JwtClaims claims;
     private final TokenCredential credential;
     private Map<String, Object> additionalClaims = null;
+    private String timezone;
 
     public UserPrincipal(JwtClaims claims, TokenCredential credential) {
-        super(credential.getType(), claims);
+        super(credential == null ? null : credential.getType(), claims);
         this.claims = claims;
         this.credential = credential;
     }
@@ -76,7 +79,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         if (claimMaps.containsKey(permissions) && claimMaps.get(permissions) instanceof JsonArray arrPermissions) {
             try {
                 authorities.addAll(arrPermissions.stream().map(v -> {
-                    if (v instanceof JsonString jsonString) return jsonString.getString();
+                    if (v instanceof JsonString jsonString) return jsonString.getString().toLowerCase();
                     return null;
                 }).filter(Objects::nonNull).collect(Collectors.toSet()));
             } catch (Exception e) {
@@ -87,7 +90,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         if (claimMaps.containsKey("realm_access") && claimMaps.get("realm_access") instanceof JsonObject realmAccess && realmAccess.containsKey("roles")) {
             try {
                 authorities.addAll(realmAccess.getJsonArray("roles").stream().map(v -> {
-                    if (v instanceof JsonString sValue) return sValue.getString();
+                    if (v instanceof JsonString sValue) return sValue.getString().toLowerCase();
                     return null;
                 }).filter(Objects::nonNull).collect(Collectors.toSet()));
             } catch (Exception e) {
@@ -102,7 +105,7 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
                         if (resAccess.get(key) instanceof JsonObject roleAccChild && roleAccChild.containsKey("roles")) {
                             authorities.add(key);
                             authorities.addAll(roleAccChild.getJsonArray("roles").stream().map(v -> {
-                                if (v instanceof JsonString sValue) return sValue.getString();
+                                if (v instanceof JsonString sValue) return sValue.getString().toLowerCase();
                                 return null;
                             }).filter(Objects::nonNull).collect(Collectors.toSet()));
                         }
@@ -115,11 +118,11 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
         return authorities;
     }
 
-    @JsonProperty("tenant_access")
+    @JsonProperty(tenantAccess)
     public Set<String> tenantAccess() {
         if (claims.hasClaim(tenantAccess) && claims.getClaimValue(tenantAccess) instanceof JsonArray tenantAccessValue) {
             return tenantAccessValue.stream().map(tenantCode -> {
-                if (tenantCode instanceof JsonString tenantCodeString) return tenantCodeString.getString();
+                if (tenantCode instanceof JsonString tenantCodeString) return tenantCodeString.getString().toLowerCase();
                 return null;
             }).filter(Objects::nonNull).collect(Collectors.toSet());
         }
@@ -160,5 +163,25 @@ public class UserPrincipal extends DefaultJWTCallerPrincipal implements io.yanma
             }
         }
         additionalClaims = Collections.unmodifiableMap(additionalClaimsMap);
+    }
+
+    @Override
+    public String getTimezone() {
+        return timezone;
+    }
+
+    @Override
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    @Override
+    public String toString() {
+        return "UserPrincipal{" +
+                "authorities=" + authorities +
+                ", claims=" + claims +
+                ", credential=" + credential +
+                ", additionalClaims=" + additionalClaims +
+                '}';
     }
 }

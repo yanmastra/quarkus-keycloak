@@ -4,7 +4,6 @@ import io.quarkus.runtime.util.StringUtil;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
@@ -14,6 +13,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.Provider;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.spi.AsyncExceptionMapperContext;
 import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveAsyncExceptionMapper;
@@ -23,7 +23,7 @@ import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Singleton
+@Provider
 public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Exception>, ResteasyReactiveExceptionMapper<Exception> {
 
     @Inject
@@ -42,7 +42,6 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
 
     @Override
     public Response toResponse(Exception exception, ServerRequestContext context) {
-        logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage(), exception.getCause() == null ? exception : exception.getCause());
 
         String message = null;
         int status = 500;
@@ -52,6 +51,11 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                 (headers.containsKey(HttpHeaders.CONTENT_TYPE) && headers.getFirst(HttpHeaders.CONTENT_TYPE).equals(MediaType.APPLICATION_JSON)) ||
                 htmlErrorMappers.stream().findAny().isEmpty()
         ) {
+            if (requestContext.getUriInfo().getPath().startsWith("/assets")) {
+                logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage());
+            } else
+                logger.error(requestContext.getUriInfo().getPath() + "::" + exception.getMessage(), exception.getCause() == null ? exception : exception.getCause());
+
             switch (exception) {
                 case HttpException httpException -> {
                     message = httpException.getPayload();
@@ -85,7 +89,6 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                     .type(MediaType.APPLICATION_JSON)
                     .build();
         }
-
 
         try (Stream<HtmlErrorMapper> errorMapperStream = htmlErrorMappers.stream()) {
             Optional<HtmlErrorMapper> errorMapper = errorMapperStream.findFirst();

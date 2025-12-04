@@ -20,17 +20,19 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 
 import java.security.PublicKey;
 
+import static io.yanmastra.authentication.security.Constant.*;
+
 @ApplicationScoped
 @Alternative
 @Priority(1)
 public final class UserJWTCallerPrincipalFactory extends DefaultJWTCallerPrincipalFactory {
-    @ConfigProperty(name = Constant.PROP_MP_PUBLIC_KEY_LOCATION, defaultValue = "-")
+    @ConfigProperty(name = PROP_MP_PUBLIC_KEY_LOCATION, defaultValue = "-")
     String publicKeyLocation;
-    @ConfigProperty(name = Constant.PROP_ALLOWED_JWT_ISSUER, defaultValue = "*")
+    @ConfigProperty(name = PROP_ALLOWED_JWT_ISSUER, defaultValue = "*")
     String allowedJwtIssuer;
-    @ConfigProperty(name = Constant.PROP_SECURITY_IS_ENCRYPT_ACCESS_TOKEN, defaultValue = "false")
+    @ConfigProperty(name = PROP_SECURITY_IS_ENCRYPT_ACCESS_TOKEN, defaultValue = "false")
     String securityIsEncryptAccessToken;
-    @ConfigProperty(name = Constant.PROP_SECURITY_TOKEN_ENCRYPTION_SECRET, defaultValue = "-")
+    @ConfigProperty(name = PROP_SECURITY_TOKEN_ENCRYPTION_SECRET, defaultValue = "-")
     String encryptSecretKey;
 
     public UserJWTCallerPrincipalFactory(){}
@@ -38,7 +40,7 @@ public final class UserJWTCallerPrincipalFactory extends DefaultJWTCallerPrincip
     private JwtConsumer jwtConsumer = null;
     private JwtConsumer getJwtConsumer() {
         if (jwtConsumer == null) {
-            if (StringUtils.isBlank(publicKeyLocation) || "-".equals(publicKeyLocation)) throw new RuntimeException("Missing required property " + Constant.PROP_MP_PUBLIC_KEY_LOCATION);
+            if (StringUtils.isBlank(publicKeyLocation) || "-".equals(publicKeyLocation)) throw new RuntimeException("Missing required property " + PROP_MP_PUBLIC_KEY_LOCATION);
             try {
                 PublicKey publicKey = KeyUtils.readPublicKey(publicKeyLocation);
                 JwtConsumerBuilder jcb = new JwtConsumerBuilder()
@@ -50,7 +52,7 @@ public final class UserJWTCallerPrincipalFactory extends DefaultJWTCallerPrincip
 
                 if (Boolean.parseBoolean(securityIsEncryptAccessToken)) {
                     if (StringUtils.isBlank(encryptSecretKey) || "-".equals(encryptSecretKey)) {
-                        throw new RuntimeException("Missing required property " + Constant.PROP_SECURITY_TOKEN_ENCRYPTION_SECRET);
+                        throw new RuntimeException("Missing required property " + PROP_SECURITY_TOKEN_ENCRYPTION_SECRET);
                     }
 
                     jcb = jcb.setDecryptionKey(KeyUtils.createSecretKeyFromSecret(encryptSecretKey));

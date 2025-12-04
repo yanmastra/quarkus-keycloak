@@ -1,14 +1,15 @@
 package io.yanmastra.authorization.deployment;
 
-import io.yanmastra.authorization.provider.ErrorMapper;
-import io.yanmastra.authorization.provider.RegisterCustomizeModule;
-import io.yanmastra.authorization.security.LoggingRequestFilter;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.yanmastra.authorization.security.UserSecurityIdentityAugmentor;
+import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
+import io.yanmastra.authorization.provider.ErrorMapper;
+import io.yanmastra.authorization.provider.RegisterCustomizeModule;
+import io.yanmastra.authorization.security.LoggingRequestFilter;
+import io.yanmastra.authorization.security.UserSecurityIdentityAugmentor;
 
 class AuthorizationProcessor {
 
@@ -18,7 +19,6 @@ class AuthorizationProcessor {
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
     }
-
 
     @BuildStep
     public ExceptionMapperBuildItem createErrorMapper() {

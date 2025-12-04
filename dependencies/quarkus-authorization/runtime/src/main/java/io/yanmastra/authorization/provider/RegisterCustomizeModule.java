@@ -1,7 +1,7 @@
 package io.yanmastra.authorization.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.yanmastra.quarkusBase.quarkusBase.utils.JsonUtils;
+import io.yanmastra.quarkusBase.utils.JsonUtils;
 import io.quarkus.jackson.ObjectMapperCustomizer;
 import jakarta.inject.Singleton;
 
