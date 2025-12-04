@@ -1,9 +1,9 @@
-package io.onebyone.microservices.mediaMailService;
+package io.yanmastra.microservices.mediaMailService;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.smallrye.mutiny.Uni;
-import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.ws.rs.GET;

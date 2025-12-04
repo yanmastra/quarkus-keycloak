@@ -1,4 +1,4 @@
-package io.onebyone.microservices.mediaMailService;
+package io.yanmastra.microservices.mediaMailService;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

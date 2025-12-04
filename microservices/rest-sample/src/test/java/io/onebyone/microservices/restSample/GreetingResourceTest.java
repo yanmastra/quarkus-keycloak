@@ -1,4 +1,4 @@
-package io.onebyone.microservices.restSample;
+package io.yanmastra.microservices.restSample;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;

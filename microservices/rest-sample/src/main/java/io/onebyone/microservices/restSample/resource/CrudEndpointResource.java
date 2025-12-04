@@ -1,4 +1,4 @@
-package io.onebyone.microservices.restSample.resource;
+package io.yanmastra.microservices.restSample.resource;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;

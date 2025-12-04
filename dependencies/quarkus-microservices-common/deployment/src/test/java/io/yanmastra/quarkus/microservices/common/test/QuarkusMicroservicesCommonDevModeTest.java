@@ -1,4 +1,4 @@
-package io.onebyone.quarkus.microservices.common.test;
+package io.yanmastra.quarkus.microservices.common.test;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;

@@ -1,12 +1,12 @@
-package io.onebyone.microservices.restSample.data.repository;
+package io.yanmastra.microservices.restSample.data.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.onebyone.microservices.restSample.data.entity.SampleChildEntity;
-import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
-import io.onebyone.microservices.restSample.data.entity.SampleParentEntity;
-import io.onebyone.microservices.restSample.dto.SampleParentSummaryDto;
-import io.onebyone.quarkus.microservices.common.crud.Paginate;
-import io.onebyone.quarkus.microservices.common.utils.CrudQueryFilterUtils;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleParentEntity;
+import io.yanmastra.microservices.restSample.dto.SampleParentSummaryDto;
+import io.yanmastra.quarkus.microservices.common.crud.Paginate;
+import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

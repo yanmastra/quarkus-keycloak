@@ -1,4 +1,4 @@
-package io.onebyone.microservices.restSample.dto;
+package io.yanmastra.microservices.restSample.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

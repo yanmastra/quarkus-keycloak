@@ -1,6 +1,6 @@
-package io.onebyone.microservices.mediaMailService;
+package io.yanmastra.microservices.mediaMailService;
 
-import io.onebyone.quarkus.microservices.common.entity.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

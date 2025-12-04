@@ -1,7 +1,7 @@
-package io.onebyone.microservices.restSample.data.repository;
+package io.yanmastra.microservices.restSample.data.repository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildOfChildEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped

@@ -1,6 +1,6 @@
-package io.onebyone.microservices.restSample.data.entity;
+package io.yanmastra.microservices.restSample.data.entity;
 
-import io.onebyone.quarkus.microservices.common.entity.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

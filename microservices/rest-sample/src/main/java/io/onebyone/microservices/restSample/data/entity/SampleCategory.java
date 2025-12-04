@@ -1,4 +1,4 @@
-package io.onebyone.microservices.restSample.data.entity;
+package io.yanmastra.microservices.restSample.data.entity;
 
 /**
  * This is sample of Enum to used as value type of column on Entity class,

@@ -1,10 +1,10 @@
-package io.onebyone.microservices.restSample.dto;
+package io.yanmastra.microservices.restSample.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.onebyone.microservices.restSample.data.entity.SampleChildEntity;
-import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildOfChildEntity;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;

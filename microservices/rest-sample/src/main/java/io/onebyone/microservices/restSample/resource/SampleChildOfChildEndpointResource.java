@@ -1,10 +1,10 @@
-package io.onebyone.microservices.restSample.resource;
+package io.yanmastra.microservices.restSample.resource;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.onebyone.microservices.restSample.data.entity.SampleChildOfChildEntity;
-import io.onebyone.microservices.restSample.dto.SampleChildOfChildEntityDto;
-import io.onebyone.microservices.restSample.data.repository.SampleChildOfChildEntityRepository;
-import io.onebyone.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.yanmastra.microservices.restSample.dto.SampleChildOfChildEntityDto;
+import io.yanmastra.microservices.restSample.data.repository.SampleChildOfChildEntityRepository;
+import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;

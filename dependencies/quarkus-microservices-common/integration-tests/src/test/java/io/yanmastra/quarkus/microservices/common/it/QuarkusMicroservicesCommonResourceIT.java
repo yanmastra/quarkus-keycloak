@@ -1,4 +1,4 @@
-package io.onebyone.quarkus.microservices.common.it;
+package io.yanmastra.quarkus.microservices.common.it;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
