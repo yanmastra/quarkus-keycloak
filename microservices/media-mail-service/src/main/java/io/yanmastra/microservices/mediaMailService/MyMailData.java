@@ -1,5 +1,6 @@
 package io.yanmastra.microservices.mediaMailService;
 
+import io.yanmastra.quarkus.microservices.common.dto.BaseDto;
 import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;
 
@@ -7,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mail_data")
-public class MyMailData extends BaseEntity {
+public class MyMailData extends BaseEntity implements BaseDto<BaseEntity> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

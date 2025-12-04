@@ -25,7 +25,7 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
 
-        <auth.version>2.0.0</auth.version>
+        <auth.version>3.0.0</auth.version>
         <commonClasses.version>2.0.3</commonClasses.version>
     </properties>
 
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>io.yanmastra</groupId>
             <artifactId>quarkus-microservices-common</artifactId>
-            <version>2.0.2</version>
+            <version>3.1.1</version>
         </dependency>
 
         <dependency>
