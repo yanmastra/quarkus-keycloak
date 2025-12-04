@@ -1,19 +1,19 @@
 package io.yanmastra.microservices.restSample;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.annotation.RunOnVirtualThread;
-import io.yanmastra.microservices.restSample.entity.SampleCategory;
-import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
-import io.yanmastra.microservices.restSample.entity.SampleChildOfChildEntity;
-import io.yanmastra.microservices.restSample.entity.SampleParentEntity;
-import io.yanmastra.microservices.restSample.json.SampleParentEntityJson;
-import io.yanmastra.microservices.restSample.json.SampleParentSummaryJson;
-import io.yanmastra.microservices.restSample.repo.SampleChildEntityRepository;
-import io.yanmastra.microservices.restSample.repo.SampleChildOfChildEntityRepository;
-import io.yanmastra.microservices.restSample.repo.SampleParentEntityRepository;
+import io.yanmastra.microservices.restSample.data.entity.SampleCategory;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleParentEntity;
+import io.yanmastra.microservices.restSample.data.repository.SampleChildEntityRepository;
+import io.yanmastra.microservices.restSample.data.repository.SampleChildOfChildEntityRepository;
+import io.yanmastra.microservices.restSample.data.repository.SampleParentEntityRepository;
+import io.yanmastra.microservices.restSample.dto.SampleParentEntityDto;
+import io.yanmastra.microservices.restSample.dto.SampleParentSummaryDto;
 import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
 import io.yanmastra.quarkus.microservices.common.crud.Paginate;
+import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 
 @Path("/api/v1/sample_entity")
 @SecurityRequirement(name = "Keycloak")
-public class SampleEntityEndpointResource extends CrudableEndpointResource<SampleParentEntity, SampleParentEntityJson> {
+public class SampleEntityEndpointResource extends CrudableEndpointResource<SampleParentEntity, SampleParentEntityDto> {
 
     @Inject
     SampleParentEntityRepository sampleEntityRepo;
@@ -49,22 +49,22 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
     Logger log;
 
     @Override
-    protected PanacheRepositoryBase<SampleParentEntity, String> getRepository() {
+    protected BaseRepository<SampleParentEntity, String> getRepository() {
         return sampleEntityRepo;
     }
 
     @Override
-    protected SampleParentEntityJson fromEntity(SampleParentEntity entity) {
-        return SampleParentEntityJson.fromEntity(entity);
+    protected SampleParentEntityDto fromEntity(SampleParentEntity entity) {
+        return SampleParentEntityDto.fromEntity(entity);
     }
 
     @Override
-    protected SampleParentEntity toEntity(SampleParentEntityJson sampleParentEntityJson) {
-        return sampleParentEntityJson.toEntity();
+    protected SampleParentEntity toEntity(SampleParentEntityDto sampleParentEntityDto) {
+        return sampleParentEntityDto.toEntity();
     }
 
     @Override
-    protected SampleParentEntity update(SampleParentEntity entity, SampleParentEntityJson json) {
+    protected SampleParentEntity update(SampleParentEntity entity, SampleParentEntityDto json) {
         entity.setName(json.name);
         entity.setCategory(json.category);
         entity.setPrice(json.price);
@@ -79,7 +79,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
     @GET
     @Path("summary")
     @RunOnVirtualThread
-    public Paginate<SampleParentSummaryJson> getSummary(
+    public Paginate<SampleParentSummaryDto> getSummary(
             @QueryParam("page") Integer page,
             @QueryParam("size") Integer size,
             @Context ContainerRequestContext requestContext

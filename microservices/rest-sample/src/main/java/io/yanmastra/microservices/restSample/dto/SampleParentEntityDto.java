@@ -1,14 +1,14 @@
-package io.yanmastra.microservices.restSample.json;
+package io.yanmastra.microservices.restSample.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.yanmastra.microservices.restSample.entity.SampleCategory;
-import io.yanmastra.microservices.restSample.entity.SampleParentEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleCategory;
+import io.yanmastra.microservices.restSample.data.entity.SampleParentEntity;
 
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleParentEntityJson {
+public class SampleParentEntityDto extends MyBaseDto<SampleParentEntity> {
     @JsonProperty("id")
     public String id;
     @JsonProperty("name")
@@ -18,11 +18,11 @@ public class SampleParentEntityJson {
     @JsonProperty("price")
     public BigDecimal price = BigDecimal.ZERO;
 
-    public SampleParentEntityJson() {
+    public SampleParentEntityDto() {
     }
 
-    public static SampleParentEntityJson fromEntity(SampleParentEntity entity) {
-        SampleParentEntityJson json = new SampleParentEntityJson();
+    public static SampleParentEntityDto fromEntity(SampleParentEntity entity) {
+        SampleParentEntityDto json = new SampleParentEntityDto();
         json.id = entity.getId();
         json.name = entity.getName();
         json.category = entity.getCategory();

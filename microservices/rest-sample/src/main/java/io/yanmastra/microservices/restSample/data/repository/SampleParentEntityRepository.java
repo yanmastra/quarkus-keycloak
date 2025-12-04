@@ -1,11 +1,11 @@
-package io.yanmastra.microservices.restSample.repo;
+package io.yanmastra.microservices.restSample.data.repository;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
-import io.yanmastra.microservices.restSample.entity.SampleChildOfChildEntity;
-import io.yanmastra.microservices.restSample.entity.SampleParentEntity;
-import io.yanmastra.microservices.restSample.json.SampleParentSummaryJson;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildOfChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleParentEntity;
+import io.yanmastra.microservices.restSample.dto.SampleParentSummaryDto;
 import io.yanmastra.quarkus.microservices.common.crud.Paginate;
+import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
 import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,20 +20,20 @@ import java.util.List;
 import java.util.Map;
 
 @ApplicationScoped
-public class SampleParentEntityRepository implements PanacheRepositoryBase<SampleParentEntity, String> {
+public class SampleParentEntityRepository extends BaseRepository<SampleParentEntity, String> {
 
     @Inject
     EntityManager entityManager;
     @Inject
     Logger log;
 
-    public Paginate<SampleParentSummaryJson> getParentSummary(Page page, MultivaluedMap<String, String> requestQueries) {
+    public Paginate<SampleParentSummaryDto> getParentSummary(Page page, MultivaluedMap<String, String> requestQueries) {
 
         Map<String, Object> sqlParams = new HashMap<>();
         String whereClause = CrudQueryFilterUtils.getQueryWhereClause(requestQueries, sqlParams, "P.");
         log.debug("whereClause:"+whereClause);
 
-        String sql = "select new "+SampleParentSummaryJson.class.getName()+"("+
+        String sql = "select new "+ SampleParentSummaryDto.class.getName()+"("+
                 "P.id, P.name, " +
                 "(select count(*) from "+ SampleChildEntity.class.getSimpleName() + " C where C.parent.id = P.id and C.deletedAt is null), " +
                 "(select count(*) from " + SampleChildOfChildEntity.class.getSimpleName() + " CC where CC.parent.parent.id = P.id and CC.deletedAt is null), " +
@@ -45,17 +45,17 @@ public class SampleParentEntityRepository implements PanacheRepositoryBase<Sampl
         long count = count("from " + SampleParentEntity.class.getSimpleName() + " P where " + whereClause, sqlParams);
 
         long first = Math.min(page.getFirstResult(), count);
-        Paginate<SampleParentSummaryJson> paginate = new Paginate<>();
+        Paginate<SampleParentSummaryDto> paginate = new Paginate<>();
         paginate.setTotalData(count);
         paginate.setCurrentPage(page.getNumber()+1);
         paginate.setSize(page.getSize());
 
-        TypedQuery<SampleParentSummaryJson> query = entityManager.createQuery(sql, SampleParentSummaryJson.class);
+        TypedQuery<SampleParentSummaryDto> query = entityManager.createQuery(sql, SampleParentSummaryDto.class);
         for (String key: sqlParams.keySet()) {
             query.setParameter(key, sqlParams.get(key));
         }
 
-        List<SampleParentSummaryJson> data = query.setMaxResults(page.getSize())
+        List<SampleParentSummaryDto> data = query.setMaxResults(page.getSize())
                 .setFirstResult((int) first)
                 .getResultList();
 
