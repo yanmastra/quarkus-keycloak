@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authorization-parent</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
   </parent>
   <artifactId>quarkus-authorization</artifactId>
   <name>Authorization - Runtime</name>
@@ -20,44 +20,36 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>io.yanmastra</groupId>
-      <artifactId>quarkus-base</artifactId>
-      <version>1.0.1</version>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-jackson</artifactId>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jsonb</artifactId>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-oidc</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.18.0</version>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-keycloak-authorization</artifactId>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
     <dependency>
       <groupId>io.yanmastra</groupId>
-      <artifactId>quarkus-authentication</artifactId>
-      <version>1.0.4</version>
+      <artifactId>quarkus-base</artifactId>
+      <version>1.0.3</version>
     </dependency>
-
   </dependencies>
   <build>
     <plugins>
@@ -88,6 +80,22 @@
             </path>
           </annotationProcessorPaths>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <failOnError>false</failOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>io.smallrye</groupId>

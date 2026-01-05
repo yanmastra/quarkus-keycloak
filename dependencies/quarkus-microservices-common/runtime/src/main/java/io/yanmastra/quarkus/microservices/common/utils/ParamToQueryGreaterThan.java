@@ -9,7 +9,7 @@ import java.util.Map;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = "greaterThan")
-public class ParamToQueryGreaterThan extends ParamToQuery {
+public final class ParamToQueryGreaterThan extends ParamToQuery {
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {

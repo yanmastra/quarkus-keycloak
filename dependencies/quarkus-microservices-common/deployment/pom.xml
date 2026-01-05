@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-microservices-common-parent</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
   </parent>
   <artifactId>quarkus-microservices-common-deployment</artifactId>
   <name>Quarkus Microservices Common - Deployment</name>
@@ -22,12 +22,12 @@
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
+      <artifactId>quarkus-jsonb-deployment</artifactId>
     </dependency>
 
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jsonb-deployment</artifactId>
+      <artifactId>quarkus-smallrye-openapi-deployment</artifactId>
     </dependency>
 
     <dependency>
@@ -35,13 +35,11 @@
       <artifactId>quarkus-microservices-common</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5-internal</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache-deployment</artifactId>

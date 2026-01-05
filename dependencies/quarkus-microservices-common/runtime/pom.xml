@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-microservices-common-parent</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
   </parent>
   <artifactId>quarkus-microservices-common</artifactId>
   <name>Quarkus Microservices Common - Runtime</name>
@@ -50,7 +50,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-base</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
 
     <dependency>

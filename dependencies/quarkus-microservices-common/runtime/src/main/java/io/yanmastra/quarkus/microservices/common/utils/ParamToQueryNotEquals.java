@@ -9,7 +9,7 @@ import java.util.Map;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = "notEquals")
-public class ParamToQueryNotEquals extends ParamToQuery{
+public final class ParamToQueryNotEquals extends ParamToQuery{
 
     @Override
     public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {

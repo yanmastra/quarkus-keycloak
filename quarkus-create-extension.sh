@@ -20,6 +20,6 @@ export ARTIFACT_ID=${2:-getting-started}
 
 cd ${DEPENDENCIES_DIR} || exit
 
-mvn io.quarkus.platform:quarkus-maven-plugin:${QUARKUS_VERSION:-2.16.3}:create-extension -N -DgroupId=${GROUP_ID:-io.onebyone} -DextensionId=${ARTIFACT_ID:-greeting-extension}
+mvn io.quarkus.platform:quarkus-maven-plugin:${QUARKUS_VERSION:-2.16.3}:create-extension -N -DgroupId=${GROUP_ID:-io.yanmastra} -DextensionId=${ARTIFACT_ID:-greeting-extension}
 echo "Extension create in ${PROJECT_DIR}/${ARTIFACT_ID}"
 cd $DIR

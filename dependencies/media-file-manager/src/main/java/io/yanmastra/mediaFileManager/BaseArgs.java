@@ -93,7 +93,7 @@ public abstract class BaseArgs {
             return Multimaps.unmodifiableMultimap(multimap);
         }
 
-        public <B extends >  extraHeaders(Multimap<String, String> headers) {
+        public Builder<B, A> extraHeaders(Multimap<String, String> headers) {
             Multimap<String, String> extraHeaders = this.copyMultimap(headers);
             this.operations.add((args) -> {
                 args.extraHeaders = extraHeaders;
@@ -101,7 +101,7 @@ public abstract class BaseArgs {
             return this;
         }
 
-        public B extraQueryParams(Multimap<String, String> queryParams) {
+        public Builder<B, A> extraQueryParams(Multimap<String, String> queryParams) {
             Multimap<String, String> extraQueryParams = this.copyMultimap(queryParams);
             this.operations.add((args) -> {
                 args.extraQueryParams = extraQueryParams;
@@ -109,7 +109,7 @@ public abstract class BaseArgs {
             return this;
         }
 
-        public B extraHeaders(Map<String, String> headers) {
+        public Builder<B, A> extraHeaders(Map<String, String> headers) {
             Multimap<String, String> extraHeaders = this.toMultimap(headers);
             this.operations.add((args) -> {
                 args.extraHeaders = extraHeaders;
@@ -117,7 +117,7 @@ public abstract class BaseArgs {
             return this;
         }
 
-        public B extraQueryParams(Map<String, String> queryParams) {
+        public Builder<B, A> extraQueryParams(Map<String, String> queryParams) {
             Multimap<String, String> extraQueryParams = this.toMultimap(queryParams);
             this.operations.add((args) -> {
                 args.extraQueryParams = extraQueryParams;

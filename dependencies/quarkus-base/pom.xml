@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-base</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>This is base of all dependencies from io.yanmastra</name>
 
     <properties>
@@ -13,6 +13,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.release>21</maven.compiler.release>
+        <quarkus.version>3.27.1</quarkus.version>
     </properties>
 
     <dependencies>
@@ -58,7 +59,12 @@
             <version>3.1</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-core</artifactId>
+            <version>${quarkus.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 
