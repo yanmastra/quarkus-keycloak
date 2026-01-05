@@ -1,4 +1,4 @@
-package io.yanmastra.microservices.restSample.entity;
+package io.yanmastra.microservices.restSample.data.entity;
 
 import io.yanmastra.quarkus.microservices.common.entity.BaseEntity;
 import jakarta.persistence.*;

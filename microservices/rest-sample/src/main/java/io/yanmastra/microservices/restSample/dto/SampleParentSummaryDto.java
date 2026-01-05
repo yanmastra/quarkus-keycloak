@@ -1,4 +1,4 @@
-package io.yanmastra.microservices.restSample.json;
+package io.yanmastra.microservices.restSample.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleParentSummaryJson {
+public class SampleParentSummaryDto extends MyBaseDto<SampleParentSummaryDto> {
     @JsonProperty("id")
     private String id;
     @JsonProperty("name")
@@ -18,10 +18,10 @@ public class SampleParentSummaryJson {
     @JsonProperty("child_of_child_total")
     private BigDecimal childOfChildTotal;
 
-    public SampleParentSummaryJson() {
+    public SampleParentSummaryDto() {
     }
 
-    public SampleParentSummaryJson(String id, String name, long childCount, long childOfChildCount, BigDecimal childOfChildTotal) {
+    public SampleParentSummaryDto(String id, String name, long childCount, long childOfChildCount, BigDecimal childOfChildTotal) {
         this.id = id;
         this.name = name;
         this.childCount = childCount;

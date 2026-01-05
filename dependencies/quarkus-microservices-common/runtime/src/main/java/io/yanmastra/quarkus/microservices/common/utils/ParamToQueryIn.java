@@ -11,7 +11,7 @@ import java.util.Set;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = "in")
-public class ParamToQueryIn extends ParamToQuery{
+public final class ParamToQueryIn extends ParamToQuery{
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {

@@ -21,7 +21,7 @@ public class AuthenticationResourceTest {
         for (int i = 0; i < 100; i++) {
 //            TestPayload payload = new TestPayload();
 //            payload.id = UUID.randomUUID().toString();
-//            payload.email = payload.id + "@onebyone.io";
+//            payload.email = payload.id + "@yanmastra.io";
 //            payload.name = payload.id.toUpperCase().replace("-", " ");
 //            payload.phone = "08"+i+"10927307103";
 //

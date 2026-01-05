@@ -1,11 +1,9 @@
 package io.yanmastra.quarkus.microservices.common.v2.entities;
 
-import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,19 +17,15 @@ import java.time.ZonedDateTime;
 @MappedSuperclass
 public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serializable {
     @CreationTimestamp(source = SourceType.DB)
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
     @Column(name = "created_by", length = 32)
     private String createdBy;
     @UpdateTimestamp(source = SourceType.DB)
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
     @Column(name = "updated_by", length = 32)
     private String updatedBy;
-
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "deleted_at")
     private ZonedDateTime deletedAt;
     @Column(name = "deleted_by", length = 32)

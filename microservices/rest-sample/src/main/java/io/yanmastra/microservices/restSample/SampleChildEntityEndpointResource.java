@@ -1,43 +1,43 @@
 package io.yanmastra.microservices.restSample;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
-import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
-import io.yanmastra.microservices.restSample.json.SampleChildEntityJson;
-import io.yanmastra.microservices.restSample.repo.SampleChildEntityRepository;
-import io.yanmastra.microservices.restSample.repo.SampleParentEntityRepository;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildEntity;
+import io.yanmastra.microservices.restSample.data.repository.SampleChildEntityRepository;
+import io.yanmastra.microservices.restSample.data.repository.SampleParentEntityRepository;
+import io.yanmastra.microservices.restSample.dto.SampleChildEntityDto;
 import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 @Path("/api/v1/sample_child_entity")
 @SecurityRequirement(name = "Keycloak")
-public class SampleChildEntityEndpointResource extends CrudableEndpointResource<SampleChildEntity, SampleChildEntityJson> {
+public class SampleChildEntityEndpointResource extends CrudableEndpointResource<SampleChildEntity, SampleChildEntityDto> {
     @Inject
     SampleChildEntityRepository repository;
     @Inject
     SampleParentEntityRepository parentRepository;
 
     @Override
-    protected PanacheRepositoryBase<SampleChildEntity, String> getRepository() {
+    protected BaseRepository<SampleChildEntity, String> getRepository() {
         return repository;
     }
 
     @Override
-    protected SampleChildEntityJson fromEntity(SampleChildEntity entity) {
-        return SampleChildEntityJson.fromEntity(entity);
+    protected SampleChildEntityDto fromEntity(SampleChildEntity entity) {
+        return SampleChildEntityDto.fromEntity(entity);
     }
 
     @Override
-    protected SampleChildEntity toEntity(SampleChildEntityJson sampleChildEntityJson) {
-        return sampleChildEntityJson.toEntity();
+    protected SampleChildEntity toEntity(SampleChildEntityDto sampleChildEntityDto) {
+        return sampleChildEntityDto.toEntity();
     }
 
     @Override
-    protected SampleChildEntity update(SampleChildEntity entity, SampleChildEntityJson sampleChildEntityJson) {
-        entity.setName(sampleChildEntityJson.getName());
-        entity.setDescription(sampleChildEntityJson.getDescription());
-        entity.setParent(parentRepository.findById(sampleChildEntityJson.getParentId()));
+    protected SampleChildEntity update(SampleChildEntity entity, SampleChildEntityDto sampleChildEntityDto) {
+        entity.setName(sampleChildEntityDto.getName());
+        entity.setDescription(sampleChildEntityDto.getDescription());
+        entity.setParent(parentRepository.findById(sampleChildEntityDto.getParentId()));
         return entity;
     }
 }

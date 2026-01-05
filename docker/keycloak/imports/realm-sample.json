@@ -597,8 +597,8 @@
     },
     {
       "id": "4d9494cd-ab85-426e-ab24-315325c7a93f",
-      "username": "service@onebyone.io",
-      "email": "service@onebyone.io",
+      "username": "service@yanmastra.io",
+      "email": "service@yanmastra.io",
       "emailVerified": true,
       "firstName": "Service",
       "lastName": "Account",
@@ -1732,12 +1732,12 @@
     "auth": "true",
     "port": "587",
     "host": "smtp.gmail.com",
-    "replyTo": "onebyone59@gmail.com",
+    "replyTo": "yanmastra59@gmail.com",
     "from": "system@smplProject.com",
     "fromDisplayName": "smplProject",
     "envelopeFrom": "",
     "ssl": "false",
-    "user": "onebyone59@gmail.com"
+    "user": "yanmastra59@gmail.com"
   },
   "eventsEnabled": false,
   "eventsListeners": [

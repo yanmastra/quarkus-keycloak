@@ -1,8 +1,8 @@
 package io.yanmastra.authorization.security;
 
 import io.vertx.ext.web.RoutingContext;
-import io.yanmastra.authentication.logging.RequestLogData;
 import io.yanmastra.authorization.logging.RequestLoggingListener;
+import io.yanmastra.quarkusBase.RequestLogData;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;

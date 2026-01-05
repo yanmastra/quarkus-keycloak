@@ -1,13 +1,13 @@
-package io.yanmastra.microservices.restSample.json;
+package io.yanmastra.microservices.restSample.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.yanmastra.microservices.restSample.entity.SampleChildEntity;
-import io.yanmastra.microservices.restSample.entity.SampleParentEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleChildEntity;
+import io.yanmastra.microservices.restSample.data.entity.SampleParentEntity;
 import org.apache.commons.lang3.StringUtils;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SampleChildEntityJson {
+public class SampleChildEntityDto extends MyBaseDto<SampleChildEntity> {
     @JsonProperty("id")
     private String id;
     @JsonProperty("name")
@@ -21,11 +21,11 @@ public class SampleChildEntityJson {
     @JsonProperty("parent_name")
     private String parentName;
 
-    public SampleChildEntityJson() {
+    public SampleChildEntityDto() {
     }
 
-    public static SampleChildEntityJson fromEntity(SampleChildEntity entity) {
-        SampleChildEntityJson json = new SampleChildEntityJson();
+    public static SampleChildEntityDto fromEntity(SampleChildEntity entity) {
+        SampleChildEntityDto json = new SampleChildEntityDto();
         json.setId(entity.getId());
         json.setName(entity.getName());
         json.setDescription(entity.getDescription());

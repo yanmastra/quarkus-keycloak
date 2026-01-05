@@ -6,7 +6,7 @@
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-project-creator</artifactId>
     <version>1.0.1</version>
-    <name>This is base of all dependencies from io.onebyone</name>
+    <name>This is base of all dependencies from io.yanmastra</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

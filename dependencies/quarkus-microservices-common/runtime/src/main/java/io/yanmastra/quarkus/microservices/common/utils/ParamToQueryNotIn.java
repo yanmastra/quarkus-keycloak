@@ -11,7 +11,7 @@ import java.util.Set;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = "notIn")
-public class ParamToQueryNotIn extends ParamToQuery{
+public final class ParamToQueryNotIn extends ParamToQuery{
 
     @Override
     public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {

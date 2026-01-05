@@ -1,4 +1,5 @@
-export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+#export $(grep -v "^$" .env | grep -v "^#" | xargs)
+source .env
 
 DB=$1
 echo "adding new database: $DB"

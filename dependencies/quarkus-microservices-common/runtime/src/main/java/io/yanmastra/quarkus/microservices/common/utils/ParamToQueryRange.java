@@ -12,7 +12,7 @@ import java.util.Map;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = ParamToQueryRange.KEY)
-public class ParamToQueryRange extends ParamToQuery{
+public final class ParamToQueryRange extends ParamToQuery{
     public static final String KEY = "range";
 
     @Inject
