@@ -25,7 +25,3 @@ To follow this guide, you need:
 
 > :warning: Recommended to use ``sdkman`` to install OpenJDK or GraalVM on your device
 > <br/> [See this to install ``SDKMAN`` ](https://sdkman.io/install) 
-
-<hr/>
-
-> :smiley: this repo is forked from [github.com:yanmastra/quarkus-keycloak](https://github.com/yanmastra/quarkus-keycloak)
