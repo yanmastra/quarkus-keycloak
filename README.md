@@ -8,12 +8,13 @@ If you are interested, let's see a couple of documentation below.
 ## Table of contents
 - [Introduction](/docs/intro.md)
 - [Prerequisites](#prerequisites)
-- [How to set up?](/docs/how-to-setup.md)
-- [How to Create a Project ?](/docs/how-to-create-project.md)
-- [How to run a service ?](/docs/how-to-run-a-services.md)
-- [Postman Collection file](/docs/postman/)
-- [Architecture Study Case](/docs/architecture-study-case.md)
-- [Performance Test](/docs/peformance-test)
+- [How to use dependencies?](/docs/how-to-use-dependencies.md)
+- [How to set up for dependency development?](/docs/how-to-setup.md)
+- [~~How to Create a Project ?~~](/docs/how-to-create-project.md)
+- [~~How to run a service ?~~](/docs/how-to-run-a-services.md)
+- [~~Postman Collection file~~](/docs/postman/)
+- [~~Architecture Study Case~~](/docs/architecture-study-case.md)
+- [~~Performance Test~~](/docs/peformance-test)
 
 <hr/>
 

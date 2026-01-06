@@ -1,4 +1,5 @@
-## How to setup for local environment?
+If you want involved to develop the dependencies, you need to set up the project on your PC/Laptop
+## How to se tup for dependency development in local environment?
 Please follow these steps to run this project correctly
 - [1. Create a project directory in your PC](#1-create-a-project-directory-in-your-pc)
 - [2. Clone the Project](#2-clone-the-project)
@@ -10,7 +11,8 @@ Please follow these steps to run this project correctly
 - [8. Setup Keycloak](#8-setup-keycloak)
 
 ### 1. Create a project directory in your PC
-This directory is to put all our projects that use dependencies from this repository.
+~~This directory is to put all our projects that use dependencies from this repository.~~
+This directory is to put all our projects, just to make them tidy
 
 ### 2. Clone the project
 Enter to your new directory, and clone this repository. There is no special way to clone this project other than 
@@ -56,7 +58,7 @@ We need to set up our localhost or our Local Machine to make a DNS running on ou
 > Coming soon
 
 ### 3. Environment Variables Setup
-1. Please copy ``docker_env.env.example`` to ``docker_env.env``
+1. Please copy ``.env.example`` to ``.env``
 2. Fill in these variable first
     - ``SERVER_HOST`` is the domain name that you have added before to ``/etc/hosts``
     - ``KEYCLOAK_HOST`` is your domain name with prefix ``keycoak.``

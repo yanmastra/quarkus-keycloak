@@ -44,6 +44,8 @@ public abstract class ParamToQuery {
         if ("true".equalsIgnoreCase(sValue)) return true;
         if ("false".equalsIgnoreCase(sValue)) return false;
 
+        Zone
+
         if (DateTimeUtils.isDate(sValue)) {
             Date result = DateTimeUtils.fromDateOnly(sValue);
             if (result == null) {
