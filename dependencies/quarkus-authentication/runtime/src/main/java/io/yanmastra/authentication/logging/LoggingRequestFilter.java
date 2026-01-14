@@ -4,22 +4,18 @@ import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.container.PreMatching;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@PreMatching
-public class LoggingRequestFilter implements ContainerRequestFilter {
+public class LoggingRequestFilter implements ContainerResponseFilter {
     private static final Logger log = Logger.getLogger(LoggingRequestFilter.class);
     private static final ExecutorService virtualExecService = Executors.newVirtualThreadPerTaskExecutor();
 
@@ -51,7 +47,7 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
     }
 
     @Override
-    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+    public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
         SecurityLifeCycleService requestLoggingListener = getRequestLoggingListener();
         if (requestLoggingListener != null && requestLoggingListener.isSkipLogging(containerRequestContext.getUriInfo().getPath())) {
             return;
@@ -62,8 +58,8 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
         data.method = containerRequestContext.getMethod();
         data.ipAddress = getIP(containerRequestContext);
         data.uri = containerRequestContext.getUriInfo().getPath();
-//        data.status = containerResponseContext.getStatus();
         data.userAgent = containerRequestContext.getHeaderString(HttpHeaders.USER_AGENT);
+        data.status = containerResponseContext.getStatus();
 
         if (containerRequestContext.getSecurityContext().getUserPrincipal() != null) {
             data.principalName = containerRequestContext.getSecurityContext().getUserPrincipal().getName();
@@ -74,19 +70,6 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
         log.info(data.ipAddress + "--> " + data.method + " " + data.uri + ", by:" +
                 data.principalName + " <-- " + data.status +
                 ", Agent:" + data.userAgent);
-
-        if (MediaType.APPLICATION_JSON_TYPE.isCompatible(containerRequestContext.getMediaType()) ||
-                MediaType.TEXT_PLAIN_TYPE.isCompatible(containerRequestContext.getMediaType()) ||
-                MediaType.APPLICATION_FORM_URLENCODED_TYPE.isCompatible(containerRequestContext.getMediaType())) {
-            try {
-                String body = new String(containerRequestContext.getEntityStream().readAllBytes(), StandardCharsets.UTF_8);
-                containerRequestContext.setEntityStream(new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)));
-                data.requestPayload = body;
-                log.info("body: " + body);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        }
 
         SecurityLifeCycleService loggingListener = getRequestLoggingListener();
         if (loggingListener != null) {

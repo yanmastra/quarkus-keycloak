@@ -48,7 +48,6 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
         }
 
         String token = getTokenFromCookie(authContext);
-
         if (StringUtils.isBlank(token)) {
             token = getTokenFromHeader(authContext);
         }

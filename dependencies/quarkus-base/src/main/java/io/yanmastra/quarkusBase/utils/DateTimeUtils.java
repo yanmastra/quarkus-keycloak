@@ -24,6 +24,7 @@ public interface DateTimeUtils {
     DateTimeFormatter displayableDateDtf = DateTimeFormatter.ofPattern("E, dd-MMM-yyyy");
     DateTimeFormatter utcDateDtf = DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC"));
     DateFormat sysDateOnly = new SimpleDateFormat(DATE_ONLY);
+    DateTimeFormatter sysDateDtf = DateTimeFormatter.ofPattern(DATE_ONLY);
     Logger logger = Logger.getLogger(DateTimeUtils.class);
     String IS_DATE = "\\d{4}-\\d{2}-\\d{2}"; //"^(19|20)\\d\\d-(0[1-9]|1[012])-([012]\\d|3[01])";
     String IS_DATE_TIME = "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z)$";
@@ -191,5 +192,41 @@ public interface DateTimeUtils {
     static boolean isDate(String date) {
         if (StringUtils.isBlank(date)) return false;
         return date.matches(IS_DATE);
+    }
+
+    static LocalDate fromUtcToLocalDate(String date) {
+        try {
+            return LocalDate.parse(date, utcDateDtf.withZone(ZoneId.systemDefault()));
+        } catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+    static LocalDate toLocalDate(String date) {
+        LocalDate localDate;
+        try {
+            localDate = LocalDate.parse(date, sysDateDtf.withZone(ZoneId.systemDefault()));
+            return localDate;
+        } catch (Throwable e) {
+            logger.warn(e.getMessage(), e);
+        }
+
+        try {
+            localDate = LocalDate.parse(date, utcDateDtf.withZone(ZoneId.systemDefault()));
+            return localDate;
+        } catch (Throwable e){
+            logger.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    static String toDateOnly(LocalDate localDate) {
+        try {
+            return sysDateDtf.format(localDate);
+        } catch (Throwable e) {
+            logger.error(e.getMessage(), e);
+            return null;
+        }
     }
 }

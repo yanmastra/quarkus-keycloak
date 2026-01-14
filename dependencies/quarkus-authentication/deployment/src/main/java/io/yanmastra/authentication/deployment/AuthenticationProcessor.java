@@ -1,9 +1,11 @@
 package io.yanmastra.authentication.deployment;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
+import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
 import io.yanmastra.authentication.logging.LoggingRequestFilter;
@@ -13,6 +15,8 @@ import io.yanmastra.authentication.security.AuthenticationMechanism;
 import io.yanmastra.authentication.security.AuthenticationService;
 import io.yanmastra.authentication.security.BaseSecurityIdentityAugmentor;
 import io.yanmastra.authentication.service.ThreadPoolExecutorService;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
 
 class AuthenticationProcessor {
 
@@ -31,27 +35,34 @@ class AuthenticationProcessor {
                 .build();
     }
 
-    @BuildStep
-    public AdditionalBeanBuildItem createAuthMechanismAnnotation() {
-        return new AdditionalBeanBuildItem.Builder()
-                .addBeanClass(AuthenticationMechanism.class)
-                .setUnremovable()
-                .build();
+    private boolean isProvided(CombinedIndexBuildItem combinedIndexBuildItem, Class<?> clazz) {
+        IndexView indexView = combinedIndexBuildItem.getIndex();
+        DotName serviceName = DotName.createSimple(clazz);
+        return !indexView.getAllKnownSubclasses(serviceName).isEmpty()
+                || !indexView.getAllKnownImplementors(serviceName).isEmpty();
     }
 
     @BuildStep
-    public ContainerRequestFilterBuildItem createLoggingResponseFilter() {
-        return new ContainerRequestFilterBuildItem.Builder(LoggingRequestFilter.class.getName())
+    public void createAuthMechanismAnnotation(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
+        boolean isNotProvided = !isProvided(combinedIndexBuildItem, AuthenticationMechanism.class);
+        if (isNotProvided) {
+            beans.produce(AdditionalBeanBuildItem.builder().addBeanClass(AuthenticationMechanism.class).setUnremovable().build());
+        }
+    }
+
+    @BuildStep
+    public ContainerResponseFilterBuildItem createLoggingResponseFilter() {
+        return new ContainerResponseFilterBuildItem.Builder(LoggingRequestFilter.class.getName())
                 .setRegisterAsBean(false)
-                .setNonBlockingRequired(true)
-                .setPreMatching(false)
                 .setPriority(1)
                 .build();
     }
 
     @BuildStep
-    public AdditionalBeanBuildItem createUserPrincipalBean() {
-        return new AdditionalBeanBuildItem(BaseSecurityIdentityAugmentor.class);
+    public void provideSecurityIdentityAugmentor(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
+        if (!isProvided(combinedIndexBuildItem, BaseSecurityIdentityAugmentor.class)) {
+            beans.produce(AdditionalBeanBuildItem.builder().addBeanClass(BaseSecurityIdentityAugmentor.class).setUnremovable().build());
+        }
     }
 
     @BuildStep
