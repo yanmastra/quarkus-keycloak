@@ -1,25 +1,28 @@
 package io.yanmastra.quarkus.microservices.common.it;
 
+import io.quarkus.panache.common.Sort;
+import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.yanmastra.quarkus.microservices.common.crud.Paginate;
 import io.yanmastra.quarkus.microservices.common.it.entity.SampleChildEntity;
 import io.yanmastra.quarkus.microservices.common.it.entity.SampleEntity;
 import io.yanmastra.quarkus.microservices.common.it.json.SampleChildEntityJson;
 import io.yanmastra.quarkus.microservices.common.it.repo.SampleChildEntityRepo;
 import io.yanmastra.quarkus.microservices.common.it.repo.SampleEntityRepository;
 import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
-import io.quarkus.panache.common.Sort;
-import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Path("/api/v1/sampleChildEntity")
+@Path("/api/v1/sample-child-entity")
 public class SampleChildEntityResource extends CrudableEndpointResource<SampleChildEntity, SampleChildEntityJson> {
 
     @Inject
@@ -47,7 +50,6 @@ public class SampleChildEntityResource extends CrudableEndpointResource<SampleCh
         return SampleChildEntityJson.toJson(entity);
     }
 
-
     @RunOnVirtualThread
     @GET
     @Path("generate")
@@ -74,5 +76,15 @@ public class SampleChildEntityResource extends CrudableEndpointResource<SampleCh
 
         getRepository().persist(generated);
         return Response.ok().build();
+    }
+
+    @RunOnVirtualThread
+    @GET
+    @Path("test-get")
+    public Paginate<SampleChildEntityJson> testGet(
+            @QueryParam("page") Integer page,
+            @Context ContainerRequestContext request
+    ) {
+        return super.getList(page, 20, "", request);
     }
 }

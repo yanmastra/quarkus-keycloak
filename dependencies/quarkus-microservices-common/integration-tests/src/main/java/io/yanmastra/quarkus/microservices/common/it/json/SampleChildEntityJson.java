@@ -14,8 +14,6 @@ public class SampleChildEntityJson implements BaseDto<SampleChildEntity> {
     public String id;
     @JsonProperty("name")
     public String name;
-//    @JsonProperty("parents")
-//    public List<SampleEntityJson> parents;
 
     public SampleChildEntityJson() {}
     public SampleChildEntityJson(Long id, String name, List<SampleEntityJson> parents) {}
@@ -24,11 +22,6 @@ public class SampleChildEntityJson implements BaseDto<SampleChildEntity> {
         SampleChildEntityJson json = new SampleChildEntityJson();
         json.setId(sampleChildEntity.getId());
         json.name = sampleChildEntity.name;
-//        if (sampleChildEntity.parents != null) {
-//            json.parents = sampleChildEntity.parents.stream().map(SampleEntityJson::toJson).toList();
-//        } else {
-//            json.parents = null;
-//        }
         return json;
     }
 
@@ -40,11 +33,6 @@ public class SampleChildEntityJson implements BaseDto<SampleChildEntity> {
 
     public SampleChildEntity toEntity(SampleChildEntity childEntity) {
         childEntity.name = name;
-//        if (parents != null) {
-//            childEntity.parents = parents.stream().map(SampleEntityJson::toEntity).toList();
-//        } else {
-//            childEntity.parents = null;
-//        }
         return childEntity;
     }
 

@@ -3,7 +3,7 @@ package io.yanmastra.quarkus.microservices.common.v2.dto;
 import java.io.Serializable;
 
 public interface BaseDto<Entity, Id> extends Serializable {
-    @Deprecated
+    @Deprecated(forRemoval = true)
     default Entity toEntity() {
         return null;
     }

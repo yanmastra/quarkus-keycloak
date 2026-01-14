@@ -3,7 +3,7 @@ package io.yanmastra.quarkus.microservices.common.crud;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.yanmastra.quarkus.microservices.common.ResponseJson;
+import io.yanmastra.quarkusBase.ResponseJson;
 import jakarta.ws.rs.BadRequestException;
 
 import java.util.ArrayList;

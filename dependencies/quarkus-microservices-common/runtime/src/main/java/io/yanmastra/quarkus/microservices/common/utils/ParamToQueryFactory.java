@@ -14,6 +14,22 @@ public class ParamToQueryFactory {
     static ParamToQuery find(String key, List<String> value) {
         ParamToQuery paramToQuery = null;
         String operator = "";
+
+        log.debug("value: " + value);
+
+        try(InstanceHandle<QueryParamParser> instanceHandle = Arc.container().instance(QueryParamParser.class)) {
+            QueryParamParser parser = instanceHandle.orElse(null);
+            if (parser != null) {
+                List<String> parsed = parser.parse(value);
+                if (parsed != null) {
+                    value.clear();
+                    value.addAll(parsed);
+                }
+            }
+        } catch (Exception e) {
+            log.warn(e.getMessage(), e);
+        }
+
         if (value.size() > 1) {
             operator = value.getFirst();
         } else if (value.size() == 1) {

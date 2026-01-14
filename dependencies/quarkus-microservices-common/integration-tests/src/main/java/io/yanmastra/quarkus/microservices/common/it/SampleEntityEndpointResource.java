@@ -1,13 +1,13 @@
 package io.yanmastra.quarkus.microservices.common.it;
 
-import io.yanmastra.quarkus.microservices.common.it.entity.SampleChildEntity;
-import io.yanmastra.quarkus.microservices.common.it.entity.SampleType;
-import io.yanmastra.quarkus.microservices.common.it.repo.SampleChildEntityRepo;
-import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
-import io.yanmastra.quarkus.microservices.common.it.entity.SampleEntity;
-import io.yanmastra.quarkus.microservices.common.it.json.SampleEntityJson;
-import io.yanmastra.quarkus.microservices.common.it.repo.SampleEntityRepository;
 import io.smallrye.common.annotation.RunOnVirtualThread;
+import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
+import io.yanmastra.quarkus.microservices.common.it.entity.SampleChildEntity;
+import io.yanmastra.quarkus.microservices.common.it.entity.SampleEntity;
+import io.yanmastra.quarkus.microservices.common.it.entity.SampleType;
+import io.yanmastra.quarkus.microservices.common.it.json.SampleEntityJson;
+import io.yanmastra.quarkus.microservices.common.it.repo.SampleChildEntityRepo;
+import io.yanmastra.quarkus.microservices.common.it.repo.SampleEntityRepository;
 import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -19,9 +19,6 @@ import jakarta.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Path("/api/v1/sample-entity")
 public class SampleEntityEndpointResource extends CrudableEndpointResource<SampleEntity, SampleEntityJson> {

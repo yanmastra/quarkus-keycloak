@@ -1,10 +1,10 @@
 package io.yanmastra.quarkus.microservices.common.v2.crud;
 
 import io.yanmastra.quarkus.microservices.common.crud.Paginate;
-import io.yanmastra.quarkus.microservices.common.dto.SelectionDto;
 import io.yanmastra.quarkus.microservices.common.entity.SelectableEntity;
 import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
+import io.yanmastra.quarkus.microservices.common.v2.dto.SelectionDto;
 import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;

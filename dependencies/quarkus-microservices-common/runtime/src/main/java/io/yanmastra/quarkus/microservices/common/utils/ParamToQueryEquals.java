@@ -10,7 +10,7 @@ import java.util.Map;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = "equals")
-public class ParamToQueryEquals extends ParamToQuery {
+public final class ParamToQueryEquals extends ParamToQuery {
 
     public ParamToQueryEquals() {
     }

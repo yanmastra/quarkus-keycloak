@@ -11,7 +11,7 @@ import java.util.List;
 
 @Unremovable
 @Singleton
-public class ColonDelimiterQueryParamParser implements QueryParamParser {
+public class ColonDelimiterQueryParamParser extends QueryParamParser {
 
     @Nullable
     @Override

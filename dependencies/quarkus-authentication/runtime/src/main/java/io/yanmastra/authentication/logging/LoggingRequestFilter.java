@@ -57,7 +57,7 @@ public class LoggingRequestFilter implements ContainerRequestFilter {
             return;
         }
 
-        RequestLogData data = new RequestLogData();
+        io.yanmastra.quarkusBase.RequestLogData data = new io.yanmastra.quarkusBase.RequestLogData();
         data.timestamp = ZonedDateTime.now();
         data.method = containerRequestContext.getMethod();
         data.ipAddress = getIP(containerRequestContext);

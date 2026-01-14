@@ -9,7 +9,7 @@ import java.util.Map;
 @Unremovable
 @Singleton
 @ParamToQueryQualifier(operator = "isNotNull")
-public class ParamToQueryIsNotNull extends ParamToQuery {
+public final class ParamToQueryIsNotNull extends ParamToQuery {
 
     @Override
     public Map<String, Object> getFieldAndParams(String key, List<String> value, String alias) {
@@ -18,6 +18,6 @@ public class ParamToQueryIsNotNull extends ParamToQuery {
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return alias + key + " is not null";
+        return alias + key + " NOT NULL";
     }
 }

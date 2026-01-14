@@ -3,7 +3,7 @@ package io.yanmastra.quarkus.microservices.common.v2.crud;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
-import io.yanmastra.quarkus.microservices.common.ResponseJson;
+import io.yanmastra.quarkusBase.ResponseJson;
 import io.yanmastra.quarkus.microservices.common.crud.WriteType;
 import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
 import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;

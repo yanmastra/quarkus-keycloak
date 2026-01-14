@@ -1,4 +1,4 @@
-package io.yanmastra.authentication.logging;
+package io.yanmastra.quarkusBase;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
