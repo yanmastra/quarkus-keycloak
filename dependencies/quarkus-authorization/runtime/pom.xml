@@ -6,7 +6,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authorization-parent</artifactId>
-    <version>4.0.1</version>
+    <version>4.0.2</version>
   </parent>
   <artifactId>quarkus-authorization</artifactId>
   <name>Authorization - Runtime</name>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-base</artifactId>
-      <version>1.0.3</version>
+      <version>${parent.version}</version>
     </dependency>
   </dependencies>
   <build>
