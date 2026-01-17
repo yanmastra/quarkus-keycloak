@@ -1,4 +1,4 @@
-package io.yanmastra.quarkus.microservices.common;
+package io.yanmastra.quarkusBase;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,18 +1,22 @@
 package io.yanmastra.authentication.deployment;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.resteasy.reactive.spi.ContainerRequestFilterBuildItem;
+import io.quarkus.resteasy.reactive.spi.ContainerResponseFilterBuildItem;
 import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.smallrye.jwt.auth.principal.JWTCallerPrincipalFactory;
-import io.yanmastra.authentication.logging.LoggingRequestFilter;
-import io.yanmastra.authentication.provider.ErrorMapper;
-import io.yanmastra.authentication.provider.RegisterCustomizeModule;
 import io.yanmastra.authentication.security.AuthenticationMechanism;
 import io.yanmastra.authentication.security.AuthenticationService;
 import io.yanmastra.authentication.security.BaseSecurityIdentityAugmentor;
 import io.yanmastra.authentication.service.ThreadPoolExecutorService;
+import io.yanmastra.quarkusBase.logging.LoggingRequestFilter;
+import io.yanmastra.quarkusBase.provider.ErrorMapper;
+import io.yanmastra.quarkusBase.provider.RegisterCustomizeModule;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
 
 class AuthenticationProcessor {
 
@@ -24,39 +28,56 @@ class AuthenticationProcessor {
     }
 
     @BuildStep
-    public ExceptionMapperBuildItem createErrorMapper() {
-        return new ExceptionMapperBuildItem.Builder(ErrorMapper.class.getName(), Exception.class.getName())
-                .setRegisterAsBean(true)
-                .setPriority(1)
-                .build();
+    public void createErrorMapper(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ExceptionMapperBuildItem> beans) {
+        boolean isProvided = isProvided(combinedIndexBuildItem, ErrorMapper.class);
+        if (!isProvided) {
+            ExceptionMapperBuildItem bean = new ExceptionMapperBuildItem.Builder(ErrorMapper.class.getName(), Exception.class.getName())
+                    .setRegisterAsBean(true)
+                    .setPriority(1)
+                    .build();
+            beans.produce(bean);
+        }
+    }
+
+    private boolean isProvided(CombinedIndexBuildItem combinedIndexBuildItem, Class<?> clazz) {
+        IndexView indexView = combinedIndexBuildItem.getIndex();
+        DotName serviceName = DotName.createSimple(clazz);
+        return !indexView.getAllKnownSubclasses(serviceName).isEmpty()
+                || !indexView.getAllKnownImplementations(serviceName).isEmpty();
     }
 
     @BuildStep
-    public AdditionalBeanBuildItem createAuthMechanismAnnotation() {
-        return new AdditionalBeanBuildItem.Builder()
-                .addBeanClass(AuthenticationMechanism.class)
-                .setUnremovable()
-                .build();
+    public void createAuthMechanismAnnotation(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
+        boolean isNotProvided = !isProvided(combinedIndexBuildItem, AuthenticationMechanism.class);
+        if (isNotProvided) {
+            beans.produce(AdditionalBeanBuildItem.builder().addBeanClass(AuthenticationMechanism.class).setUnremovable().build());
+        }
     }
 
     @BuildStep
-    public ContainerRequestFilterBuildItem createLoggingResponseFilter() {
-        return new ContainerRequestFilterBuildItem.Builder(LoggingRequestFilter.class.getName())
-                .setRegisterAsBean(false)
-                .setNonBlockingRequired(true)
-                .setPreMatching(false)
-                .setPriority(1)
-                .build();
+    public void createLoggingResponseFilter(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ContainerResponseFilterBuildItem> beans) {
+        boolean isProvided = isProvided(combinedIndexBuildItem, LoggingRequestFilter.class);
+        if (!isProvided) {
+            ContainerResponseFilterBuildItem bean = new ContainerResponseFilterBuildItem.Builder(LoggingRequestFilter.class.getName())
+                    .setRegisterAsBean(false)
+                    .setPriority(1)
+                    .build();
+            beans.produce(bean);
+        }
     }
 
     @BuildStep
-    public AdditionalBeanBuildItem createUserPrincipalBean() {
-        return new AdditionalBeanBuildItem(BaseSecurityIdentityAugmentor.class);
+    public void provideSecurityIdentityAugmentor(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
+        if (!isProvided(combinedIndexBuildItem, BaseSecurityIdentityAugmentor.class)) {
+            beans.produce(AdditionalBeanBuildItem.unremovableOf(BaseSecurityIdentityAugmentor.class));
+        }
     }
 
     @BuildStep
-    public AdditionalBeanBuildItem createAdditionalBeanBuildItem() {
-        return new AdditionalBeanBuildItem(RegisterCustomizeModule.class);
+    public void createAdditionalBeanBuildItem(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
+        if (!isProvided(combinedIndexBuildItem, RegisterCustomizeModule.class)) {
+            beans.produce(AdditionalBeanBuildItem.unremovableOf(RegisterCustomizeModule.class));
+        }
     }
 
     @BuildStep
@@ -70,7 +91,9 @@ class AuthenticationProcessor {
     }
 
     @BuildStep
-    public AdditionalBeanBuildItem createThreadPoolExecutorBean() {
-        return AdditionalBeanBuildItem.unremovableOf(ThreadPoolExecutorService.class);
+    public void createThreadPoolExecutorBean(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
+        if (!isProvided(combinedIndexBuildItem, ThreadPoolExecutorService.class)) {
+            beans.produce(AdditionalBeanBuildItem.unremovableOf(ThreadPoolExecutorService.class));
+        }
     }
 }

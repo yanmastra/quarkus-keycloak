@@ -5,9 +5,9 @@ source .env
 docker compose -f docker-compose.yml up postgres -d
 
 cd $DIR || exit
-cd ../../../dependencies/quarkus-authentication || exit
+cd ../../../dependencies/quarkus-base || exit
 mvn clean install -DskipTests
-echo "Building authorization is complete"
+echo "Building Base is complete"
 sleep 1
 
 cd ../../

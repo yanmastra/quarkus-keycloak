@@ -5,7 +5,7 @@ import io.smallrye.common.annotation.RunOnVirtualThread;
 import io.vertx.ext.web.handler.HttpException;
 import io.yanmastra.quarkus.microservices.common.crud.WriteType;
 import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
-import io.yanmastra.quarkus.microservices.common.v2.entities.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;
 import io.yanmastra.quarkusBase.ResponseJson;
 import io.yanmastra.quarkusBase.security.UserPrincipal;
 import jakarta.transaction.Transactional;

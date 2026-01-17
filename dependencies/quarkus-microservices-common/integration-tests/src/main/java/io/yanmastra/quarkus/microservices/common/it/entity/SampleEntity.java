@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -31,10 +31,10 @@ public class SampleEntity extends BaseEntity implements Serializable {
     public SampleType sampleType;
 
     @Column(name = "x_date")
-    public Date date;
+    public LocalDate date;;
 
     @Column(name = "x_date_time")
-    public ZonedDateTime dateTime;
+    public OffsetDateTime dateTime;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "sample_children",

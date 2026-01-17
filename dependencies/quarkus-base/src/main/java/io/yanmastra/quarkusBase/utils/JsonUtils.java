@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.jboss.logging.Logger;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 public class JsonUtils {
@@ -48,6 +49,8 @@ public class JsonUtils {
         SimpleModule module = new JavaTimeModule();
         module.addDeserializer(Date.class, new DateDeserializer());
         module.addSerializer(Date.class, new DateSerializer());
+        module.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+        module.addSerializer(LocalDate.class, new LocalDateSerializer());
         objectMapper.registerModule(module);
         objectMapper.setVisibility(objectMapper.getSerializationConfig()
                 .getDefaultVisibilityChecker()

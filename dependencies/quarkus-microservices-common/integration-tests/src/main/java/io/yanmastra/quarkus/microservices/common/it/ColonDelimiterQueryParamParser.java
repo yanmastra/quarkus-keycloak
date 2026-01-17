@@ -1,17 +1,15 @@
 package io.yanmastra.quarkus.microservices.common.it;
 
-import io.quarkus.arc.Unremovable;
 import io.yanmastra.quarkus.microservices.common.utils.QueryParamParser;
 import jakarta.annotation.Nullable;
-import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Unremovable
-@ApplicationScoped
+//@Unremovable
+//@ApplicationScoped
 public class ColonDelimiterQueryParamParser extends QueryParamParser {
 
     @Nullable

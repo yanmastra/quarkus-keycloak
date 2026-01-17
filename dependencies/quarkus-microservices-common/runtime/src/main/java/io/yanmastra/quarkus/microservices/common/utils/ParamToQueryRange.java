@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.jboss.logging.Logger;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public final class ParamToQueryRange extends ParamToQuery{
 
         String sKey = getSKey(key);
         Object startDate = getRealValue(value.get(1));
-        if (startDate instanceof Date date) {
+        if (startDate instanceof Date || startDate instanceof LocalDate) {
             return "( cast(" + alias + key + " as date) between :"+sKey+"_start and :"+sKey+"_end )";
         }
         return "( " + alias + key + " between :"+sKey+"_start and :"+sKey+"_end )";

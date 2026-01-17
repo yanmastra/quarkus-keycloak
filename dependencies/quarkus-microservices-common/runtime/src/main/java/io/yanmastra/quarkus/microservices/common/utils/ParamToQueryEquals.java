@@ -20,11 +20,11 @@ public final class ParamToQueryEquals extends ParamToQuery {
         Object oValue = getRealValue(value.getFirst());
         String sKey = key;
         if (oValue instanceof String) {
-            sKey = "cast(" + key + " as string)";
+            sKey = "cast(" + alias + key + " as string)";
         } else if (oValue instanceof Date) {
-            sKey = "cast(" + key + " as date)";
+            sKey = "cast(" + alias + key + " as date)";
         }
-        return alias + sKey + "=:" + getSKey(key);
+        return sKey + "=:" + getSKey(key);
     }
 
     @Override

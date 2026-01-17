@@ -1,4 +1,4 @@
-package io.yanmastra.authentication.provider;
+package io.yanmastra.quarkusBase.provider;
 
 import io.quarkus.runtime.util.StringUtil;
 import io.vertx.ext.web.handler.HttpException;
@@ -7,13 +7,15 @@ import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.Provider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.spi.AsyncExceptionMapperContext;
 import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveAsyncExceptionMapper;
@@ -23,9 +25,8 @@ import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Provider
 public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Exception>, ResteasyReactiveExceptionMapper<Exception> {
-
+    private static final Log log = LogFactory.getLog(ErrorMapper.class);
     @Inject
     Logger logger;
     @Inject
@@ -64,6 +65,10 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                 case ClientErrorException clientError -> {
                     message = clientError.getMessage();
                     status = clientError.getResponse().getStatus();
+                    if (clientError instanceof BadRequestException badRequestException) {
+                        Object entity = badRequestException.getResponse().getEntity();
+                        log.info("response entity class: " + entity.getClass().getName());
+                    }
                 }
                 case SecurityException securityException -> {
                     message = securityException.getMessage();

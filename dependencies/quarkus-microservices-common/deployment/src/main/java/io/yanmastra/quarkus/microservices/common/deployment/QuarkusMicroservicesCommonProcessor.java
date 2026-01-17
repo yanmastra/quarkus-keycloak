@@ -6,17 +6,21 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.AdditionalIndexedClassesBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.resteasy.reactive.spi.ExceptionMapperBuildItem;
 import io.yanmastra.quarkus.microservices.common.crud.BasePaginationResource;
 import io.yanmastra.quarkus.microservices.common.crud.CrudableEndpointResource;
 import io.yanmastra.quarkus.microservices.common.crud.SelectablePaginationResource;
 import io.yanmastra.quarkus.microservices.common.repository.BaseRepository;
 import io.yanmastra.quarkus.microservices.common.utils.*;
-import jakarta.enterprise.context.ApplicationScoped;
+import io.yanmastra.quarkusBase.provider.ErrorMapper;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Singleton;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.ext.Provider;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 class QuarkusMicroservicesCommonProcessor {
@@ -60,15 +64,7 @@ class QuarkusMicroservicesCommonProcessor {
 
     @BuildStep
     void provideValueSeparator(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<AdditionalBeanBuildItem> beans) {
-        IndexView indexView = combinedIndexBuildItem.getIndex();
-        DotName serviceName = DotName.createSimple(QueryParamParser.class);
-        boolean provided = (indexView.getAllKnownSubclasses(serviceName).stream()
-                .anyMatch(clazz -> clazz.hasAnnotation(DotName.createSimple(ApplicationScoped.class)) ||
-                        clazz.hasAnnotation(DotName.createSimple(Singleton.class)) ||
-                        clazz.hasAnnotation(DotName.createSimple(RequestScoped.class))
-                ))
-                || !indexView.getAllKnownImplementations(serviceName).isEmpty();
-        if (!provided) {
+        if (!isProvided(combinedIndexBuildItem, QueryParamParser.class, List.of(Singleton.class, ApplicationPath.class, RequestScoped.class))) {
             beans.produce(
                     AdditionalBeanBuildItem
                             .builder()
@@ -77,5 +73,26 @@ class QuarkusMicroservicesCommonProcessor {
                             .build()
             );
         }
+    }
+
+    @BuildStep
+    public void createErrorMapper(CombinedIndexBuildItem combinedIndexBuildItem, BuildProducer<ExceptionMapperBuildItem> beans) {
+        boolean isProvided = isProvided(combinedIndexBuildItem, ErrorMapper.class, List.of(Provider.class, Singleton.class, ApplicationPath.class, RequestScoped.class));
+        if (!isProvided) {
+            ExceptionMapperBuildItem bean = new ExceptionMapperBuildItem.Builder(ErrorMapper.class.getName(), Exception.class.getName())
+                    .setRegisterAsBean(true)
+                    .setPriority(1)
+                    .build();
+            beans.produce(bean);
+        }
+    }
+
+    private boolean isProvided(CombinedIndexBuildItem combinedIndexBuildItem, Class<?> eClass, List<Class<? extends Annotation>> hasAnnotations) {
+        IndexView indexView = combinedIndexBuildItem.getIndex();
+        DotName serviceName = DotName.createSimple(eClass);
+        return (indexView.getAllKnownSubclasses(serviceName).stream()
+                .anyMatch(clazz -> hasAnnotations.stream().anyMatch(clazz::hasAnnotation))
+                )
+                || !indexView.getAllKnownImplementations(serviceName).isEmpty();
     }
 }

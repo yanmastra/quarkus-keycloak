@@ -18,6 +18,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.*;
 
 @Path("/api/v1/sample-entity")
@@ -83,7 +84,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
             sampleEntity.price = BigDecimal.valueOf(random.nextInt(99999) * (i%5))
                     .divide(new BigDecimal((random.nextInt(1, 9) * (i%7+1)) + ""), 2, RoundingMode.HALF_EVEN);
             sampleEntity.sampleType = SampleType.values()[random.nextInt(SampleType.values().length)];
-            sampleEntity.date = new Date();
+            sampleEntity.date = LocalDate.now();
             generated.add(sampleEntity);
         }
 

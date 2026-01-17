@@ -9,7 +9,7 @@ import io.yanmastra.quarkus.microservices.common.entity.SelectableEntity;
 import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
 import io.yanmastra.quarkus.microservices.common.v2.dto.SelectionDto;
-import io.yanmastra.quarkus.microservices.common.v2.entities.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

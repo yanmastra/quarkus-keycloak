@@ -1,13 +1,10 @@
-package io.yanmastra.authentication.provider;
+package io.yanmastra.quarkusBase.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.yanmastra.quarkusBase.utils.JsonUtils;
 import io.quarkus.jackson.ObjectMapperCustomizer;
-import jakarta.inject.Singleton;
+import io.yanmastra.quarkusBase.utils.JsonUtils;
 
-@Singleton
 public final class RegisterCustomizeModule implements ObjectMapperCustomizer {
-
     @Override
     public void customize(ObjectMapper objectMapper) {
         JsonUtils.setObjectMapper(objectMapper);

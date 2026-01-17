@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 DIR=$(pwd)
 cd ../../../docker
 source .env

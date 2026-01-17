@@ -3,6 +3,7 @@ package io.yanmastra.quarkus.microservices.common.utils;
 import io.quarkus.arc.Unremovable;
 import jakarta.inject.Singleton;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,13 @@ public final class ParamToQueryNotEquals extends ParamToQuery{
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return alias + key + " != :"+getSKey(key);
+        Object oValue = getRealValue(value.getFirst());
+        String sKey = key;
+        if (oValue instanceof String) {
+            sKey = "cast(" + alias + key + " as string)";
+        } else if (oValue instanceof Date) {
+            sKey = "cast(" + alias + key + " as date)";
+        }
+        return sKey + " != :"+getSKey(key);
     }
 }

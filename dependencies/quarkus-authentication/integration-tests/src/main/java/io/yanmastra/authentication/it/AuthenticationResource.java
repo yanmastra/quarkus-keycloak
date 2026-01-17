@@ -25,7 +25,6 @@ import io.yanmastra.authentication.security.AuthenticationService;
 import io.yanmastra.authentication.service.SecurityLifeCycleService;
 import io.yanmastra.authentication.utils.CookieSessionUtils;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -46,7 +45,6 @@ import java.util.Set;
 import java.util.UUID;
 
 @Path("/authentication")
-@ApplicationScoped
 public class AuthenticationResource {
     private static final Log log = LogFactory.getLog(AuthenticationResource.class);
     // add some rest methods here
@@ -133,9 +131,20 @@ public class AuthenticationResource {
 
     @GET
     @Path("user_get_data")
-    @RolesAllowed({"GET_DATA", "manage-users"})
+    @RolesAllowed({"GET_DATA", "manage_users"})
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> user1(@Context ContainerRequestContext context) {
+        for (String key: context.getCookies().keySet()) {
+            log.debug("key:"+key+", value:"+context.getCookies().get(key));
+        }
+        return Uni.createFrom().item(Response.ok(context.getSecurityContext().getUserPrincipal()).build());
+    }
+
+    @GET
+    @Path("forbidden")
+    @RolesAllowed({"GET_DATA"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getForbidden(@Context ContainerRequestContext context) {
         for (String key: context.getCookies().keySet()) {
             log.debug("key:"+key+", value:"+context.getCookies().get(key));
         }

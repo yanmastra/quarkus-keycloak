@@ -1,7 +1,7 @@
-package io.yanmastra.quarkus.microservices.common.v2.entities;
+package io.yanmastra.quarkus.microservices.common.v2.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import io.yanmastra.quarkus.microservices.common.v2.dto.BaseDto;
+import io.yanmastra.quarkus.microservices.common.dto.BaseDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.CreationTimestamp;
@@ -98,7 +98,7 @@ public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serial
      * @param dto
      */
     @Deprecated
-    public static <BE extends BaseEntity<Id>, Dto extends BaseDto<BE, Id>, Id> BE fromDto(Dto dto) {
+    public static <BE extends BaseEntity, Dto extends BaseDto<BE>> BE fromDto(Dto dto) {
         return dto.toEntity();
     }
 

@@ -1,4 +1,4 @@
-package io.yanmastra.authentication.provider;
+package io.yanmastra.quarkusBase.provider;
 
 import jakarta.ws.rs.core.Response;
 

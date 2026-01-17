@@ -1,6 +1,6 @@
 package io.yanmastra.quarkus.microservices.common.it.entity;
 
-import io.yanmastra.quarkus.microservices.common.v2.entities.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;
 import jakarta.persistence.*;
 
 @Entity

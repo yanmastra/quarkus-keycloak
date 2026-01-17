@@ -17,9 +17,9 @@ public class QueryParamParser {
     public List<String> parse(List<String> values) {
         if (values != null && values.size() == 1) {
             String value = values.getFirst();
-            if (StringUtils.isNotBlank(value) && value.contains("|")) {
+            if (StringUtils.isNotBlank(value) && value.contains(",")) {
 
-                String[] split = value.split("\\|");
+                String[] split = value.split(",");
                 values = Arrays.asList(split);
                 return values;
             }

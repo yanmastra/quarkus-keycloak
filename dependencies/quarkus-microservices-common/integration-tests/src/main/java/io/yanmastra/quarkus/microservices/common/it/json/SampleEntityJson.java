@@ -7,8 +7,8 @@ import io.yanmastra.quarkus.microservices.common.it.entity.SampleEntity;
 import io.yanmastra.quarkus.microservices.common.it.entity.SampleType;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,9 +26,9 @@ public class SampleEntityJson implements BaseDto<SampleEntity> {
     @JsonProperty("sample_type")
     public SampleType sampleType;
     @JsonProperty("x_date")
-    public Date date;
+    public LocalDate date;
     @JsonProperty("x_date_time")
-    public ZonedDateTime dateTime;
+    public OffsetDateTime dateTime;
     @JsonProperty("children")
     public List<SampleChildEntityJson> children;
 
@@ -36,6 +36,10 @@ public class SampleEntityJson implements BaseDto<SampleEntity> {
     }
 
     public static SampleEntityJson toJson(SampleEntity entity) {
+        return toJson(entity, true);
+    }
+
+    public static SampleEntityJson toJson(SampleEntity entity, boolean deep) {
         SampleEntityJson json = new SampleEntityJson();
         json.id = entity.id;
         json.name = entity.name;
@@ -45,8 +49,10 @@ public class SampleEntityJson implements BaseDto<SampleEntity> {
         json.sampleType = entity.sampleType;
         json.date = entity.date;
         json.dateTime = entity.dateTime;
-        if (entity.children != null) {
-            json.children = entity.children.stream().map(SampleChildEntityJson::toJson).toList();
+        if (deep) {
+            if (entity.children != null) {
+                json.children = entity.children.stream().map(SampleChildEntityJson::toJson).toList();
+            }
         }
         return json;
     }

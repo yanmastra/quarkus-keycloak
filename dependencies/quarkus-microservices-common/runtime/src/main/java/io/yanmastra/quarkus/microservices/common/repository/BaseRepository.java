@@ -7,7 +7,7 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
-import io.yanmastra.quarkus.microservices.common.v2.entities.BaseEntity;
+import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;
 import io.yanmastra.quarkusBase.security.UserPrincipal;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedMap;

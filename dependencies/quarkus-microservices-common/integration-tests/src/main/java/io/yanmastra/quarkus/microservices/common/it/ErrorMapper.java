@@ -2,7 +2,6 @@ package io.yanmastra.quarkus.microservices.common.it;
 
 import io.quarkus.runtime.util.StringUtil;
 import io.vertx.ext.web.handler.HttpException;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
@@ -19,7 +18,7 @@ import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveAsyncExceptionMapp
 import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveExceptionMapper;
 import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 
-@ApplicationScoped
+//@Provider
 public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Exception>, ResteasyReactiveExceptionMapper<Exception> {
 
     @Inject

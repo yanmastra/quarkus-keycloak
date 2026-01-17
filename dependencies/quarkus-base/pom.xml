@@ -65,6 +65,12 @@
             <version>${quarkus.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+            <version>${quarkus.version}</version>
+        </dependency>
+
     </dependencies>
 
 

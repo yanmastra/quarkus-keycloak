@@ -7,6 +7,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +46,6 @@ public abstract class ParamToQuery {
     protected Object getRealValue(String sValue) {
         if ("true".equalsIgnoreCase(sValue)) return true;
         if ("false".equalsIgnoreCase(sValue)) return false;
-
-        Zone
-
         if (DateTimeUtils.isDate(sValue)) {
             Date result = DateTimeUtils.fromDateOnly(sValue);
             if (result == null) {
@@ -78,6 +78,13 @@ public abstract class ParamToQuery {
                 }
             }
         }
+
+        if (DateTimeUtils.looksLikeDateTime(sValue)) {
+            TemporalAccessor ta = DateTimeUtils.parseDateTime(sValue);
+            if (ta instanceof OffsetDateTime offsetDateTime) return offsetDateTime;
+            else if (ta instanceof ZonedDateTime zonedDateTime) return zonedDateTime;
+        }
+
         return sValue;
     }
 }

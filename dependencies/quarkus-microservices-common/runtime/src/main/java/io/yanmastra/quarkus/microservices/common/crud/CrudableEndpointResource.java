@@ -10,6 +10,7 @@ import io.yanmastra.quarkus.microservices.common.dto.BaseDto;
  * @param <Dto> is a Data Access Object class like json representation of the Entity class, you can use your entity class itself if it doesn't have any DAO class
  */
 public abstract class CrudableEndpointResource<Entity extends BaseEntity, Dto extends BaseDto<Entity>> extends io.yanmastra.quarkus.microservices.common.v2.crud.CrudableEndpointResource<Entity, Dto, String> {
+
     @Override
     protected String toId(String id) {
         return id;
