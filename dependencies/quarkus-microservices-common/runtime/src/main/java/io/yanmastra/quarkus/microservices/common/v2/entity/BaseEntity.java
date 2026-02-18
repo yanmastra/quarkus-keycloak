@@ -9,7 +9,7 @@ import org.hibernate.annotations.SourceType;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * This class contains the basic columns that should be defined on every Entity
@@ -18,27 +18,27 @@ import java.time.ZonedDateTime;
 public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serializable {
     @CreationTimestamp(source = SourceType.DB)
     @Column(name = "created_at")
-    private ZonedDateTime createdAt;
+    private OffsetDateTime createdAt;
     @Column(name = "created_by", length = 32)
     private String createdBy;
     @UpdateTimestamp(source = SourceType.DB)
     @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
+    private OffsetDateTime updatedAt;
     @Column(name = "updated_by", length = 32)
     private String updatedBy;
     @Column(name = "deleted_at")
-    private ZonedDateTime deletedAt;
+    private OffsetDateTime deletedAt;
     @Column(name = "deleted_by", length = 32)
     private String deletedBy;
 
     public abstract Id getId();
     public abstract void setId(Id id);
 
-    public ZonedDateTime getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
+    public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -50,11 +50,11 @@ public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serial
         this.createdBy = createdBy;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(ZonedDateTime updatedAt) {
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -66,11 +66,11 @@ public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serial
         this.updatedBy = updatedBy;
     }
 
-    public ZonedDateTime getDeletedAt() {
+    public OffsetDateTime getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(ZonedDateTime deletedAt) {
+    public void setDeletedAt(OffsetDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 

@@ -116,12 +116,17 @@ public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implemen
     }
 
     public PanacheQuery<Entity> createPaginationQuery(MultivaluedMap<String, String> requestQueries, Set<String> searchAbleColumn, Sort sort) {
-        Map<String, Object> queryParams = new HashMap<>();
-        String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn);
-        log.debug("generated hql: "+hql);
-        log.debug("generated hql value: "+queryParams);
+        try {
+            Map<String, Object> queryParams = new HashMap<>();
+            String hql = CrudQueryFilterUtils.createFilterQuery(requestQueries, queryParams, searchAbleColumn);
+            log.debug("generated hql: " + hql);
+            log.debug("generated hql value: " + queryParams);
 
-        return find(hql, sort, queryParams);
+            return find(hql, sort, queryParams);
+        } catch (Throwable e) {
+            log.error(e);
+        }
+        return null;
     }
 
     public Entity findActiveById(Id id) {

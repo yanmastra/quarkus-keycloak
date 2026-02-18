@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.MediaType;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,8 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -372,6 +373,80 @@ public class QuarkusMicroservicesCommonResourceTest {
                 .when().get("/api/v1/sample-entity?children=contains,SampleChildEntity," + String.join(",", testChildren))
                 .then().statusCode(200)
                 .body("meta.total_data", equalTo(4));
+    }
+
+    @Test
+    public void testFreeTextSearch() {
+        ResponseJson<SampleEntityJson> responseJson = given()
+                .body(Json.createObjectBuilder()
+                        .add("name", UUID.randomUUID().toString())
+                        .add("category", "something")
+                        .add("price", BigDecimal.valueOf(1092301))
+                        .add("is_active", true)
+                        .add("x_date", DateTimeUtils.toDateOnly(LocalDate.now()))
+                        .add("x_date_time", DateTimeUtils.utcDateDtf.format(Instant.now()))
+                        .build()
+                        .toString()
+                )
+                .contentType(MediaType.APPLICATION_JSON.toString())
+                .post("/api/v1/sample-entity")
+                .then()
+                .statusCode(200)
+                .extract().response().getBody().as(new TypeRef<>() {
+                });
+
+        String parentId = responseJson.getData().id;
+
+        responseJson = given()
+                .body(Json.createObjectBuilder()
+                        .add("name", UUID.randomUUID().toString())
+                        .add("category", "thing-some")
+                        .add("price", BigDecimal.valueOf(1092301))
+                        .add("is_active", true)
+                        .add("x_date", DateTimeUtils.toDateOnly(LocalDate.now()))
+                        .add("x_date_time", DateTimeUtils.utcDateDtf.format(Instant.now()))
+                        .add("parent", Json.createObjectBuilder().add("id", parentId).build())
+                        .build()
+                        .toString()
+                )
+                .contentType(MediaType.APPLICATION_JSON.toString())
+                .post("/api/v1/sample-entity")
+                .then()
+                .statusCode(200)
+                .extract().response().getBody().as(new TypeRef<>() {
+                });
+        parentId = responseJson.getData().id;
+
+        responseJson = given()
+                .body(Json.createObjectBuilder()
+                        .add("name", UUID.randomUUID().toString())
+                        .add("category", "thing-one")
+                        .add("price", BigDecimal.valueOf(1092301))
+                        .add("is_active", true)
+                        .add("x_date", DateTimeUtils.toDateOnly(LocalDate.now()))
+                        .add("x_date_time", DateTimeUtils.utcDateDtf.format(Instant.now()))
+                        .add("parent", Json.createObjectBuilder().add("id", parentId).build())
+                        .build()
+                        .toString()
+                )
+                .contentType(MediaType.APPLICATION_JSON.toString())
+                .post("/api/v1/sample-entity")
+                .then()
+                .statusCode(200)
+                .extract().response().getBody().as(new TypeRef<>() {
+                });
+        parentId = responseJson.getData().id;
+        System.out.println(responseJson.getData().id);
+
+        given()
+                .when().get("/api/v1/sample-entity?keyword=thing-")
+                .then().statusCode(200)
+                .body("meta.total_data", greaterThan(0));
+
+        given()
+                .when().get("/api/v1/sample-entity?keyword=something")
+                .then().statusCode(200)
+                .body("meta.total_data", greaterThan(0));
     }
 
 

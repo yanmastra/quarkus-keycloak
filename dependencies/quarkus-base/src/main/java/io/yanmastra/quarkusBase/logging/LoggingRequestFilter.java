@@ -38,10 +38,13 @@ public class LoggingRequestFilter implements ContainerResponseFilter {
     }
 
     private SecurityLifeCycleService getRequestLoggingListener() {
-        try (InstanceHandle<SecurityLifeCycleService> errorMapperStream = Arc.container().beanInstanceSupplier(SecurityLifeCycleService.class).get()) {
-            return errorMapperStream.orElse(null);
-        } catch (Exception e) {
-            log.warn(e.getMessage());
+        var securityLifeCycle = Arc.container().beanInstanceSupplier(SecurityLifeCycleService.class);
+        if (securityLifeCycle != null) {
+            try (InstanceHandle<SecurityLifeCycleService> errorMapperStream = securityLifeCycle.get()) {
+                return errorMapperStream.orElse(null);
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
         }
         return null;
     }

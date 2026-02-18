@@ -15,6 +15,9 @@ public class SampleEntityInteger extends BaseEntity<Long> {
     @Column(length = 100)
     private String description;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private SampleEntity parent;
 
     @Override
     public Long getId() {
@@ -40,5 +43,13 @@ public class SampleEntityInteger extends BaseEntity<Long> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public SampleEntity getParent() {
+        return parent;
+    }
+
+    public void setParent(SampleEntity parent) {
+        this.parent = parent;
     }
 }

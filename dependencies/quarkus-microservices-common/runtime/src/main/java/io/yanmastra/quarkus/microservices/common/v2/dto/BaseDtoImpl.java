@@ -2,27 +2,27 @@ package io.yanmastra.quarkus.microservices.common.v2.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 public abstract class BaseDtoImpl<Entity, Id> implements BaseDto<Entity, Id> {
     @JsonProperty("created_at")
-    private ZonedDateTime createdAt;
+    private OffsetDateTime createdAt;
     @JsonProperty("created_by")
     private String createdBy;
     @JsonProperty("updated_at")
-    private ZonedDateTime updatedAt;
+    private OffsetDateTime updatedAt;
     @JsonProperty("updated_by")
     private String updatedBy;
     @JsonProperty("deleted_at")
-    private ZonedDateTime deletedAt;
+    private OffsetDateTime deletedAt;
     @JsonProperty("deleted_by")
     private String deletedBy;
 
-    public ZonedDateTime getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(ZonedDateTime createdAt) {
+    public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -36,11 +36,11 @@ public abstract class BaseDtoImpl<Entity, Id> implements BaseDto<Entity, Id> {
         this.createdBy = createdBy;
     }
 
-    public ZonedDateTime getUpdatedAt() {
+    public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(ZonedDateTime updatedAt) {
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -54,11 +54,11 @@ public abstract class BaseDtoImpl<Entity, Id> implements BaseDto<Entity, Id> {
         this.updatedBy = updatedBy;
     }
 
-    public ZonedDateTime getDeletedAt() {
+    public OffsetDateTime getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(ZonedDateTime deletedAt) {
+    public void setDeletedAt(OffsetDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 

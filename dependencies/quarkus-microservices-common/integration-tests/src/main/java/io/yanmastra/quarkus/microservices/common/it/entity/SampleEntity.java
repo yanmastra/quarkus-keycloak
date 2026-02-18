@@ -44,6 +44,10 @@ public class SampleEntity extends BaseEntity implements Serializable {
     )
     public List<SampleChildEntity> children = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    public SampleEntity parent;
+
     @Override
     public String getId() {
         return id;

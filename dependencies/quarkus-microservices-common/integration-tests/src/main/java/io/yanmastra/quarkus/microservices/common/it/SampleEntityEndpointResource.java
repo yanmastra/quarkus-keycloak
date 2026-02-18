@@ -51,6 +51,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
         entity.price = json.price;
         entity.isActive = json.isActive;
         entity.sampleType = json.sampleType;
+        entity.parent = json.parent == null ? null : json.parent.toEntity();
         return entity;
     }
 
@@ -61,7 +62,7 @@ public class SampleEntityEndpointResource extends CrudableEndpointResource<Sampl
 
     @Override
     protected Set<String> searchAbleColumn() {
-        return Set.of("name", "category", "price");
+        return Set.of("name", "category", "parent.category", "parent.parent.category");
     }
 
     public static final Random random = new Random();

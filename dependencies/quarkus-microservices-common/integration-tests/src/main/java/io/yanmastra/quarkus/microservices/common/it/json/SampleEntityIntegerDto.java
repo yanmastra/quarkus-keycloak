@@ -14,7 +14,8 @@ public class SampleEntityIntegerDto implements BaseDto<SampleEntityInteger, Long
     private String description;
     @JsonProperty("created_by")
     private String createdBy;
-
+    @JsonProperty("parent")
+    private SampleEntityJson parent;
 
     @Override
     public Long getId() {
@@ -70,5 +71,13 @@ public class SampleEntityIntegerDto implements BaseDto<SampleEntityInteger, Long
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public SampleEntityJson getParent() {
+        return parent;
+    }
+
+    public void setParent(SampleEntityJson parent) {
+        this.parent = parent;
     }
 }

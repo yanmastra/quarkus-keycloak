@@ -31,6 +31,8 @@ public class SampleEntityJson implements BaseDto<SampleEntity> {
     public OffsetDateTime dateTime;
     @JsonProperty("children")
     public List<SampleChildEntityJson> children;
+    @JsonProperty("parent")
+    public SampleEntityJson parent;
 
     public SampleEntityJson() {
     }
@@ -49,6 +51,7 @@ public class SampleEntityJson implements BaseDto<SampleEntity> {
         json.sampleType = entity.sampleType;
         json.date = entity.date;
         json.dateTime = entity.dateTime;
+        json.parent = entity.parent == null ? null : SampleEntityJson.toJson(entity.parent);
         if (deep) {
             if (entity.children != null) {
                 json.children = entity.children.stream().map(SampleChildEntityJson::toJson).toList();
@@ -67,6 +70,7 @@ public class SampleEntityJson implements BaseDto<SampleEntity> {
         entity.sampleType = this.sampleType;
         entity.date = this.date;
         entity.dateTime = this.dateTime;
+        entity.parent = this.parent == null ? null : this.parent.toEntity();
         if (children != null) {
             entity.children = children.stream().map(SampleChildEntityJson::toEntity).toList();
         } else  {

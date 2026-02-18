@@ -3,6 +3,7 @@ package io.yanmastra.quarkus.microservices.common.utils;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.panache.common.Sort;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
@@ -124,7 +125,21 @@ public class CrudQueryFilterUtils {
             Set<String> searchKey = new HashSet<>();
             sbQuery.append(" and (");
             for (String column: searchableColumn) {
-                searchKey.add("lower(cast(" + alias + column + " as string)) like :keyword");
+                String[] columnObjs = column.contains(".") ? column.split("\\.") : new String[]{};
+                String nonNullColumnValidation = "";
+                if (columnObjs.length > 3) {
+                    throw new BadRequestException("Searchable column %s has more than three level!".formatted(column));
+                } else if (columnObjs.length >= 1) {
+                    nonNullColumnValidation +=  alias + columnObjs[0] + " is not null";
+                    if (columnObjs.length >= 2) {
+                        nonNullColumnValidation += " and " + alias + columnObjs[0] + "." + columnObjs[1] + " is not null";
+                    }
+                    if (columnObjs.length == 3) {
+                        nonNullColumnValidation += " and " + alias + columnObjs[0] + "." + columnObjs[1] + "." + columnObjs[2] + " is not null";
+                    }
+                }
+                if (StringUtils.isNotBlank(nonNullColumnValidation)) nonNullColumnValidation += " and ";
+                searchKey.add("(" + nonNullColumnValidation + " lower(cast(" + alias + column + " as string)) like :keyword)");
             }
             sbQuery.append(String.join(" or ", searchKey)).append(")");
         }
