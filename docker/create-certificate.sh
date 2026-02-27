@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-export $(grep -v "^$" docker_env.env | grep -v "^#" | xargs)
+export $(grep -v "^$" .env | grep -v "^#" | xargs)
 
 if [[ -f keycloak/server.keystore ]]; then
   echo "keycloak/server.keystore already exists!"

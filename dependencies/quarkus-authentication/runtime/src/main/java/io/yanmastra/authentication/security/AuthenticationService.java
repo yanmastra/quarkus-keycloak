@@ -78,7 +78,7 @@ public class AuthenticationService {
                 }
 
                 SecretKey secretKey = KeyUtils.createSecretKeyFromSecret(tokenEncryptionSecret);
-                PublicKey publicKey = KeyUtils.readPublicKey(publicKeyLocation);
+                PublicKey publicKey = Constant.getPublicKey(publicKeyLocation);
 
                 JwtConsumerBuilder jcb = new JwtConsumerBuilder()
                         .setRequireExpirationTime()

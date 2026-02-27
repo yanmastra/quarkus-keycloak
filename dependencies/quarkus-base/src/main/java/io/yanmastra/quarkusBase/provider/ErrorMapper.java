@@ -2,12 +2,13 @@ package io.yanmastra.quarkusBase.provider;
 
 import io.quarkus.runtime.util.StringUtil;
 import io.vertx.ext.web.handler.HttpException;
+import io.yanmastra.quarkusBase.exception.ValidationErrorException;
+import io.yanmastra.quarkusBase.utils.ValidationUtils;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -22,6 +23,8 @@ import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveAsyncExceptionMapp
 import org.jboss.resteasy.reactive.server.spi.ResteasyReactiveExceptionMapper;
 import org.jboss.resteasy.reactive.server.spi.ServerRequestContext;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -46,6 +49,7 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
 
         String message = null;
         int status = 500;
+        Map<String, String> errors = new HashMap<>();
 
         MultivaluedMap<String, String> headers = requestContext.getHeaders();
         if ((headers.containsKey(HttpHeaders.ACCEPT) && headers.getFirst(HttpHeaders.ACCEPT).equals(MediaType.APPLICATION_JSON)) ||
@@ -65,10 +69,12 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                 case ClientErrorException clientError -> {
                     message = clientError.getMessage();
                     status = clientError.getResponse().getStatus();
-                    if (clientError instanceof BadRequestException badRequestException) {
-                        Object entity = badRequestException.getResponse().getEntity();
-                        log.info("response entity class: " + entity.getClass().getName());
-                    }
+                    ValidationUtils.fetchValidationError(clientError, errors);
+                }
+                case ValidationErrorException validationError -> {
+                    message = validationError.getMessage();
+                    status = 400;
+                    errors.putAll(validationError.getErrors());
                 }
                 case SecurityException securityException -> {
                     message = securityException.getMessage();

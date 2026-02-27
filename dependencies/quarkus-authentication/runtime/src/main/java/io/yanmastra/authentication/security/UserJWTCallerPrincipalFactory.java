@@ -42,7 +42,7 @@ public final class UserJWTCallerPrincipalFactory extends DefaultJWTCallerPrincip
         if (jwtConsumer == null) {
             if (StringUtils.isBlank(publicKeyLocation) || "-".equals(publicKeyLocation)) throw new RuntimeException("Missing required property " + PROP_MP_PUBLIC_KEY_LOCATION);
             try {
-                PublicKey publicKey = KeyUtils.readPublicKey(publicKeyLocation);
+                PublicKey publicKey = Constant.getPublicKey(publicKeyLocation);
                 JwtConsumerBuilder jcb = new JwtConsumerBuilder()
                         .setRequireExpirationTime()
                         .setVerificationKey(publicKey)
@@ -64,6 +64,7 @@ public final class UserJWTCallerPrincipalFactory extends DefaultJWTCallerPrincip
         }
         return jwtConsumer;
     }
+
 
     @Override
     public JWTCallerPrincipal parse(String token, JWTAuthContextInfo jwtAuthContextInfo) throws HttpException {
