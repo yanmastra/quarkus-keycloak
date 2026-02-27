@@ -3,6 +3,7 @@ package io.yanmastra.quarkus.microservices.common.v2.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 public abstract class BaseDtoImpl<Entity, Id> implements BaseDto<Entity, Id> {
     @JsonProperty("created_at")
@@ -26,6 +27,10 @@ public abstract class BaseDtoImpl<Entity, Id> implements BaseDto<Entity, Id> {
         this.createdAt = createdAt;
     }
 
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt == null ? null : createdAt.toOffsetDateTime();
+    }
+
     @Override
     public String getCreatedBy() {
         return createdBy;
@@ -42,6 +47,10 @@ public abstract class BaseDtoImpl<Entity, Id> implements BaseDto<Entity, Id> {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt == null ? null : updatedAt.toOffsetDateTime();
     }
 
     @Override

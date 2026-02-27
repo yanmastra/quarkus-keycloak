@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * This class contains the basic columns that should be defined on every Entity
@@ -42,6 +43,10 @@ public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serial
         this.createdAt = createdAt;
     }
 
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt == null ? null : createdAt.toOffsetDateTime();
+    }
+
     public String getCreatedBy() {
         return createdBy;
     }
@@ -56,6 +61,10 @@ public abstract class BaseEntity<Id> extends PanacheEntityBase implements Serial
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setUpdatedAt(ZonedDateTime updatedAt) {
+        this.updatedAt = updatedAt == null ? null : updatedAt.toOffsetDateTime();
     }
 
     public String getUpdatedBy() {
