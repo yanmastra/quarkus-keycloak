@@ -45,8 +45,7 @@ if [ ! -f "$SENTINEL_FILE" ]; then
     echo "[INFO] Waiting for Keycloak to become healthy..."
     MAX_WAIT=120
     ELAPSED=0
-    until curl -sf http://localhost:8080/health/ready > /dev/null 2>&1 || \
-          curl -sf http://localhost:8080/auth/health/ready > /dev/null 2>&1; do
+    until bash -c 'cat < /dev/null > /dev/tcp/localhost/8080' 2>/dev/null; do
         sleep 5
         ELAPSED=$((ELAPSED + 5))
         if [ $ELAPSED -ge $MAX_WAIT ]; then

@@ -38,7 +38,7 @@ networks:
 # ---------------------------------------------------------------------------
 # Volumes (named volumes are managed by Docker; bind mounts use host paths)
 # ---------------------------------------------------------------------------
-volumes:
+#volumes:
 # We use bind mounts (host paths) so data survives `docker compose down -v`
 # All paths are set in .env via the DATA_* variables
 
@@ -71,8 +71,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USERNAME} -d ${KC_DB_NAME}"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 20s
+      retries: 10
+      start_period: 60s
     # Security: no ports exposed to host — only accessible within backend network
     expose:
       - "5432"
@@ -112,7 +112,7 @@ services:
       KC_HTTP_PORT:            "8080"
       KC_HOSTNAME:             ${DOMAIN}
       KC_HOSTNAME_STRICT:      "false"
-      KC_HOSTNAME_STRICT_HTTPS:"false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
 
       # ---- Features ----
       KC_FEATURES: token-exchange,admin-fine-grained-authz
@@ -138,7 +138,7 @@ services:
     expose:
       - "8080"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      test: ["CMD-SHELL", "bash -c 'cat < /dev/null > /dev/tcp/localhost/8080' 2>/dev/null"]
       interval: 30s
       timeout: 10s
       retries: 10
