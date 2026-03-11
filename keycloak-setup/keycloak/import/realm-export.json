@@ -1,8 +1,8 @@
 {
-  "id": "my-realm",
-  "realm": "my-realm",
-  "displayName": "My Application",
-  "displayNameHtml": "<b>My Application</b>",
+  "id": "${KC_REALM_NAME}",
+  "realm": "${KC_REALM_NAME}",
+  "displayName": "${KC_REALM_DISPLAY_NAME}",
+  "displayNameHtml": "<b>${KC_REALM_DISPLAY_NAME}</b>",
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": false,
@@ -39,8 +39,8 @@
   "smtpServer": {
     "host": "",
     "port": "587",
-    "from": "no-reply@example.com",
-    "fromDisplayName": "My Application",
+    "from": "${KC_SMTP_FROM}",
+    "fromDisplayName": "${KC_REALM_DISPLAY_NAME}",
     "ssl": "false",
     "starttls": "true",
     "auth": "false"
@@ -53,7 +53,7 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "REPLACE_WITH_STRONG_SECRET",
-      "publicClient": false,
+      "publicClient": true,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
@@ -61,12 +61,14 @@
       "authorizationServicesEnabled": false,
       "protocol": "openid-connect",
       "redirectUris": [
-        "https://app.example.com/*",
-        "http://localhost:8080/*"
+        "https://${KC_WEB_APP_REDIRECT_URI}/*",
+        "http://localhost:8080/*",
+        "http://localhost:3000/*"
       ],
       "webOrigins": [
-        "https://app.example.com",
-        "http://localhost:8080"
+        "https://${KC_WEB_APP_REDIRECT_URI}",
+        "http://localhost:8080",
+        "http://localhost:3000"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256",
@@ -99,7 +101,7 @@
       "description": "Machine-to-machine client — Client Credentials Flow",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "REPLACE_WITH_STRONG_M2M_SECRET",
+      "secret": "${KC_BACKEND_CLIENT_SECRET}",
       "publicClient": false,
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
@@ -358,7 +360,7 @@
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
   "attributes": {
-    "frontendUrl": "https://auth.example.com",
+    "frontendUrl": "https://${DOMAIN}",
     "acr.loa.map": "{}",
     "oauth2.device.code.lifespan": "600",
     "oauth2.device.polling.interval": "5",

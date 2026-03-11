@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # Keycloak Entrypoint Script
-# Location inside container: /opt/keycloak/data/import/entrypoint.sh
+# Location inside container: /opt/keycloak/data/import-templates/entrypoint.sh
 #
 # Logic:
 #   - On FIRST RUN (sentinel file absent): start Keycloak with --import-realm
@@ -16,6 +16,7 @@
 set -e
 
 SENTINEL_FILE="/opt/keycloak/data/.realm-imported"
+TEMPLATE_DIR="/opt/keycloak/data/import-templates"
 IMPORT_DIR="/opt/keycloak/data/import"
 REALM_FILE="${REALM_IMPORT_FILE:-realm-export}.json"
 
@@ -23,6 +24,31 @@ echo "=========================================="
 echo "  Keycloak Entrypoint"
 echo "  Realm import file: ${REALM_FILE}"
 echo "=========================================="
+
+# ---------------------------------------------------------------------------
+# Process realm template — replace ${VAR} placeholders with env-var values.
+# The template lives in the read-only mount (import-templates/); the rendered
+# file is written to the writable import/ dir that Keycloak's --import-realm
+# reads from.
+# Uses sed instead of envsubst (not available in the Keycloak UBI image).
+# Only the variables listed below are substituted — Keycloak's own
+# placeholders like ${client_id} are left untouched.
+# ---------------------------------------------------------------------------
+if [ -f "$TEMPLATE_DIR/$REALM_FILE" ]; then
+    echo "[INFO] Processing realm template with sed..."
+    mkdir -p "$IMPORT_DIR"
+    sed \
+        -e "s|\${DOMAIN}|${DOMAIN}|g" \
+        -e "s|\${KC_REALM_NAME}|${KC_REALM_NAME}|g" \
+        -e "s|\${KC_REALM_DISPLAY_NAME}|${KC_REALM_DISPLAY_NAME}|g" \
+        -e "s|\${KC_WEB_APP_REDIRECT_URI}|${KC_WEB_APP_REDIRECT_URI}|g" \
+        -e "s|\${KC_BACKEND_CLIENT_SECRET}|${KC_BACKEND_CLIENT_SECRET}|g" \
+        -e "s|\${KC_SMTP_FROM}|${KC_SMTP_FROM}|g" \
+        "$TEMPLATE_DIR/$REALM_FILE" > "$IMPORT_DIR/$REALM_FILE"
+    echo "[INFO] Rendered $IMPORT_DIR/$REALM_FILE"
+else
+    echo "[WARN] Template not found at $TEMPLATE_DIR/$REALM_FILE"
+fi
 
 if [ ! -f "$SENTINEL_FILE" ]; then
     echo "[FIRST RUN] Sentinel not found — performing realm import..."

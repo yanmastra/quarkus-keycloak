@@ -10,8 +10,8 @@
 #
 # First-run behaviour:
 #   - PostgreSQL initialises the keycloak database via postgres/init/01-init.sql
-#   - Keycloak imports realm-export.json ONLY when the data volume is empty
-#     (controlled by the KC_IMPORT_REALM env var and the entrypoint check)
+#   - The entrypoint renders the realm template (envsubst) then imports it
+#     ONLY when the data volume is empty (controlled by the sentinel file)
 #   - On subsequent starts, realm import is skipped automatically
 #
 # Volume layout on host (set paths in .env):
@@ -125,16 +125,24 @@ services:
       # ---- Realm import flag (used by entrypoint script) ----
       REALM_IMPORT_FILE: ${REALM_IMPORT_FILE:-realm-export}
 
+      # ---- Realm template variables (used by envsubst in entrypoint) ----
+      DOMAIN:                   ${DOMAIN}
+      KC_REALM_NAME:            ${KC_REALM_NAME}
+      KC_REALM_DISPLAY_NAME:    ${KC_REALM_DISPLAY_NAME}
+      KC_WEB_APP_REDIRECT_URI:  ${KC_WEB_APP_REDIRECT_URI}
+      KC_BACKEND_CLIENT_SECRET: ${KC_BACKEND_CLIENT_SECRET}
+      KC_SMTP_FROM:             ${KC_SMTP_FROM}
+
     volumes:
       # Keycloak persistent data (uploaded providers, etc.)
       - ${KEYCLOAK_DATA_PATH}:/opt/keycloak/data
-      # Realm import files — read-only
-      - ./keycloak/import:/opt/keycloak/data/import:ro
+      # Realm template files — read-only; entrypoint renders to /opt/keycloak/data/import/
+      - ./keycloak/import:/opt/keycloak/data/import-templates:ro
       # Theme files — mounted directly from host, no image rebuild needed.
       # Edit files under ./keycloak/themes/ then restart: docker compose restart keycloak
       - ${KEYCLOAK_THEMES_PATH}:/opt/keycloak/themes:ro
     # Custom entrypoint: import realm only on first run, then start normally
-    entrypoint: ["/bin/bash", "/opt/keycloak/data/import/entrypoint.sh"]
+    entrypoint: ["/bin/bash", "/opt/keycloak/data/import-templates/entrypoint.sh"]
     expose:
       - "8080"
     healthcheck:
