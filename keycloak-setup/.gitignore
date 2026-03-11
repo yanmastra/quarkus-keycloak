@@ -1,0 +1,18 @@
+# Environment — never commit secrets
+.env
+
+# SSL certificates
+nginx/ssl/
+
+# Persisted data volumes
+data/
+
+# Docker build artefacts
+Dockerfile.keycloak
+Dockerfile.postgres
+postgres/postgresql.conf
+postgres/init/
+
+# OS
+.DS_Store
+Thumbs.db

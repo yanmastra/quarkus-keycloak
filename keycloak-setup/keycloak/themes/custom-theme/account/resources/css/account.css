@@ -1,0 +1,37 @@
+/* =============================================================================
+   Custom Keycloak Theme — Account Console CSS
+   Inherits base Keycloak account styles and applies brand colours
+   ============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --pf-global--primary-color--100: #4B49AC;
+  --pf-global--primary-color--200: #3a3888;
+  --pf-global--link--Color:        #4B49AC;
+  --pf-global--FontFamily--sans-serif: 'Nunito', sans-serif;
+  --pf-global--BorderRadius:       8px;
+}
+
+body,
+.pf-c-page {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+.pf-c-button.pf-m-primary {
+  background-color: #4B49AC;
+  border-color: #4B49AC;
+}
+.pf-c-button.pf-m-primary:hover {
+  background-color: #3a3888;
+  border-color: #3a3888;
+}
+
+a { color: #4B49AC; }
+a:hover { color: #3a3888; }
+
+.pf-c-nav__link.pf-m-current,
+.pf-c-nav__link:hover {
+  color: #4B49AC;
+  border-left-color: #4B49AC;
+}
