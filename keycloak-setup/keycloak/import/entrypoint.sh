@@ -44,6 +44,14 @@ if [ -f "$TEMPLATE_DIR/$REALM_FILE" ]; then
         -e "s|\${KC_WEB_APP_REDIRECT_URI}|${KC_WEB_APP_REDIRECT_URI}|g" \
         -e "s|\${KC_BACKEND_CLIENT_SECRET}|${KC_BACKEND_CLIENT_SECRET}|g" \
         -e "s|\${KC_SMTP_FROM}|${KC_SMTP_FROM}|g" \
+        -e "s|\${KC_SMTP_REPLY_TO}|${KC_SMTP_REPLY_TO}|g" \
+        -e "s|\${KC_SMTP_HOST}|${KC_SMTP_HOST}|g" \
+        -e "s|\${KC_SMTP_PORT}|${KC_SMTP_PORT}|g" \
+        -e "s|\${KC_SMTP_SSL}|${KC_SMTP_SSL}|g" \
+        -e "s|\${KC_SMTP_STARTTLS}|${KC_SMTP_STARTTLS}|g" \
+        -e "s|\${KC_SMTP_AUTH}|${KC_SMTP_AUTH}|g" \
+        -e "s|\${KC_SMTP_USER}|${KC_SMTP_USER}|g" \
+        -e "s|\${KC_SMTP_PASSWORD}|${KC_SMTP_PASSWORD}|g" \
         "$TEMPLATE_DIR/$REALM_FILE" > "$IMPORT_DIR/$REALM_FILE"
     echo "[INFO] Rendered $IMPORT_DIR/$REALM_FILE"
 else

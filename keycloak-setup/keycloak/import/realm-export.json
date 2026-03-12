@@ -37,13 +37,16 @@
   "defaultLocale": "en",
   "supportedLocales": ["en"],
   "smtpServer": {
-    "host": "",
-    "port": "587",
+    "host": "${KC_SMTP_HOST}",
+    "port": "${KC_SMTP_PORT}",
     "from": "${KC_SMTP_FROM}",
     "fromDisplayName": "${KC_REALM_DISPLAY_NAME}",
-    "ssl": "false",
-    "starttls": "true",
-    "auth": "false"
+    "replyTo": "${KC_SMTP_REPLY_TO}",
+    "ssl": "${KC_SMTP_SSL}",
+    "starttls": "${KC_SMTP_STARTTLS}",
+    "auth": "${KC_SMTP_AUTH}",
+    "user": "${KC_SMTP_USER}",
+    "password": "${KC_SMTP_PASSWORD}"
   },
   "clients": [
     {

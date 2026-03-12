@@ -132,6 +132,14 @@ services:
       KC_WEB_APP_REDIRECT_URI:  ${KC_WEB_APP_REDIRECT_URI}
       KC_BACKEND_CLIENT_SECRET: ${KC_BACKEND_CLIENT_SECRET}
       KC_SMTP_FROM:             ${KC_SMTP_FROM}
+      KC_SMTP_REPLY_TO:         ${KC_SMTP_REPLY_TO}
+      KC_SMTP_HOST:             ${KC_SMTP_HOST}
+      KC_SMTP_PORT:             ${KC_SMTP_PORT}
+      KC_SMTP_SSL:              ${KC_SMTP_SSL}
+      KC_SMTP_STARTTLS:         ${KC_SMTP_STARTTLS}
+      KC_SMTP_AUTH:             ${KC_SMTP_AUTH}
+      KC_SMTP_USER:             ${KC_SMTP_USER}
+      KC_SMTP_PASSWORD:         ${KC_SMTP_PASSWORD}
 
     volumes:
       # Keycloak persistent data (uploaded providers, etc.)
