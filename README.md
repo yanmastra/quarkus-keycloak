@@ -49,7 +49,14 @@ The extensions in this project are published to **GitHub Packages**. You can use
 
 ### 1. Create a GitHub Personal Access Token (PAT)
 
-Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens) and create a token with the `read:packages` scope.
+You need a Personal Access Token (PAT) to authenticate with GitHub Packages.
+
+1. Go to [GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens)
+2. Click **"Generate new token"** > **"Generate new token (classic)"**
+3. Give it a descriptive name (e.g. `maven-packages-read`)
+4. Select the **`read:packages`** scope
+5. Click **"Generate token"**
+6. Copy the token immediately — you won't be able to see it again
 
 ### 2. Configure Maven settings
 
