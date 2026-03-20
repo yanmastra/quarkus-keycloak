@@ -1,5 +1,5 @@
 If you want involved to develop the dependencies, you need to set up the project on your PC/Laptop
-## How to se tup for dependency development in local environment?
+## How to setup for dependency development in local environment?
 Please follow these steps to run this project correctly
 - [1. Create a project directory in your PC](#1-create-a-project-directory-in-your-pc)
 - [2. Clone the Project](#2-clone-the-project)
@@ -101,7 +101,7 @@ Certificate is needed to secure our keycloak
    (don't worry about Dockerfile, it would be generated letter)
 
 ### 6. Run Keycloak and PostgreSQL
-1. On your terminal, please run this ``./compose-up-keycloak-posgress.sh``
+1. On your terminal, please run this ``./compose-up-keycloak-postgress.sh``
 2. Please wait until finish, the result would be like this
    ![image](/docs/img/compose-up-keycloak-postgress.png)
 
@@ -110,6 +110,6 @@ Click [the title](/docs/keycloak-setup.md) to see the complete instruction
 
 ### 8. Complete
 Now, our setup to run this project is complete, so you can run [Rest Sample](/services/rest-sample) project by
-open the terminal and enter to [microservices/rest-sample](/services/rest-sample) folder and then run ``./run-debug.sh`` script
+open the terminal and enter to [services/rest-sample](/services/rest-sample) folder and then run ``./run-debug.sh`` script
 
 [Back](../README.md#7-setup-keycloak)

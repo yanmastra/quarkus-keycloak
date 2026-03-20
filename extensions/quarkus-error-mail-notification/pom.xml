@@ -4,10 +4,10 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.yanmastra</groupId>
-    <artifactId>quarkus-authentication-parent</artifactId>
+    <artifactId>quarkus-error-mail-notification-parent</artifactId>
     <version>4.0.4</version>
     <packaging>pom</packaging>
-    <name>authentication - Parent</name>
+    <name>Error Mail Notification - Parent</name>
     <modules>
         <module>deployment</module>
         <module>runtime</module>

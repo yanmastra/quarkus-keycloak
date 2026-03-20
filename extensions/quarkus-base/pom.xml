@@ -171,6 +171,13 @@
             </plugins>
         </pluginManagement>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub yanmastra Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/yanmastra/quarkus-keycloak</url>
+        </repository>
+    </distributionManagement>
     <repositories>
         <repository>
             <id>maven_central</id>

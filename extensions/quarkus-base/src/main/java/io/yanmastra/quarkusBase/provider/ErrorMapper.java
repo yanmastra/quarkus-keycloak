@@ -2,8 +2,10 @@ package io.yanmastra.quarkusBase.provider;
 
 import io.quarkus.runtime.util.StringUtil;
 import io.vertx.ext.web.handler.HttpException;
+import io.yanmastra.quarkusBase.event.ErrorEvent;
 import io.yanmastra.quarkusBase.exception.ValidationErrorException;
 import io.yanmastra.quarkusBase.utils.ValidationUtils;
+import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -37,6 +39,9 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
 
     @Inject
     Instance<HtmlErrorMapper> htmlErrorMappers;
+
+    @Inject
+    Event<ErrorEvent> errorEvent;
 
     @Override
     public void asyncResponse(Exception exception, AsyncExceptionMapperContext context) {
@@ -84,6 +89,12 @@ public class ErrorMapper implements ResteasyReactiveAsyncExceptionMapper<Excepti
                     Throwable cause = exception.getCause();
                     message = cause == null ? exception.getMessage() : cause.getMessage();
                 }
+            }
+
+            try {
+                errorEvent.fire(new ErrorEvent(exception, status, requestContext.getUriInfo().getPath(), message));
+            } catch (Exception e) {
+                logger.error("Failed to fire error event", e);
             }
 
             JsonObjectBuilder job = Json.createObjectBuilder()

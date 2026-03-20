@@ -13,6 +13,7 @@ root/
 │   ├── quarkus-authentication/
 │   ├── quarkus-authorization/
 │   ├── quarkus-microservices-common/
+│   ├── quarkus-error-mail-notification/
 │   └── media-file-manager/
 ├── services/             # Microservices
 │   ├── rest-sample/
@@ -38,7 +39,85 @@ root/
 - [~~How to run a service ?~~](/docs/how-to-run-a-services.md)
 - [~~Postman Collection file~~](/docs/postman/)
 - [~~Architecture Study Case~~](/docs/architecture-study-case.md)
-- [~~Performance Test~~](/docs/peformance-test)
+- [~~Performance Test~~](/docs/performance-test)
+
+<hr/>
+
+## Using Extensions as Dependencies
+
+The extensions in this project are published to **GitHub Packages**. You can use them in your own Quarkus project without cloning this repo.
+
+### 1. Create a GitHub Personal Access Token (PAT)
+
+Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens) and create a token with the `read:packages` scope.
+
+### 2. Configure Maven settings
+
+Add the following to your `~/.m2/settings.xml`:
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>github</id>
+      <username>YOUR_GITHUB_USERNAME</username>
+      <password>YOUR_GITHUB_PAT</password>
+    </server>
+  </servers>
+</settings>
+```
+
+### 3. Add the repository to your project `pom.xml`
+
+```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/yanmastra/quarkus-keycloak</url>
+    </repository>
+</repositories>
+```
+
+### 4. Add the dependencies you need
+
+```xml
+<!-- Base utilities (required by all other extensions) -->
+<dependency>
+    <groupId>io.yanmastra</groupId>
+    <artifactId>quarkus-base</artifactId>
+    <version>4.0.4</version>
+</dependency>
+
+<!-- Keycloak authorization (bearer token + policy enforcement) -->
+<dependency>
+    <groupId>io.yanmastra</groupId>
+    <artifactId>quarkus-authorization</artifactId>
+    <version>4.0.4</version>
+</dependency>
+
+<!-- JWT authentication (cannot be combined with quarkus-authorization) -->
+<dependency>
+    <groupId>io.yanmastra</groupId>
+    <artifactId>quarkus-authentication</artifactId>
+    <version>4.0.4</version>
+</dependency>
+
+<!-- Auto-generated CRUD REST endpoints -->
+<dependency>
+    <groupId>io.yanmastra</groupId>
+    <artifactId>quarkus-microservices-common</artifactId>
+    <version>4.0.4</version>
+</dependency>
+
+<!-- Error mail notification -->
+<dependency>
+    <groupId>io.yanmastra</groupId>
+    <artifactId>quarkus-error-mail-notification</artifactId>
+    <version>4.0.4</version>
+</dependency>
+```
+
+> **Note:** `quarkus-authentication` and `quarkus-authorization` have conflicting auth beans and cannot be used together in the same service.
 
 <hr/>
 

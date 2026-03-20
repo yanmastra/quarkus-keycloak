@@ -12,19 +12,19 @@ If you got interesting, lets explore
 - quarkus-jdbc-postgresql
 
 ### Installation
-1. Come to root folder of this project
-1. Run [``./scripts/deploy-dependency.sh``](/scripts/deploy-dependency.sh)
-1. Come to [``/deployed-dependencies``](/deployed-dependencies)
-1. Copy folder [``quarkus-microservices-common``](/deplyed-dependencies/quarkus-microservices-common) and put to folder [``/extensions``]() on root folder of your project
-1. Add this to your pom.xml project in dependencies part 
-    ```xml
-    <dependency>
-        <groupId>io.yanmastra</groupId>
-        <artifactId>quarkus-microservices-common</artifactId>
-        <version>4.0.1</version>
-    </dependency>
-    ```
-1. Try to run ``mvn clean install -DskipTests`` in root folder of your project, if there is no error, the dependency is installed successfully
+
+This extension is published to GitHub Packages. See [Using Extensions as Dependencies](/README.md#using-extensions-as-dependencies) for setup instructions.
+
+Add this to your `pom.xml`:
+```xml
+<dependency>
+    <groupId>io.yanmastra</groupId>
+    <artifactId>quarkus-microservices-common</artifactId>
+    <version>4.0.4</version>
+</dependency>
+```
+
+To verify the installation, run ``mvn clean install -DskipTests`` in the root folder of your project.
 
 ### Dependency usage
 #### [`io.yanmastra.quarkus.microservices.common.entity.BaseEntity`](runtime/src/main/java/io/yanmastra/quarkus/microservices/common/entity/BaseEntity)

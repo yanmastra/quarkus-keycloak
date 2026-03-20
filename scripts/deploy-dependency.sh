@@ -11,7 +11,7 @@ cd extensions || exit
 DIRDPC=$(pwd)
 echo "$DIRDPC"
 
-DEP_LIST="quarkus-base quarkus-authentication quarkus-authorization quarkus-microservices-common"
+DEP_LIST="quarkus-base quarkus-authentication quarkus-authorization quarkus-microservices-common quarkus-error-mail-notification"
 DEP_CATEGORY="deployment runtime"
 for dep in $DEP_LIST ; do
     echo "deploying : $dep"
