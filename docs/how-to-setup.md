@@ -1,5 +1,5 @@
 If you want involved to develop the dependencies, you need to set up the project on your PC/Laptop
-## How to se tup for dependency development in local environment?
+## How to setup for dependency development in local environment?
 Please follow these steps to run this project correctly
 - [1. Create a project directory in your PC](#1-create-a-project-directory-in-your-pc)
 - [2. Clone the Project](#2-clone-the-project)
@@ -96,12 +96,12 @@ Certificate is needed to secure our keycloak
 1. Run ``./create-certificate.sh`` on your terminal
 2. After that check on folder ``./nginx/certs``, ``self-signed.crt`` and ``self-signed.key`` files would be there <br/>
    ![image](/docs/img/nginx-certs.png)
-3. And then check on folder ``./docker/keycloak/``, ``server.keystore`` would be there
+3. And then check on folder ``./infra/docker/keycloak/``, ``server.keystore`` would be there
    ![image](/docs/img/server-keystore.png) <br/>
    (don't worry about Dockerfile, it would be generated letter)
 
 ### 6. Run Keycloak and PostgreSQL
-1. On your terminal, please run this ``./compose-up-keycloak-posgress.sh``
+1. On your terminal, please run this ``./compose-up-keycloak-postgress.sh``
 2. Please wait until finish, the result would be like this
    ![image](/docs/img/compose-up-keycloak-postgress.png)
 
@@ -109,7 +109,7 @@ Certificate is needed to secure our keycloak
 Click [the title](/docs/keycloak-setup.md) to see the complete instruction
 
 ### 8. Complete
-Now, our setup to run this project is complete, so you can run [Rest Sample](/microservices/rest-sample) project by
-open the terminal and enter to [microservices/rest-sample](/microservices/rest-sample) folder and then run ``./run-debug.sh`` script
+Now, our setup to run this project is complete, so you can run [Rest Sample](/services/rest-sample) project by
+open the terminal and enter to [services/rest-sample](/services/rest-sample) folder and then run ``./run-debug.sh`` script
 
 [Back](../README.md#7-setup-keycloak)
