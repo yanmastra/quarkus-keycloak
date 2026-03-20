@@ -49,7 +49,14 @@ The extensions in this project are published to **GitHub Packages**. You can use
 
 ### 1. Create a GitHub Personal Access Token (PAT)
 
-Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens) and create a token with the `read:packages` scope.
+You need a Personal Access Token (PAT) to authenticate with GitHub Packages.
+
+1. Go to [GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens)
+2. Click **"Generate new token"** > **"Generate new token (classic)"**
+3. Give it a descriptive name (e.g. `maven-packages-read`)
+4. Select the **`read:packages`** scope
+5. Click **"Generate token"**
+6. Copy the token immediately — you won't be able to see it again
 
 ### 2. Configure Maven settings
 
@@ -85,35 +92,35 @@ Add the following to your `~/.m2/settings.xml`:
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-base</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- Keycloak authorization (bearer token + policy enforcement) -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authorization</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- JWT authentication (cannot be combined with quarkus-authorization) -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authentication</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- Auto-generated CRUD REST endpoints -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-microservices-common</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- Error mail notification -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-error-mail-notification</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 

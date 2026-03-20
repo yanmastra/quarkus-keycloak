@@ -20,7 +20,7 @@ Add this to your `pom.xml`:
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-microservices-common</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 
