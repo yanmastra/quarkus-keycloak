@@ -1,0 +1,197 @@
+# =============================================================================
+# Docker Compose — Keycloak + PostgreSQL + Nginx
+# Single VM deployment with external volume persistence
+#
+# Prerequisites:
+#   1. Copy .env.example to .env and fill in your values
+#   2. Run: ./scripts/generate-ssl.sh
+#   3. Run: ./scripts/generate-dockerfiles.sh
+#   4. Run: docker compose up -d --build
+#
+# First-run behaviour:
+#   - PostgreSQL initialises the keycloak database via postgres/init/01-init.sql
+#   - The entrypoint renders the realm template (envsubst) then imports it
+#     ONLY when the data volume is empty (controlled by the sentinel file)
+#   - On subsequent starts, realm import is skipped automatically
+#
+# Volume layout on host (set paths in .env):
+#   ./data/postgres       — PostgreSQL data directory
+#   ./data/keycloak-data  — Keycloak /opt/keycloak/data (providers, etc.)
+#   ./keycloak/themes     — Custom themes (mounted read-only; edit without rebuild)
+#   ./nginx/ssl           — SSL certificates
+# =============================================================================
+
+name: keycloak-stack
+
+# ---------------------------------------------------------------------------
+# Networks
+# ---------------------------------------------------------------------------
+networks:
+  frontend:
+    driver: bridge
+    name: keycloak-frontend
+  backend:
+    driver: bridge
+    name: keycloak-backend
+    internal: true     # Postgres & Keycloak backend — not reachable from outside
+
+# ---------------------------------------------------------------------------
+# Volumes (named volumes are managed by Docker; bind mounts use host paths)
+# ---------------------------------------------------------------------------
+#volumes:
+# We use bind mounts (host paths) so data survives `docker compose down -v`
+# All paths are set in .env via the DATA_* variables
+
+# ---------------------------------------------------------------------------
+# Services
+# ---------------------------------------------------------------------------
+services:
+
+  # ---- 1. PostgreSQL -------------------------------------------------------
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: keycloak-postgres
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      POSTGRES_DB:       ${KC_DB_NAME}
+      POSTGRES_USER:     ${KC_DB_USERNAME}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
+      PGDATA:            /var/lib/postgresql/data/pgdata
+    volumes:
+      # Persistent data directory on host
+      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
+      # Init scripts — run ONLY when data directory is empty (first start)
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USERNAME} -d ${KC_DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    # Security: no ports exposed to host — only accessible within backend network
+    expose:
+      - "5432"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---- 2. Keycloak ---------------------------------------------------------
+  keycloak:
+    build:
+      context: .
+      dockerfile: Dockerfile.keycloak
+    container_name: keycloak-app
+    restart: unless-stopped
+    networks:
+      - backend
+      - frontend    # Nginx needs to reach Keycloak
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # ---- Admin credentials ----
+      KEYCLOAK_ADMIN:          ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+
+      # ---- Database ----
+      KC_DB:          postgres
+      KC_DB_URL:      jdbc:postgresql://postgres:5432/${KC_DB_NAME}
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+
+      # ---- Network / Proxy ----
+      KC_PROXY:                edge
+      KC_HTTP_ENABLED:         "true"
+      KC_HTTP_PORT:            "8080"
+      KC_HOSTNAME:             ${DOMAIN}
+      KC_HOSTNAME_STRICT:      "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+
+      # ---- Features ----
+      KC_FEATURES: token-exchange,admin-fine-grained-authz
+
+      KC_HEALTH_ENABLED: "true"
+
+      # ---- Logging ----
+      KC_LOG_LEVEL: INFO
+
+      # ---- Realm import flag (used by entrypoint script) ----
+      REALM_IMPORT_FILE: ${REALM_IMPORT_FILE:-realm-export}
+
+      # ---- Realm template variables (used by envsubst in entrypoint) ----
+      DOMAIN:                   ${DOMAIN}
+      KC_REALM_NAME:            ${KC_REALM_NAME}
+      KC_REALM_DISPLAY_NAME:    ${KC_REALM_DISPLAY_NAME}
+      KC_WEB_APP_REDIRECT_URI:  ${KC_WEB_APP_REDIRECT_URI}
+      KC_BACKEND_CLIENT_SECRET: ${KC_BACKEND_CLIENT_SECRET}
+      KC_SMTP_FROM:             ${KC_SMTP_FROM}
+      KC_SMTP_REPLY_TO:         ${KC_SMTP_REPLY_TO}
+      KC_SMTP_HOST:             ${KC_SMTP_HOST}
+      KC_SMTP_PORT:             ${KC_SMTP_PORT}
+      KC_SMTP_SSL:              ${KC_SMTP_SSL}
+      KC_SMTP_STARTTLS:         ${KC_SMTP_STARTTLS}
+      KC_SMTP_AUTH:             ${KC_SMTP_AUTH}
+      KC_SMTP_USER:             ${KC_SMTP_USER}
+      KC_SMTP_PASSWORD:         ${KC_SMTP_PASSWORD}
+
+    volumes:
+      # Keycloak persistent data (uploaded providers, etc.)
+      - ${KEYCLOAK_DATA_PATH}:/opt/keycloak/data
+      # Realm template files — read-only; entrypoint renders to /opt/keycloak/data/import/
+      - ./keycloak/import:/opt/keycloak/data/import-templates:ro
+      # Theme files — mounted directly from host, no image rebuild needed.
+      # Edit files under ./keycloak/themes/ then restart: docker compose restart keycloak
+      - ${KEYCLOAK_THEMES_PATH}:/opt/keycloak/themes:ro
+    # Custom entrypoint: import realm only on first run, then start normally
+    entrypoint: ["/bin/bash", "/opt/keycloak/data/import-templates/entrypoint.sh"]
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'cat < /dev/null > /dev/tcp/localhost/8080' 2>/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+  # ---- 3. Nginx ------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: keycloak-nginx
+    restart: unless-stopped
+    networks:
+      - frontend
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ${NGINX_SSL_PATH}:/etc/nginx/ssl:ro
+      # Optional: certbot webroot for Let's Encrypt renewal
+      - ./data/certbot/www:/var/www/certbot:ro
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

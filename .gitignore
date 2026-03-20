@@ -7,17 +7,17 @@
 **/**.zip
 **.cache
 **.mysql
-./docker
+./infra/docker
 **/privatekey.pem
 **/publickey.pub
 .test
 **/null/**
 
 .mysql
-docker/.postgresql
-docker/nginx/certs/**.crt
-docker/nginx/certs/**.key
-docker/nginx/nginx.conf
-docker/keycloak/Dockerfile
-docker/keycloak/**.keystore
+infra/docker/.postgresql
+infra/docker/nginx/certs/**.crt
+infra/docker/nginx/certs/**.key
+infra/docker/nginx/nginx.conf
+infra/docker/keycloak/Dockerfile
+infra/docker/keycloak/**.keystore
 **/deployed-dependencies/**

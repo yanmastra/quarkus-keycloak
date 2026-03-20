@@ -35,7 +35,8 @@ Please follow these steps to set up the Keycloak correctly
 17. "Frontend" client is successfully created, now we have two clients
     ![Keycloak client list](/docs/img/keycloak-client-list.png)
 18. Then we need to fill a-few more environment variables based on our Keycloak config, so edit the ``docker_env.env`` file
-    , find ``KEYCLOAK_REALM=``, and fill the value by your Realm name that you have been created!
+    (if you haven't created it yet, copy ``.env.example`` to ``docker_env.env`` in the ``infra/docker/`` folder),
+    find ``KEYCLOAK_REALM=``, and fill the value by your Realm name that you have been created!
 19. Back to Keycloak admin console, from the "Clients" list page, click the "backend", and then click "Credentials" tab, then
     click "Copy to clipboard" icon on "Client Secret" field
     ![Copy Client Secret](/docs/img/keycloak-copy-client-secret.png)
