@@ -92,35 +92,35 @@ Add the following to your `~/.m2/settings.xml`:
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-base</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- Keycloak authorization (bearer token + policy enforcement) -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authorization</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- JWT authentication (cannot be combined with quarkus-authorization) -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-authentication</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- Auto-generated CRUD REST endpoints -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-microservices-common</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 
 <!-- Error mail notification -->
 <dependency>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-error-mail-notification</artifactId>
-    <version>4.0.4</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 
