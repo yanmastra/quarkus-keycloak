@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.yanmastra</groupId>
         <artifactId>quarkus-error-mail-notification-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.2</version>
     </parent>
     <artifactId>quarkus-error-mail-notification-integration-tests</artifactId>
     <name>Error Mail Notification - Integration Tests</name>
