@@ -3,7 +3,7 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$DIR"
-cd deployed-dependencies || exit
+cd deployed-dependencies || mkdir deployed-dependencies && cd deployed-dependencies
 DIR_DEPLOYED=$(pwd)
 cd $DIR
 
@@ -16,6 +16,8 @@ DEP_CATEGORY="deployment runtime"
 for dep in $DEP_LIST ; do
     echo "deploying : $dep"
     cd $dep || exit 0
+
+    mvn deploy -DskipTests
 
     echo "getting version: mvn -q -Dexec.executable=echo -Dexec.args='\${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:3.1.0:exec"
     VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:3.1.0:exec)
