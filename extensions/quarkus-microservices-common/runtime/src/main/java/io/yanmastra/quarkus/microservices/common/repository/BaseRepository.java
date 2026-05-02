@@ -38,7 +38,7 @@ public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implemen
             if (securityIdentity.getPrincipal() == null) return null;
             return (securityIdentity.getPrincipal() instanceof UserPrincipal userPrincipal) ? userPrincipal : null;
         } catch (Exception e) {
-            log.error("Security Error: " + e.getMessage());
+            log.error("Security Error: " + e.getMessage(), e);
             return null;
         }
     }
@@ -124,7 +124,7 @@ public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implemen
 
             return find(hql, sort, queryParams);
         } catch (Throwable e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
         return null;
     }
