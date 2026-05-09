@@ -9,6 +9,7 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.yanmastra.quarkus.microservices.common.utils.CrudQueryFilterUtils;
 import io.yanmastra.quarkus.microservices.common.v2.entity.BaseEntity;
 import io.yanmastra.quarkusBase.security.UserPrincipal;
+import jakarta.enterprise.context.ContextNotActiveException;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.MultivaluedMap;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +38,11 @@ public abstract class BaseRepository<Entity extends BaseEntity<Id>, Id> implemen
             if (securityIdentity == null) return null;
             if (securityIdentity.getPrincipal() == null) return null;
             return (securityIdentity.getPrincipal() instanceof UserPrincipal userPrincipal) ? userPrincipal : null;
+        } catch (ContextNotActiveException cne) {
+            log.warn("NON REQUEST SCOPE PERSISTENT IN " + getClass().getName());
+            return null;
         } catch (Exception e) {
-            log.error("Security Error: " + e.getMessage(), e);
+            log.error("PERSISTENT SECURITY :" + e.getMessage(), e);
             return null;
         }
     }
