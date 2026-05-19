@@ -22,6 +22,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class KeyValueCacheUtils {
     private static final String CACHE_DIR = "/.cache_v2";
@@ -36,6 +37,20 @@ public class KeyValueCacheUtils {
 
     private static SecretKey cachedKey = null;
 
+    // 32 fixed stripes — ~1.6 KB total memory regardless of session count.
+    // Same cacheName always maps to the same stripe, so concurrent access on
+    // the same session file is serialised; different sessions rarely share a stripe.
+    private static final int STRIPES = 32;
+    private static final ReentrantReadWriteLock[] STRIPE_LOCKS;
+    static {
+        STRIPE_LOCKS = new ReentrantReadWriteLock[STRIPES];
+        for (int i = 0; i < STRIPES; i++) STRIPE_LOCKS[i] = new ReentrantReadWriteLock();
+    }
+
+    private static ReentrantReadWriteLock stripeFor(String cacheName) {
+        return STRIPE_LOCKS[Math.abs(cacheName.hashCode() % STRIPES)];
+    }
+
     public static void removeCache(String cacheName, String key) {
         saveCache(cacheName, key, "");
     }
@@ -49,78 +64,90 @@ public class KeyValueCacheUtils {
         Map<String, String> mapLine = Map.of("key", key, "value", value);
         String sLine = JsonUtils.toJson(mapLine);
 
-        File file = getCacheFileName(cacheName);
-        File lockFile = new File(file.getAbsolutePath() + LOCK_SUFFIX);
+        ReentrantReadWriteLock rwLock = stripeFor(cacheName);
+        rwLock.writeLock().lock();
+        try {
+            File file = getCacheFileName(cacheName);
+            File lockFile = new File(file.getAbsolutePath() + LOCK_SUFFIX);
 
-        try (FileChannel channel = FileChannel.open(lockFile.toPath(),
-                StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-             FileLock lock = channel.lock()) {
+            try (FileChannel channel = FileChannel.open(lockFile.toPath(),
+                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                 FileLock lock = channel.lock()) {
 
-            StringBuilder cache = new StringBuilder();
-            Set<String> usedKey = new HashSet<>();
+                StringBuilder cache = new StringBuilder();
+                Set<String> usedKey = new HashSet<>();
 
-            String decrypted = readAndDecrypt(file);
-            if (StringUtils.isNotBlank(decrypted)) {
-                boolean hasReplaced = false;
-                for (String line : decrypted.split("\n")) {
-                    if (StringUtils.isBlank(line)) continue;
-                    Map<String, String> mapLine1 = JsonUtils.fromJson(line, new TypeReference<>() {
-                    });
-                    String cKey = mapLine1.get("key");
-                    if (usedKey.contains(cKey)) continue;
-                    usedKey.add(cKey);
+                String decrypted = readAndDecrypt(file);
+                if (StringUtils.isNotBlank(decrypted)) {
+                    boolean hasReplaced = false;
+                    for (String line : decrypted.split("\n")) {
+                        if (StringUtils.isBlank(line)) continue;
+                        Map<String, String> mapLine1 = JsonUtils.fromJson(line, new TypeReference<>() {
+                        });
+                        String cKey = mapLine1.get("key");
+                        if (usedKey.contains(cKey)) continue;
+                        usedKey.add(cKey);
 
-                    if (cKey.equals(key)) {
-                        if (StringUtils.isNotBlank(value)) {
-                            cache.append(sLine);
+                        if (cKey.equals(key)) {
+                            if (StringUtils.isNotBlank(value)) {
+                                cache.append(sLine);
+                                cache.append('\n');
+                            }
+                            hasReplaced = true;
+                        } else {
+                            cache.append(line);
                             cache.append('\n');
                         }
-                        hasReplaced = true;
-                    } else {
-                        cache.append(line);
+                    }
+
+                    if (!hasReplaced) {
+                        cache.append(sLine);
                         cache.append('\n');
                     }
-                }
-
-                if (!hasReplaced) {
+                } else {
                     cache.append(sLine);
                     cache.append('\n');
                 }
-            } else {
-                cache.append(sLine);
-                cache.append('\n');
-            }
 
-            encryptAndWrite(file, cache.toString());
-        } catch (IOException e) {
-            logger.error("Failed to acquire lock for cache: " + cacheName, e);
-            throw new RuntimeException(e);
+                encryptAndWrite(file, cache.toString());
+            } catch (IOException e) {
+                logger.error("Failed to acquire lock for cache: " + cacheName, e);
+                throw new RuntimeException(e);
+            }
+        } finally {
+            rwLock.writeLock().unlock();
         }
     }
 
     public static String findCache(String cacheName, String key) {
-        File file = getCacheFileName(cacheName);
-        File lockFile = new File(file.getAbsolutePath() + LOCK_SUFFIX);
+        ReentrantReadWriteLock rwLock = stripeFor(cacheName);
+        rwLock.readLock().lock();
+        try {
+            File file = getCacheFileName(cacheName);
+            File lockFile = new File(file.getAbsolutePath() + LOCK_SUFFIX);
 
-        try (FileChannel channel = FileChannel.open(lockFile.toPath(),
-                StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
-             FileLock lock = channel.lock(0, Long.MAX_VALUE, true)) {
+            try (FileChannel channel = FileChannel.open(lockFile.toPath(),
+                    StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
+                 FileLock lock = channel.lock(0, Long.MAX_VALUE, true)) {
 
-            String decrypted = readAndDecrypt(file);
-            if (StringUtils.isBlank(decrypted)) return null;
+                String decrypted = readAndDecrypt(file);
+                if (StringUtils.isBlank(decrypted)) return null;
 
-            for (String line : decrypted.split("\n")) {
-                if (StringUtils.isBlank(line)) continue;
-                Map<String, String> mapLine = JsonUtils.fromJson(line, new TypeReference<>() {
-                });
-                if (key.equals(mapLine.get("key"))) {
-                    return mapLine.get("value");
+                for (String line : decrypted.split("\n")) {
+                    if (StringUtils.isBlank(line)) continue;
+                    Map<String, String> mapLine = JsonUtils.fromJson(line, new TypeReference<>() {
+                    });
+                    if (key.equals(mapLine.get("key"))) {
+                        return mapLine.get("value");
+                    }
                 }
+                return null;
+            } catch (IOException e) {
+                logger.error("Failed to acquire lock for cache: " + cacheName, e);
+                throw new RuntimeException(e);
             }
-            return null;
-        } catch (IOException e) {
-            logger.error("Failed to acquire lock for cache: " + cacheName, e);
-            throw new RuntimeException(e);
+        } finally {
+            rwLock.readLock().unlock();
         }
     }
 
