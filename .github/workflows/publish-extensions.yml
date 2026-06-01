@@ -74,7 +74,7 @@ jobs:
     if: needs.detect-changes.outputs.quarkus-base == 'true'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - uses: actions/checkout@v4
@@ -100,6 +100,22 @@ jobs:
         working-directory: extensions/quarkus-base
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        working-directory: extensions/quarkus-base
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="quarkus-base-v${{ steps.version.outputs.version }}"
+          gh release create "$TAG" \
+            --title "quarkus-base ${{ steps.version.outputs.version }}" \
+            --notes "Published quarkus-base ${{ steps.version.outputs.version }} to GitHub Packages." \
+            --latest \
+            2>/dev/null || echo "Release $TAG already exists, skipping."
 
   publish-quarkus-authentication:
     needs: [detect-changes, publish-quarkus-base]

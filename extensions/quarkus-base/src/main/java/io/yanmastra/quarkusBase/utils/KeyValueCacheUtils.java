@@ -12,11 +12,8 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashSet;
@@ -33,7 +30,6 @@ public class KeyValueCacheUtils {
     private static final int GCM_TAG_LENGTH = 128;
     private static final int GCM_IV_LENGTH = 12;
     private static final String KEY_FILE_NAME = ".cache.key";
-    private static final String LOCK_SUFFIX = ".lock";
 
     private static SecretKey cachedKey = null;
 
@@ -68,52 +64,36 @@ public class KeyValueCacheUtils {
         rwLock.writeLock().lock();
         try {
             File file = getCacheFileName(cacheName);
-            File lockFile = new File(file.getAbsolutePath() + LOCK_SUFFIX);
+            StringBuilder cache = new StringBuilder();
+            Set<String> usedKey = new HashSet<>();
 
-            try (FileChannel channel = FileChannel.open(lockFile.toPath(),
-                    StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-                 FileLock lock = channel.lock()) {
+            String decrypted = readAndDecrypt(file);
+            if (StringUtils.isNotBlank(decrypted)) {
+                boolean hasReplaced = false;
+                for (String line : decrypted.split("\n")) {
+                    if (StringUtils.isBlank(line)) continue;
+                    Map<String, String> mapLine1 = JsonUtils.fromJson(line, new TypeReference<>() {});
+                    String cKey = mapLine1.get("key");
+                    if (usedKey.contains(cKey)) continue;
+                    usedKey.add(cKey);
 
-                StringBuilder cache = new StringBuilder();
-                Set<String> usedKey = new HashSet<>();
-
-                String decrypted = readAndDecrypt(file);
-                if (StringUtils.isNotBlank(decrypted)) {
-                    boolean hasReplaced = false;
-                    for (String line : decrypted.split("\n")) {
-                        if (StringUtils.isBlank(line)) continue;
-                        Map<String, String> mapLine1 = JsonUtils.fromJson(line, new TypeReference<>() {
-                        });
-                        String cKey = mapLine1.get("key");
-                        if (usedKey.contains(cKey)) continue;
-                        usedKey.add(cKey);
-
-                        if (cKey.equals(key)) {
-                            if (StringUtils.isNotBlank(value)) {
-                                cache.append(sLine);
-                                cache.append('\n');
-                            }
-                            hasReplaced = true;
-                        } else {
-                            cache.append(line);
-                            cache.append('\n');
+                    if (cKey.equals(key)) {
+                        if (StringUtils.isNotBlank(value)) {
+                            cache.append(sLine).append('\n');
                         }
+                        hasReplaced = true;
+                    } else {
+                        cache.append(line).append('\n');
                     }
-
-                    if (!hasReplaced) {
-                        cache.append(sLine);
-                        cache.append('\n');
-                    }
-                } else {
-                    cache.append(sLine);
-                    cache.append('\n');
                 }
-
-                encryptAndWrite(file, cache.toString());
-            } catch (IOException e) {
-                logger.error("Failed to acquire lock for cache: " + cacheName, e);
-                throw new RuntimeException(e);
+                if (!hasReplaced) {
+                    cache.append(sLine).append('\n');
+                }
+            } else {
+                cache.append(sLine).append('\n');
             }
+
+            encryptAndWrite(file, cache.toString());
         } finally {
             rwLock.writeLock().unlock();
         }
@@ -124,28 +104,17 @@ public class KeyValueCacheUtils {
         rwLock.readLock().lock();
         try {
             File file = getCacheFileName(cacheName);
-            File lockFile = new File(file.getAbsolutePath() + LOCK_SUFFIX);
+            String decrypted = readAndDecrypt(file);
+            if (StringUtils.isBlank(decrypted)) return null;
 
-            try (FileChannel channel = FileChannel.open(lockFile.toPath(),
-                    StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
-                 FileLock lock = channel.lock(0, Long.MAX_VALUE, true)) {
-
-                String decrypted = readAndDecrypt(file);
-                if (StringUtils.isBlank(decrypted)) return null;
-
-                for (String line : decrypted.split("\n")) {
-                    if (StringUtils.isBlank(line)) continue;
-                    Map<String, String> mapLine = JsonUtils.fromJson(line, new TypeReference<>() {
-                    });
-                    if (key.equals(mapLine.get("key"))) {
-                        return mapLine.get("value");
-                    }
+            for (String line : decrypted.split("\n")) {
+                if (StringUtils.isBlank(line)) continue;
+                Map<String, String> mapLine = JsonUtils.fromJson(line, new TypeReference<>() {});
+                if (key.equals(mapLine.get("key"))) {
+                    return mapLine.get("value");
                 }
-                return null;
-            } catch (IOException e) {
-                logger.error("Failed to acquire lock for cache: " + cacheName, e);
-                throw new RuntimeException(e);
             }
+            return null;
         } finally {
             rwLock.readLock().unlock();
         }
