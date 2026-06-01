@@ -149,7 +149,7 @@ public class CrudQueryFilterUtils {
         }
 
         if (!requestParams.isEmpty()) {
-            sbQuery.append(getQueryWhereClause(requestParams, sqlParams));
+            sbQuery.append(getQueryWhereClause(requestParams, sqlParams, alias));
         }
         return sbQuery.toString();
     }
