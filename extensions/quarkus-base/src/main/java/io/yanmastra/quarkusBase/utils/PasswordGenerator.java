@@ -1,18 +1,13 @@
 package io.yanmastra.quarkusBase.utils;
 
-import java.security.SecureRandom;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class PasswordGenerator {
     private final char[] SPECIAL_CHARACTERS = new char[]{'!', '@', '#', '$', '?', '%', '*', '&'};
     private final char[] ALPHABET = new char[26];
     private boolean initialized = false;
-    private static final SecureRandom INSTANCE = new SecureRandom();
 
     private PasswordGenerator() {
-    }
-
-    public static SecureRandom random() {
-        return INSTANCE;
     }
 
     private void init() {
@@ -29,11 +24,11 @@ public class PasswordGenerator {
     }
 
     private char getAlphabet() {
-        return this.ALPHABET[PasswordGenerator.random().nextInt(26)];
+        return this.ALPHABET[ThreadLocalRandom.current().nextInt(26)];
     }
 
     private char getSpecial() {
-        return this.SPECIAL_CHARACTERS[PasswordGenerator.random().nextInt(this.SPECIAL_CHARACTERS.length)];
+        return this.SPECIAL_CHARACTERS[ThreadLocalRandom.current().nextInt(this.SPECIAL_CHARACTERS.length)];
     }
 
     public static String generatePassword(int length, boolean includeSpecial) {
@@ -42,8 +37,8 @@ public class PasswordGenerator {
         byte[] result = new byte[length];
 
         for(int i = 0; i < result.length; ++i) {
-            int act = PasswordGenerator.random().nextInt(4);
-            result[i] = (byte)(act == 0 ? passwordGenerator.getAlphabet() : (act == 1 ? (includeSpecial ? passwordGenerator.getSpecial() : passwordGenerator.getAlphabet()) : (act == 2 ? (new String(new byte[]{(byte) passwordGenerator.getAlphabet()})).toUpperCase().getBytes()[0] : ("" + PasswordGenerator.random().nextInt(9)).getBytes()[0])));
+            int act = ThreadLocalRandom.current().nextInt(4);
+            result[i] = (byte)(act == 0 ? passwordGenerator.getAlphabet() : (act == 1 ? (includeSpecial ? passwordGenerator.getSpecial() : passwordGenerator.getAlphabet()) : (act == 2 ? (new String(new byte[]{(byte) passwordGenerator.getAlphabet()})).toUpperCase().getBytes()[0] : ("" + ThreadLocalRandom.current().nextInt(9)).getBytes()[0])));
         }
 
         return new String(result);
