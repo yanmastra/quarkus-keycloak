@@ -19,6 +19,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.security.SecureRandom;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class KeyValueCacheUtils {
@@ -36,6 +37,11 @@ public class KeyValueCacheUtils {
     // 32 fixed stripes — ~1.6 KB total memory regardless of session count.
     // Same cacheName always maps to the same stripe, so concurrent access on
     // the same session file is serialised; different sessions rarely share a stripe.
+    // Lazy holder — SecureRandom initialized at runtime, not at GraalVM build time
+    private static class RandomHolder {
+        static final SecureRandom INSTANCE = new SecureRandom();
+    }
+
     private static final int STRIPES = 32;
     private static final ReentrantReadWriteLock[] STRIPE_LOCKS;
     static {
@@ -148,7 +154,7 @@ public class KeyValueCacheUtils {
     private static void encryptAndWrite(File file, String plainText) {
         try {
             byte[] iv = new byte[GCM_IV_LENGTH];
-            PasswordGenerator.random().nextBytes(iv);
+            RandomHolder.INSTANCE.nextBytes(iv);
 
             Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
             GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
@@ -184,7 +190,7 @@ public class KeyValueCacheUtils {
                     cachedKey = new SecretKeySpec(keyBytes, "AES");
                 } else {
                     KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-                    keyGen.init(256, PasswordGenerator.random());
+                    keyGen.init(256, RandomHolder.INSTANCE);
                     cachedKey = keyGen.generateKey();
 
                     Files.write(keyFile.toPath(), cachedKey.getEncoded());

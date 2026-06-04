@@ -1,44 +1,43 @@
 package io.yanmastra.quarkusBase.utils;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.security.SecureRandom;
 
 public class PasswordGenerator {
-    private final char[] SPECIAL_CHARACTERS = new char[]{'!', '@', '#', '$', '?', '%', '*', '&'};
-    private final char[] ALPHABET = new char[26];
-    private boolean initialized = false;
+    private static final char[] SPECIAL_CHARACTERS = new char[]{'!', '@', '#', '$', '?', '%', '*', '&'};
+    private static final char[] ALPHABET = new char[26];
 
-    private PasswordGenerator() {
-    }
-
-    private void init() {
-        if (!this.initialized) {
-            int i = 0;
-
-            for(char ch = 'a'; ch <= 'z'; ++ch) {
-                this.ALPHABET[i] = ch;
-                ++i;
-            }
-
-            this.initialized = true;
+    static {
+        int i = 0;
+        for (char ch = 'a'; ch <= 'z'; ch++) {
+            ALPHABET[i++] = ch;
         }
     }
 
-    private char getAlphabet() {
-        return this.ALPHABET[ThreadLocalRandom.current().nextInt(26)];
+    // Lazy holder — SecureRandom is created at first use (runtime), not at build time
+    private static class RandomHolder {
+        static final SecureRandom INSTANCE = new SecureRandom();
     }
 
-    private char getSpecial() {
-        return this.SPECIAL_CHARACTERS[ThreadLocalRandom.current().nextInt(this.SPECIAL_CHARACTERS.length)];
+    private static SecureRandom random() {
+        return RandomHolder.INSTANCE;
     }
 
     public static String generatePassword(int length, boolean includeSpecial) {
-        PasswordGenerator passwordGenerator = new PasswordGenerator();
-        passwordGenerator.init();
+        SecureRandom rng = random();
         byte[] result = new byte[length];
 
-        for(int i = 0; i < result.length; ++i) {
-            int act = ThreadLocalRandom.current().nextInt(4);
-            result[i] = (byte)(act == 0 ? passwordGenerator.getAlphabet() : (act == 1 ? (includeSpecial ? passwordGenerator.getSpecial() : passwordGenerator.getAlphabet()) : (act == 2 ? (new String(new byte[]{(byte) passwordGenerator.getAlphabet()})).toUpperCase().getBytes()[0] : ("" + ThreadLocalRandom.current().nextInt(9)).getBytes()[0])));
+        for (int i = 0; i < length; i++) {
+            int act = rng.nextInt(4);
+            char ch;
+            switch (act) {
+                case 0 -> ch = ALPHABET[rng.nextInt(26)];
+                case 1 -> ch = includeSpecial
+                        ? SPECIAL_CHARACTERS[rng.nextInt(SPECIAL_CHARACTERS.length)]
+                        : ALPHABET[rng.nextInt(26)];
+                case 2 -> ch = Character.toUpperCase(ALPHABET[rng.nextInt(26)]);
+                default -> ch = (char) ('0' + rng.nextInt(9));
+            }
+            result[i] = (byte) ch;
         }
 
         return new String(result);
