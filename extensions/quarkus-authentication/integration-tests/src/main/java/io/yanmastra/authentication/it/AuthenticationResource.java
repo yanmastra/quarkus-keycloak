@@ -150,4 +150,15 @@ public class AuthenticationResource {
         }
         return Uni.createFrom().item(Response.ok(context.getSecurityContext().getUserPrincipal()).build());
     }
+
+    @GET
+    @Path("permissions")
+    @RolesAllowed({"VIEW_ALL"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPermissions() {
+        Set<String> names = securityIdentity.getPermissions().stream()
+                .map(java.security.Permission::getName)
+                .collect(java.util.stream.Collectors.toSet());
+        return Response.ok(names).build();
+    }
 }

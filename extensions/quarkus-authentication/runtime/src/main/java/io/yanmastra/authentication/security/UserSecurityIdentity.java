@@ -9,6 +9,7 @@ import java.security.Permission;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserSecurityIdentity implements SecurityIdentity {
     private final SecurityIdentity securityIdentity;
@@ -38,6 +39,12 @@ public class UserSecurityIdentity implements SecurityIdentity {
     public boolean hasRole(String s) {
         if (StringUtils.isBlank(s)) return false;
         return principal.getAuthorities().contains(s.toLowerCase());
+    }
+
+    @Override
+    public Set<Permission> getPermissions() {
+        return principal.getAuthorities().stream().map(io.yanmastra.quarkusBase.security.UserPermission::new)
+                .collect(Collectors.toSet());
     }
 
     @Override

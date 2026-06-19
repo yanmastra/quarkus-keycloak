@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.empty;
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -65,7 +67,7 @@ public class AuthenticationResourceTest {
 
     @BeforeEach
     public void getToken() {
-        io.restassured.response.Response response = given().accept(MediaType.APPLICATION_JSON.toString())
+        io.restassured.response.Response response = given().accept(jakarta.ws.rs.core.MediaType.APPLICATION_JSON.toString())
                 .when().get("/authentication")
                 .then().statusCode(200).extract().response();
 
@@ -115,5 +117,32 @@ public class AuthenticationResourceTest {
                 .then().statusCode(HttpStatus.SC_FORBIDDEN);
     }
 
+    @Test
+    void testGetPermissions() {
+        // authenticated user gets back the permissions derived from their authorities
+        given().accept(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .when().get("/authentication/permissions")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("$", hasItems("view_all", "manage_users", "view_profile", "manage_user_permission"));
+    }
 
+    @Test
+    void testGetPermissionsViaCookie() {
+        given().accept(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.COOKIE, cookieValue)
+                .when().get("/authentication/permissions")
+                .then()
+                .statusCode(HttpStatus.SC_OK)
+                .body("$", hasItems("view_all", "manage_users", "view_profile", "manage_user_permission"));
+    }
+
+    @Test
+    void testGetPermissionsUnauthenticated() {
+        given().accept(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+                .when().get("/authentication/permissions")
+                .then()
+                .statusCode(HttpStatus.SC_UNAUTHORIZED);
+    }
 }

@@ -37,6 +37,11 @@ public class UnauthorizedSecurityIdentity implements SecurityIdentity {
     }
 
     @Override
+    public Set<Permission> getPermissions() {
+        return Set.of();
+    }
+
+    @Override
     public <T extends Credential> T getCredential(Class<T> aClass) {
         return null;
     }

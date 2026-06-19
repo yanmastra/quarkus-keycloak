@@ -9,11 +9,11 @@ import io.yanmastra.quarkusBase.utils.DateTimeUtils;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.ws.rs.core.MediaType;
 import org.hamcrest.Matchers;
 import org.jboss.logging.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.MediaType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -63,7 +63,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200);
@@ -78,7 +78,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200);
@@ -93,7 +93,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200);
@@ -144,7 +144,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200);
@@ -191,7 +191,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                             .build()
                             .toString()
                     )
-                    .contentType(MediaType.APPLICATION_JSON.toString())
+                    .contentType(MediaType.APPLICATION_JSON)
                     .post("/api/v1/sample-entity")
                     .then()
                     .statusCode(200);
@@ -289,7 +289,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                             .build()
                             .toString()
                     )
-                    .contentType(MediaType.APPLICATION_JSON.toString())
+                    .contentType(MediaType.APPLICATION_JSON)
                     .post("/api/v1/sample-entity")
                     .then()
                     .statusCode(200)
@@ -328,7 +328,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                     .toString();
             ResponseJson<SampleChildEntityJson> responseJson = given()
                     .body(createChildPayload)
-                    .contentType(MediaType.APPLICATION_JSON.toString())
+                    .contentType(MediaType.APPLICATION_JSON)
                     .post("/api/v1/sample-child-entity")
                     .then()
                     .statusCode(200)
@@ -388,7 +388,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200)
@@ -409,7 +409,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200)
@@ -429,7 +429,7 @@ public class QuarkusMicroservicesCommonResourceTest {
                         .build()
                         .toString()
                 )
-                .contentType(MediaType.APPLICATION_JSON.toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .post("/api/v1/sample-entity")
                 .then()
                 .statusCode(200)

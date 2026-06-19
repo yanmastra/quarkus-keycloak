@@ -10,6 +10,8 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.stream.Collectors;
+
 public class UserSecurityIdentity implements SecurityIdentity {
     private final SecurityIdentity securityIdentity;
     private final UserPrincipal principal;
@@ -38,6 +40,13 @@ public class UserSecurityIdentity implements SecurityIdentity {
     public boolean hasRole(String s) {
         return principal.getAuthorities().contains(s);
     }
+
+    @Override
+    public Set<Permission> getPermissions() {
+        return principal.getAuthorities().stream().map(io.yanmastra.quarkusBase.security.UserPermission::new)
+                .collect(Collectors.toSet());
+    }
+
 
     @Override
     public <T extends Credential> T getCredential(Class<T> aClass) {

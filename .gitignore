@@ -20,4 +20,5 @@ infra/docker/nginx/certs/**.key
 infra/docker/nginx/nginx.conf
 infra/docker/keycloak/Dockerfile
 infra/docker/keycloak/**.keystore
-**/deployed-dependencies/**
+**/deployed-dependencies/**infra/docker/.minio-data/
+quarkus-media-file-manager
