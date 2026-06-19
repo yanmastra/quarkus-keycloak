@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-media-file-manager-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
   </parent>
   <artifactId>quarkus-media-file-manager</artifactId>
   <name>quarkus-media-file-manager - Runtime</name>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-base</artifactId>
-      <version>4.2.0</version>
+      <version>4.2.1</version>
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.amazonservices</groupId>
