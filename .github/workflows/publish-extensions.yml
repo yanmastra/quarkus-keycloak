@@ -19,6 +19,7 @@ on:
           - quarkus-authorization
           - quarkus-microservices-common
           - quarkus-error-mail-notification
+          - quarkus-media-file-manager
 
 jobs:
   detect-changes:
@@ -29,6 +30,7 @@ jobs:
       quarkus-authorization: ${{ steps.result.outputs.quarkus-authorization }}
       quarkus-microservices-common: ${{ steps.result.outputs.quarkus-microservices-common }}
       quarkus-error-mail-notification: ${{ steps.result.outputs.quarkus-error-mail-notification }}
+      quarkus-media-file-manager: ${{ steps.result.outputs.quarkus-media-file-manager }}
     steps:
       - uses: actions/checkout@v4
 
@@ -48,13 +50,15 @@ jobs:
               - 'extensions/quarkus-microservices-common/**'
             quarkus-error-mail-notification:
               - 'extensions/quarkus-error-mail-notification/**'
+            quarkus-media-file-manager:
+              - 'extensions/quarkus-media-file-manager/**'
 
       - name: Resolve which extensions to publish
         id: result
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             EXT="${{ inputs.extension }}"
-            for name in quarkus-base quarkus-authentication quarkus-authorization quarkus-microservices-common quarkus-error-mail-notification; do
+            for name in quarkus-base quarkus-authentication quarkus-authorization quarkus-microservices-common quarkus-error-mail-notification quarkus-media-file-manager; do
               if [ "$EXT" = "all" ] || [ "$EXT" = "$name" ]; then
                 echo "${name}=true" >> "$GITHUB_OUTPUT"
               else
@@ -67,6 +71,7 @@ jobs:
             echo "quarkus-authorization=${{ steps.changes.outputs.quarkus-authorization }}" >> "$GITHUB_OUTPUT"
             echo "quarkus-microservices-common=${{ steps.changes.outputs.quarkus-microservices-common }}" >> "$GITHUB_OUTPUT"
             echo "quarkus-error-mail-notification=${{ steps.changes.outputs.quarkus-error-mail-notification }}" >> "$GITHUB_OUTPUT"
+            echo "quarkus-media-file-manager=${{ steps.changes.outputs.quarkus-media-file-manager }}" >> "$GITHUB_OUTPUT"
           fi
 
   publish-quarkus-base:
@@ -268,3 +273,57 @@ jobs:
         working-directory: extensions/quarkus-error-mail-notification
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-quarkus-media-file-manager:
+    needs: [detect-changes, publish-quarkus-base]
+    if: |
+      always() &&
+      needs.detect-changes.outputs.quarkus-media-file-manager == 'true' &&
+      (needs.publish-quarkus-base.result == 'success' || needs.publish-quarkus-base.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Generate settings.xml
+        run: |
+          cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${env.GITHUB_ACTOR}</username>
+                <password>${env.GITHUB_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          SETTINGS
+      - name: Install quarkus-base locally
+        run: mvn install -DskipTests
+        working-directory: extensions/quarkus-base
+      - name: Build and publish
+        run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
+        working-directory: extensions/quarkus-media-file-manager
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        working-directory: extensions/quarkus-media-file-manager
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="quarkus-media-file-manager-v${{ steps.version.outputs.version }}"
+          gh release create "$TAG" \
+            --title "quarkus-media-file-manager ${{ steps.version.outputs.version }}" \
+            --notes "Published quarkus-media-file-manager ${{ steps.version.outputs.version }} to GitHub Packages." \
+            --latest \
+            2>/dev/null || echo "Release $TAG already exists, skipping."
