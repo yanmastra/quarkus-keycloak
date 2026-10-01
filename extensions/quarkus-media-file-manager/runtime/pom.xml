@@ -16,7 +16,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-base</artifactId>
-      <version>4.3.0</version>
+      <version>4.2.2</version>
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.amazonservices</groupId>
