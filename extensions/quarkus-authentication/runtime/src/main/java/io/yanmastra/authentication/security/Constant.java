@@ -20,7 +20,7 @@ public interface Constant {
 
 
     static PublicKey getPublicKey(String publicKeyLocation) throws Exception {
-        InputStream is = ResourceUtils.getAsClasspathResource(publicKeyLocation);
+        InputStream is = ResourceUtils.getResourceStream(publicKeyLocation);
         if (is == null) {
             throw new FileNotFoundException("File not found in classpath: " + publicKeyLocation);
         }

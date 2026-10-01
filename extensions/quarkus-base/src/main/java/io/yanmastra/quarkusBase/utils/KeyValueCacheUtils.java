@@ -1,276 +1,113 @@
 package io.yanmastra.quarkusBase.utils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import io.smallrye.mutiny.Uni;
+import io.yanmastra.quarkusBase.cache.FileKeyValueCacheStore;
+import io.yanmastra.quarkusBase.cache.KeyValueCacheMigrator;
+import io.yanmastra.quarkusBase.cache.KeyValueCacheStore;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.logging.Logger;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.security.SecureRandom;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Objects;
 
+/**
+ * Simple key/value cache grouped by cache name.
+ * <p>
+ * By default the data is kept in encrypted local files ({@link FileKeyValueCacheStore}). An extension such as
+ * {@code quarkus-redis-cache} can switch the storage by calling {@link #registerStore(KeyValueCacheStore)}; callers
+ * of this class do not change. Data left in the previous storage is migrated automatically on registration.
+ * <p>
+ * The blocking methods ({@link #saveCache}, {@link #findCache}, {@link #removeCache}) must not be called from the
+ * event loop when a non-file store is registered; use the {@code *Async} variants there.
+ */
 public class KeyValueCacheUtils {
-    private static final String CACHE_DIR = "/.cache_v2";
-
     private static final Logger logger = Logger.getLogger(KeyValueCacheUtils.class.getName());
 
-    private static final String AES_ALGORITHM = "AES/GCM/NoPadding";
-    private static final int GCM_TAG_LENGTH = 128;
-    private static final int GCM_IV_LENGTH = 12;
-    private static final String KEY_FILE_NAME = ".cache.key";
-
-    private static SecretKey cachedKey = null;
-
-    // 32 fixed stripes — ~1.6 KB total memory regardless of session count.
-    // Same cacheName always maps to the same stripe, so concurrent access on
-    // the same session file is serialised; different sessions rarely share a stripe.
-    // Lazy holder — SecureRandom initialized at runtime, not at GraalVM build time
-    private static class RandomHolder {
-        static final SecureRandom INSTANCE = new SecureRandom();
+    // Lazy holder — nothing is created until the first cache access
+    private static class FileStoreHolder {
+        static final FileKeyValueCacheStore INSTANCE = new FileKeyValueCacheStore();
     }
 
-    private static final int STRIPES = 32;
-    private static final ReentrantReadWriteLock[] STRIPE_LOCKS;
-    static {
-        STRIPE_LOCKS = new ReentrantReadWriteLock[STRIPES];
-        for (int i = 0; i < STRIPES; i++) STRIPE_LOCKS[i] = new ReentrantReadWriteLock();
+    private static volatile KeyValueCacheStore registeredStore = null;
+
+    // --- store selection ---
+
+    /**
+     * Makes {@code store} the storage for all caches, after moving any data still kept in local files into it.
+     * If the store reports {@link KeyValueCacheStore#isEnabled()} as {@code false}, it is not used; instead its
+     * content is moved back into local files (the "migrate back" path).
+     *
+     * @throws IllegalStateException when the migration fails, in which case the store is not registered.
+     */
+    public static synchronized void registerStore(KeyValueCacheStore store) {
+        Objects.requireNonNull(store, "store");
+        FileKeyValueCacheStore files = FileStoreHolder.INSTANCE;
+        String storeName = store.getClass().getSimpleName();
+
+        if (store.isEnabled()) {
+            KeyValueCacheMigrator.migrate(files, "local files", store, storeName, store);
+            registeredStore = store;
+            logger.infof("Key/value cache is now stored in %s", storeName);
+        } else {
+            KeyValueCacheMigrator.migrate(store, storeName, files, "local files", store);
+            registeredStore = null;
+            logger.infof("Key/value cache is stored in local files (%s is disabled)", storeName);
+        }
     }
 
-    private static ReentrantReadWriteLock stripeFor(String cacheName) {
-        return STRIPE_LOCKS[Math.abs(cacheName.hashCode() % STRIPES)];
+    /** Goes back to local files without migrating; mainly for shutdown and tests. */
+    public static synchronized void unregisterStore(KeyValueCacheStore store) {
+        if (registeredStore == store) registeredStore = null;
     }
+
+    private static KeyValueCacheStore store() {
+        KeyValueCacheStore store = registeredStore;
+        return store != null ? store : FileStoreHolder.INSTANCE;
+    }
+
+    // --- blocking API ---
 
     public static void removeCache(String cacheName, String key) {
-        saveCache(cacheName, key, "");
+        requireKey(key);
+        store().remove(cacheName, key);
     }
 
     public static void saveCache(String cacheName, String key, String value) {
-        if (StringUtils.isBlank(key))
-            throw new IllegalArgumentException("key can't be empty");
-
-        if (StringUtils.isBlank(value)) value = "";
-
-        Map<String, String> mapLine = Map.of("key", key, "value", value);
-        String sLine = JsonUtils.toJson(mapLine);
-
-        ReentrantReadWriteLock rwLock = stripeFor(cacheName);
-        rwLock.writeLock().lock();
-        try {
-            File file = getCacheFileName(cacheName);
-            StringBuilder cache = new StringBuilder();
-            Set<String> usedKey = new HashSet<>();
-
-            String decrypted = readAndDecrypt(file);
-            if (StringUtils.isNotBlank(decrypted)) {
-                boolean hasReplaced = false;
-                for (String line : decrypted.split("\n")) {
-                    if (StringUtils.isBlank(line)) continue;
-                    Map<String, String> mapLine1 = JsonUtils.fromJson(line, new TypeReference<>() {});
-                    String cKey = mapLine1.get("key");
-                    if (usedKey.contains(cKey)) continue;
-                    usedKey.add(cKey);
-
-                    if (cKey.equals(key)) {
-                        if (StringUtils.isNotBlank(value)) {
-                            cache.append(sLine).append('\n');
-                        }
-                        hasReplaced = true;
-                    } else {
-                        cache.append(line).append('\n');
-                    }
-                }
-                if (!hasReplaced) {
-                    cache.append(sLine).append('\n');
-                }
-            } else {
-                cache.append(sLine).append('\n');
-            }
-
-            encryptAndWrite(file, cache.toString());
-        } finally {
-            rwLock.writeLock().unlock();
+        requireKey(key);
+        if (StringUtils.isBlank(value)) {
+            store().remove(cacheName, key);
+        } else {
+            store().put(cacheName, key, value);
         }
     }
 
     public static String findCache(String cacheName, String key) {
-        ReentrantReadWriteLock rwLock = stripeFor(cacheName);
-        rwLock.readLock().lock();
-        try {
-            File file = getCacheFileName(cacheName);
-            String decrypted = readAndDecrypt(file);
-            if (StringUtils.isBlank(decrypted)) return null;
-
-            for (String line : decrypted.split("\n")) {
-                if (StringUtils.isBlank(line)) continue;
-                Map<String, String> mapLine = JsonUtils.fromJson(line, new TypeReference<>() {});
-                if (key.equals(mapLine.get("key"))) {
-                    return mapLine.get("value");
-                }
-            }
-            return null;
-        } finally {
-            rwLock.readLock().unlock();
-        }
+        if (StringUtils.isBlank(key)) return null;
+        return store().get(cacheName, key);
     }
 
-    // --- Encryption helpers ---
+    // --- non-blocking API ---
 
-    private static String readAndDecrypt(File file) {
-        if (!file.exists() || file.length() == 0) return null;
-        try {
-            byte[] fileBytes = Files.readAllBytes(file.toPath());
-            if (fileBytes.length <= GCM_IV_LENGTH) return null;
-
-            byte[] iv = new byte[GCM_IV_LENGTH];
-            byte[] cipherText = new byte[fileBytes.length - GCM_IV_LENGTH];
-            System.arraycopy(fileBytes, 0, iv, 0, GCM_IV_LENGTH);
-            System.arraycopy(fileBytes, GCM_IV_LENGTH, cipherText, 0, cipherText.length);
-
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-            GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
-            cipher.init(Cipher.DECRYPT_MODE, getOrCreateKey(), spec);
-
-            byte[] plainText = cipher.doFinal(cipherText);
-            return new String(plainText, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            logger.warn("Failed to decrypt cache file, resetting: " + e.getMessage());
-            return null;
-        }
+    public static Uni<Void> removeCacheAsync(String cacheName, String key) {
+        if (StringUtils.isBlank(key)) return Uni.createFrom().failure(keyRequired());
+        return store().removeAsync(cacheName, key);
     }
 
-    private static void encryptAndWrite(File file, String plainText) {
-        try {
-            byte[] iv = new byte[GCM_IV_LENGTH];
-            RandomHolder.INSTANCE.nextBytes(iv);
-
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-            GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
-            cipher.init(Cipher.ENCRYPT_MODE, getOrCreateKey(), spec);
-
-            byte[] cipherText = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
-
-            byte[] output = new byte[GCM_IV_LENGTH + cipherText.length];
-            System.arraycopy(iv, 0, output, 0, GCM_IV_LENGTH);
-            System.arraycopy(cipherText, 0, output, GCM_IV_LENGTH, cipherText.length);
-
-            Files.write(file.toPath(), output);
-            setRestrictedPermissions(file);
-        } catch (Exception e) {
-            logger.error("Failed to encrypt cache: " + e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+    public static Uni<Void> saveCacheAsync(String cacheName, String key, String value) {
+        if (StringUtils.isBlank(key)) return Uni.createFrom().failure(keyRequired());
+        if (StringUtils.isBlank(value)) return store().removeAsync(cacheName, key);
+        return store().putAsync(cacheName, key, value);
     }
 
-    private static SecretKey getOrCreateKey() {
-        if (cachedKey != null) return cachedKey;
-
-        synchronized (KeyValueCacheUtils.class) {
-            if (cachedKey != null) return cachedKey;
-
-            String cacheDir = getCacheDir();
-            File dir = checkPath(cacheDir + CACHE_DIR);
-            File keyFile = new File(dir, KEY_FILE_NAME);
-
-            try {
-                if (keyFile.exists() && keyFile.length() > 0) {
-                    byte[] keyBytes = Files.readAllBytes(keyFile.toPath());
-                    cachedKey = new SecretKeySpec(keyBytes, "AES");
-                } else {
-                    KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-                    keyGen.init(256, RandomHolder.INSTANCE);
-                    cachedKey = keyGen.generateKey();
-
-                    Files.write(keyFile.toPath(), cachedKey.getEncoded());
-                    setRestrictedPermissions(keyFile);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to load/create encryption key: " + e.getMessage(), e);
-                throw new RuntimeException(e);
-            }
-
-            return cachedKey;
-        }
+    public static Uni<String> findCacheAsync(String cacheName, String key) {
+        if (StringUtils.isBlank(key)) return Uni.createFrom().nullItem();
+        return store().getAsync(cacheName, key);
     }
 
-    private static void setRestrictedPermissions(File file) {
-        try {
-            Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rw-------");
-            Files.setPosixFilePermissions(file.toPath(), perms);
-        } catch (UnsupportedOperationException e) {
-            // Windows does not support POSIX permissions, skip
-        } catch (Exception e) {
-            logger.warn("Could not set file permissions on: " + file.getAbsolutePath());
-        }
+    private static void requireKey(String key) {
+        if (StringUtils.isBlank(key)) throw keyRequired();
     }
 
-    // --- File/directory helpers ---
-
-    private static File checkPath(String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            boolean result = file.mkdir();
-            if (!result) {
-                try {
-                    String[] pathSegment = path.split("/");
-                    File root = null;
-                    for (String segment : pathSegment) {
-                        if (root == null) {
-                            if (path.startsWith("/"))
-                                root = new File("/" + segment);
-                            else
-                                root = new File(segment);
-                        } else {
-                            root = new File(root, segment);
-                        }
-                        if (root.exists()) continue;
-                        root.mkdir();
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    file = new File(System.getProperty("user.dir"));
-                }
-            }
-        }
-        return file;
-    }
-
-    private static String getCacheDir() {
-        String cacheDir = null;
-        try {
-            cacheDir = ConfigProvider.getConfig().getConfigValue("cache_directory").getValue();
-        } catch (Exception e) {
-            logger.warn(e.getMessage());
-        }
-        if (StringUtils.isBlank(cacheDir)) cacheDir = System.getenv("CACHE_DIRECTORY");
-        if (StringUtils.isBlank(cacheDir)) cacheDir = System.getenv("user.dir");
-        return cacheDir;
-    }
-
-    private static File getCacheFileName(String cacheName) {
-        String cacheFileName = ".cache." + cacheName;
-        File dir = checkPath(getCacheDir() + CACHE_DIR);
-        File file = new File(dir, cacheFileName);
-        if (!file.exists()) {
-            try {
-                boolean result = file.createNewFile();
-                if (result) setRestrictedPermissions(file);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return file;
+    private static IllegalArgumentException keyRequired() {
+        return new IllegalArgumentException("key can't be empty");
     }
 }

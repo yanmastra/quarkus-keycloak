@@ -5,6 +5,8 @@ import io.quarkus.arc.InstanceHandle;
 import io.smallrye.jwt.build.Jwt;
 import io.smallrye.jwt.build.JwtClaimsBuilder;
 import io.smallrye.jwt.util.KeyUtils;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.vertx.ext.web.RoutingContext;
 import io.yanmastra.authentication.payload.UserTokenPayload;
 import io.yanmastra.authentication.service.SecurityLifeCycleService;
@@ -146,10 +148,95 @@ public class AuthenticationService {
         }
     }
 
+    public Uni<Map<String, Object>> createAccessTokenAsync(String refreshToken) {
+        return createAccessTokenAsync(refreshToken, null);
+    }
+
+    /**
+     * Non-blocking variant of {@link #createAccessToken(String, UserTokenPayload)}. When no payload is given,
+     * {@code SecurityLifeCycleService.onCreateAccessTokenPayload} is invoked on a worker thread because it is user
+     * code that may block (for example a database lookup).
+     */
+    public Uni<Map<String, Object>> createAccessTokenAsync(String refreshToken, UserTokenPayload payload) {
+        if (StringUtils.isBlank(refreshToken)) return Uni.createFrom().failure(new BadRequestException("Missing refresh token!"));
+
+        String sessionId;
+        String tokenIssuer;
+        try {
+            JwtClaims claims = getRefreshTokenClaims(refreshToken);
+            sessionId = claims.getSubject();
+            // resolved here, on the request thread, because it may read the current request
+            tokenIssuer = StringUtils.isBlank(claims.getIssuer()) ? getIssuer() : claims.getIssuer();
+        } catch (Exception e) {
+            return Uni.createFrom().failure(new RuntimeException(e.getMessage(), e));
+        }
+
+        if (payload != null) {
+            return createAccessTokenAsync(payload, defaultExpiration(), tokenIssuer, sessionId, refreshToken);
+        }
+
+        return getUserIdAsync(sessionId)
+                .emitOn(Infrastructure.getDefaultWorkerPool())
+                .chain(userId -> {
+                    try (InstanceHandle<SecurityLifeCycleService> handle = Arc.container().instance(SecurityLifeCycleService.class)) {
+                        if (!handle.isAvailable()) throw new IllegalArgumentException("Please implement User Service");
+                        UserTokenPayload createdPayload = handle.get().onCreateAccessTokenPayload(userId);
+                        return createAccessTokenAsync(createdPayload, defaultExpiration(), tokenIssuer, sessionId, refreshToken);
+                    } catch (IllegalArgumentException e) {
+                        return Uni.<Map<String, Object>>createFrom().failure(new RuntimeException(e.getMessage(), e));
+                    } catch (Exception e) {
+                        return Uni.<Map<String, Object>>createFrom().failure(new BadRequestException(e.getMessage(), e));
+                    }
+                });
+    }
+
+    private Instant defaultExpiration() {
+        return expiration == 0 ?
+                Instant.now().plus(Duration.ofMinutes(30)) :
+                Instant.now().plus(Duration.ofSeconds(expiration));
+    }
+
     public Map<String, Object> createAccessToken(UserTokenPayload userTokenPayload, Instant expiredAt, String issuer, String sessionId, String existingRefreshToken) {
+        IssuedTokens issued = issueTokens(userTokenPayload, expiredAt, issuer, sessionId, existingRefreshToken);
+        KeyValueCacheUtils.saveCache(keySessionStorage, issued.sessionId(), userTokenPayload.getId());
+        if (issued.cookieTokenKey() != null) {
+            CookieSessionUtils.putSessionToCache(issued.cookieTokenKey(), issued.cookieToken());
+        }
+        return issued.response();
+    }
+
+    /**
+     * Non-blocking variant of {@link #createAccessToken(UserTokenPayload)}: signing the tokens is done right away,
+     * only the cache writes are asynchronous. Call it from the request thread, since resolving the issuer may need
+     * the current request.
+     */
+    public Uni<Map<String, Object>> createAccessTokenAsync(UserTokenPayload userTokenPayload) {
+        return createAccessTokenAsync(userTokenPayload, null, null, null, null);
+    }
+
+    private Uni<Map<String, Object>> createAccessTokenAsync(UserTokenPayload userTokenPayload, Instant expiredAt, String issuer, String sessionId, String existingRefreshToken) {
+        IssuedTokens issued;
+        try {
+            issued = issueTokens(userTokenPayload, expiredAt, issuer, sessionId, existingRefreshToken);
+        } catch (RuntimeException e) {
+            return Uni.createFrom().failure(e);
+        }
+
+        Uni<Void> saveSession = KeyValueCacheUtils.saveCacheAsync(keySessionStorage, issued.sessionId(), userTokenPayload.getId());
+        Uni<Void> saveCookie = issued.cookieTokenKey() == null ?
+                Uni.createFrom().voidItem() :
+                CookieSessionUtils.putSessionToCacheAsync(issued.cookieTokenKey(), issued.cookieToken());
+
+        return Uni.combine().all().unis(saveSession, saveCookie).discardItems()
+                .replaceWith(issued.response());
+    }
+
+    private record IssuedTokens(Map<String, Object> response, String sessionId, String cookieTokenKey, String cookieToken) {
+    }
+
+    private IssuedTokens issueTokens(UserTokenPayload userTokenPayload, Instant expiredAt, String issuer, String sessionId, String existingRefreshToken) {
         if (StringUtils.isBlank(tokenEncryptionSecret) || "-".equals(tokenEncryptionSecret)) throw new BadRequestException("Please set property \"" + PROP_SECURITY_TOKEN_ENCRYPTION_SECRET + "\".");
         if (StringUtils.isBlank(sessionId)) sessionId = UUID.randomUUID().toString();
-        KeyValueCacheUtils.saveCache(keySessionStorage, sessionId, userTokenPayload.getId());
 
         if (expiredAt == null) expiredAt = expiration == 0 ?
                 Instant.now().plus(Duration.ofMinutes(30)) :
@@ -187,11 +274,10 @@ public class AuthenticationService {
         ));
 
         if (cookieTokenEnabled) {
-            CookieSessionUtils.putSessionToCache(cookieTokenKey, cookieToken);
             response.put(keyCookieToken, cookieTokenKey);
         }
         response.put(AuthenticationService.keyExpiredAt, expiredAt.atZone(ZoneId.of("UTC")));
-        return response;
+        return new IssuedTokens(response, sessionId, cookieTokenKey, cookieToken);
     }
 
     private JwtClaimsBuilder createClaimsForAccess(UserTokenPayload userTokenPayload, Instant expiredAt, String issuer) {
@@ -258,8 +344,18 @@ public class AuthenticationService {
         return userId.equals(savedSessionById);
     }
 
+    public Uni<Boolean> checkSessionAsync(String sessionId, String userId) {
+        if (StringUtils.isBlank(userId)) return Uni.createFrom().failure(new BadRequestException("Invalid user id"));
+        return KeyValueCacheUtils.findCacheAsync(keySessionStorage, sessionId)
+                .map(userId::equals);
+    }
+
     public void removeSession(String sessionId) {
         KeyValueCacheUtils.removeCache(keySessionStorage, sessionId);
+    }
+
+    public Uni<Void> removeSessionAsync(String sessionId) {
+        return KeyValueCacheUtils.removeCacheAsync(keySessionStorage, sessionId);
     }
 
     @Deprecated(forRemoval = true)
@@ -298,6 +394,10 @@ public class AuthenticationService {
         return KeyValueCacheUtils.findCache(keySessionStorage, sessionId);
     }
 
+    public Uni<String> getUserIdAsync(String sessionId) {
+        return KeyValueCacheUtils.findCacheAsync(keySessionStorage, sessionId);
+    }
+
     public static JwtConsumerBuilder getJwtConsumerBuilder(JwtConsumerBuilder jcb, String allowedJwtIssuer) {
         if (StringUtils.isNotBlank(allowedJwtIssuer) && !"*".equals(allowedJwtIssuer)) {
             String[] issuers = allowedJwtIssuer.split(",");
@@ -312,5 +412,9 @@ public class AuthenticationService {
 
     public void logout(String sessionId) {
         KeyValueCacheUtils.removeCache(keySessionStorage, sessionId);
+    }
+
+    public Uni<Void> logoutAsync(String sessionId) {
+        return KeyValueCacheUtils.removeCacheAsync(keySessionStorage, sessionId);
     }
 }

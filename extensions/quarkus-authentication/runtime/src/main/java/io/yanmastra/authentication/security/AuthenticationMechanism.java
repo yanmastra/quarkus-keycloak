@@ -47,12 +47,15 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
             return Uni.createFrom().nullItem();
         }
 
-        String token = getTokenFromCookie(authContext);
+        // This runs on the event loop, so the cookie session must be read without blocking.
+        return getTokenFromCookie(authContext)
+                .onItem().transformToUni(cookieToken -> {
+                    String token = StringUtils.isBlank(cookieToken) ? getTokenFromHeader(authContext) : cookieToken;
+                    return authenticateWithToken(token, authContext, identityProviderManager);
+                });
+    }
 
-        if (StringUtils.isBlank(token)) {
-            token = getTokenFromHeader(authContext);
-        }
-
+    private Uni<SecurityIdentity> authenticateWithToken(String token, RoutingContext authContext, IdentityProviderManager identityProviderManager) {
         if (StringUtils.isNotBlank(token)) {
             try {
                 UserPrincipal principal = (UserPrincipal) jwtParser.parse(token);
@@ -112,13 +115,19 @@ public class AuthenticationMechanism implements HttpAuthenticationMechanism {
         return Set.of(TokenAuthenticationRequest.class);
     }
 
-    private String getTokenFromCookie(RoutingContext context) {
+    /**
+     * Looks up the token stored for the session cookie. If the cache cannot be reached the cookie is treated as
+     * absent, so the request falls back to the Authorization header instead of failing.
+     */
+    private Uni<String> getTokenFromCookie(RoutingContext context) {
         Map<String, String> cookies = CookieSessionUtils.getCookieFromHeader(context);
 
         if (cookies != null && cookies.containsKey(CookieSessionUtils.AUTH_IDENTIFIER)) {
             String identifier1 = cookies.get(CookieSessionUtils.AUTH_IDENTIFIER);
-            return CookieSessionUtils.getSessionValue(identifier1);
+            return CookieSessionUtils.getSessionValueAsync(identifier1)
+                    .onFailure().invoke(e -> log.error("Could not read the cookie session from cache, ignoring the cookie: " + e.getMessage(), e))
+                    .onFailure().recoverWithNull();
         }
-        return null;
+        return Uni.createFrom().nullItem();
     }
 }

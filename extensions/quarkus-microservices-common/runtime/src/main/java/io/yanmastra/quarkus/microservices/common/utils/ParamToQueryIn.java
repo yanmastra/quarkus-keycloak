@@ -15,7 +15,7 @@ public final class ParamToQueryIn extends ParamToQuery{
 
     @Override
     public String getWhereClause(String key, List<String> value, String alias) {
-        return alias + key + " in (:"+getSKey(key)+")";
+        return "cast(" + alias + key + " as string) in (:"+getSKey(key)+")";
     }
 
     @Override

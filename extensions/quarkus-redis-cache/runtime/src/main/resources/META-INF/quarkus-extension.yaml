@@ -1,0 +1,7 @@
+name: redis-cache
+description: Stores the io.yanmastra key/value cache (sessions, cookie tokens) in Redis instead of local files and migrates existing data automatically.
+metadata:
+  keywords:
+    - quarkus-redis-cache
+    - redis
+    - cache

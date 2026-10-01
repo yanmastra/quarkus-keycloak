@@ -26,8 +26,10 @@ mvn clean install -DskipTests
 
 Build order matters — `quarkus-base` must be built first, then the extensions that depend on it:
 1. `quarkus-base`
-2. `quarkus-authentication`, `quarkus-authorization` (depend on quarkus-base)
+2. `quarkus-authentication`, `quarkus-authorization`, `quarkus-redis-cache` (depend on quarkus-base)
 3. `quarkus-microservices-common` (depends on quarkus-base)
+
+`quarkus-base` and `quarkus-authentication` have unit/integration tests that need no Docker; `quarkus-redis-cache/integration-tests` needs Docker (Quarkus Dev Services starts Redis) or `-Dquarkus.redis.hosts=...`.
 
 ### Building and running services
 
@@ -62,9 +64,10 @@ mvn test
 
 Extensions follow the **Quarkus extension structure** with `deployment/` + `runtime/` modules under a parent POM. `quarkus-base` is a plain library (no deployment module).
 
-- **quarkus-base** — Utility classes (caching, password generation) shared across all extensions
+- **quarkus-base** — Utility classes (caching, password generation) shared across all extensions. `KeyValueCacheUtils` stores sessions/cookie tokens in encrypted local files by default; its storage is pluggable through the `KeyValueCacheStore` interface (`registerStore`) and it migrates data between stores automatically. It has blocking and `*Async` (`Uni`) methods: code running on the event loop must use the async ones
 - **quarkus-authentication** — JWT generation/validation, cookie sessions, bearer token auth. **Cannot** be combined with quarkus-authorization (conflicting auth beans)
 - **quarkus-authorization** — Keycloak-specific bearer token validation and policy enforcement
+- **quarkus-redis-cache** — Optional: keeps the `KeyValueCacheUtils` cache in Redis (Quarkus Redis client) and migrates existing local files to Redis and back. Adding the dependency is all a service needs; see `docs/redis-cache.md`
 - **quarkus-microservices-common** — Auto-generates 5 CRUD REST endpoints per entity. Converts query params to HQL for filtering, sorting, and pagination. Key base classes: `BaseEntity`, `BaseDto`, `BaseRepository`
 - **media-file-manager** — (Planned) Media file management extension, currently incomplete
 

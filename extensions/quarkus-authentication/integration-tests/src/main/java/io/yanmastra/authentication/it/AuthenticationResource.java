@@ -30,6 +30,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -119,6 +120,56 @@ public class AuthenticationResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response refresh(RefreshTokenPayload payload) {
         return authenticationService.createAccessTokenResponse(payload.refreshToken);
+    }
+
+    // --- reactive endpoints: these run on the event loop, so they must use the async service methods ---
+
+    @GET
+    @Path("async")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getTokenAsync() {
+        MyUserTokenPayload tokenPayload = (MyUserTokenPayload) securityLifeCycleService.onCreateAccessTokenPayload(UUID.randomUUID().toString());
+        return authenticationService.createAccessTokenAsync(tokenPayload)
+                .map(tokens -> Response.ok(tokens).cookie(CookieSessionUtils.createSessionCookie(tokens)).build());
+    }
+
+    @POST
+    @Path("async/refresh")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> refreshAsync(RefreshTokenPayload payload) {
+        return authenticationService.createAccessTokenAsync(payload.refreshToken)
+                .map(tokens -> Response.ok(tokens).build());
+    }
+
+    @POST
+    @Path("async/session")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Uni<Response> sessionUserAsync(RefreshTokenPayload payload) {
+        return authenticationService.getUserIdAsync(sessionIdOf(payload))
+                .map(userId -> userId == null ? Response.noContent().build() : Response.ok(userId).build());
+    }
+
+    @POST
+    @Path("async/session/check")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Uni<Response> checkSessionAsync(RefreshTokenPayload payload, @QueryParam("userId") String userId) {
+        return authenticationService.checkSessionAsync(sessionIdOf(payload), userId)
+                .map(matches -> Response.ok(String.valueOf(matches)).build());
+    }
+
+    @POST
+    @Path("async/logout")
+    public Uni<Response> logoutAsync(RefreshTokenPayload payload) {
+        return authenticationService.logoutAsync(sessionIdOf(payload))
+                .map(ignored -> Response.noContent().build());
+    }
+
+    private String sessionIdOf(RefreshTokenPayload payload) {
+        try {
+            return authenticationService.getRefreshTokenClaims(payload.refreshToken).getSubject();
+        } catch (org.jose4j.jwt.MalformedClaimException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
     }
 
     @RolesAllowed({"VIEW_ALL"})

@@ -1,5 +1,6 @@
 package io.yanmastra.authentication.utils;
 
+import io.smallrye.mutiny.Uni;
 import io.vertx.ext.web.RoutingContext;
 import io.yanmastra.authentication.security.AuthenticationService;
 import io.yanmastra.quarkusBase.utils.KeyValueCacheUtils;
@@ -70,6 +71,16 @@ public class CookieSessionUtils {
 
     public static void putSessionToCache(String key, String value) {
         KeyValueCacheUtils.saveCache(COOKIE_SESSION, key, value);
+    }
+
+    /** Non-blocking variant of {@link #getSessionValue}; use it on the event loop. */
+    public static Uni<String> getSessionValueAsync(String key) {
+        return KeyValueCacheUtils.findCacheAsync(COOKIE_SESSION, key);
+    }
+
+    /** Non-blocking variant of {@link #putSessionToCache}. */
+    public static Uni<Void> putSessionToCacheAsync(String key, String value) {
+        return KeyValueCacheUtils.saveCacheAsync(COOKIE_SESSION, key, value);
     }
 
 }

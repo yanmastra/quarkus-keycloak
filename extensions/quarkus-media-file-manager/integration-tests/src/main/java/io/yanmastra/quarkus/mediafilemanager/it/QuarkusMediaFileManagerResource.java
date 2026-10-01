@@ -15,9 +15,6 @@ import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 @Path("/test")
@@ -35,18 +32,14 @@ public class QuarkusMediaFileManagerResource {
             @RestForm("file") FileUpload fileUpload,
             @RestForm("location") String location
     ) {
-        File file = withExtension(fileUpload);
-        try {
-            MediaService.ImageStore store = mediaService.storeImage(file)
-                    .addWidthVariant(320)
-                    .addWidthVariant(640);
-            if (StringUtils.isNotBlank(location)) {
-                store.specificLocation(location);
-            }
-            return store.store();
-        } finally {
-            file.delete();
+        File file = fileUpload.uploadedFile().toFile();
+        MediaService.ImageStore store = mediaService.storeImage(file, fileUpload.fileName())
+                .addWidthVariant(320)
+                .addWidthVariant(640);
+        if (StringUtils.isNotBlank(location)) {
+            store.specificLocation(location);
         }
+        return store.store();
     }
 
     @POST
@@ -57,18 +50,14 @@ public class QuarkusMediaFileManagerResource {
             @RestForm("file") FileUpload fileUpload,
             @RestForm("location") String location
     ) {
-        File file = withExtension(fileUpload);
-        try {
-            MediaService.ImageStore store = mediaService.storeSecuredImage(file)
-                    .addWidthVariant(320)
-                    .addWidthVariant(640);
-            if (StringUtils.isNotBlank(location)) {
-                store.specificLocation(location);
-            }
-            return store.store();
-        } finally {
-            file.delete();
+        File file = fileUpload.uploadedFile().toFile();
+        MediaService.ImageStore store = mediaService.storeSecuredImage(file, fileUpload.fileName())
+                .addWidthVariant(320)
+                .addWidthVariant(640);
+        if (StringUtils.isNotBlank(location)) {
+            store.specificLocation(location);
         }
+        return store.store();
     }
 
     @POST
@@ -79,16 +68,12 @@ public class QuarkusMediaFileManagerResource {
             @RestForm("file") FileUpload fileUpload,
             @RestForm("location") String location
     ) {
-        File file = withExtension(fileUpload);
-        try {
-            MediaService.FileStore store = mediaService.storeFile(file);
-            if (StringUtils.isNotBlank(location)) {
-                store.specificLocation(location);
-            }
-            return store.store();
-        } finally {
-            file.delete();
+        File file = fileUpload.uploadedFile().toFile();
+        MediaService.FileStore store = mediaService.storeFile(file, fileUpload.fileName());
+        if (StringUtils.isNotBlank(location)) {
+            store.specificLocation(location);
         }
+        return store.store();
     }
 
     @POST
@@ -99,16 +84,12 @@ public class QuarkusMediaFileManagerResource {
             @RestForm("file") FileUpload fileUpload,
             @RestForm("location") String location
     ) {
-        File file = withExtension(fileUpload);
-        try {
-            MediaService.FileStore store = mediaService.storeSecuredFile(file);
-            if (StringUtils.isNotBlank(location)) {
-                store.specificLocation(location);
-            }
-            return store.store();
-        } finally {
-            file.delete();
+        File file = fileUpload.uploadedFile().toFile();
+        MediaService.FileStore store = mediaService.storeSecuredFile(file, fileUpload.fileName());
+        if (StringUtils.isNotBlank(location)) {
+            store.specificLocation(location);
         }
+        return store.store();
     }
 
     @DELETE
@@ -121,24 +102,5 @@ public class QuarkusMediaFileManagerResource {
     @Path("/media/secured/{fileId}")
     public void deleteSecuredMedia(@PathParam("fileId") String fileId) {
         mediaService.removeSecuredMedia(fileId);
-    }
-
-    /**
-     * Copies the uploaded temp file to a new temp file that preserves the original filename extension,
-     * since Quarkus saves multipart uploads without the original extension.
-     */
-    private static File withExtension(FileUpload fileUpload) {
-        String originalName = fileUpload.fileName();
-        String ext = "";
-        if (StringUtils.isNotBlank(originalName) && originalName.contains(".")) {
-            ext = originalName.substring(originalName.lastIndexOf("."));
-        }
-        try {
-            java.nio.file.Path tmp = Files.createTempFile("upload-", ext);
-            Files.copy(fileUpload.uploadedFile(), tmp, StandardCopyOption.REPLACE_EXISTING);
-            return tmp.toFile();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to stage uploaded file", e);
-        }
     }
 }
