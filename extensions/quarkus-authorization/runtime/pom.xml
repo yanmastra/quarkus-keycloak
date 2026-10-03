@@ -48,7 +48,7 @@
     <dependency>
       <groupId>io.yanmastra</groupId>
       <artifactId>quarkus-base</artifactId>
-      <version>${parent.version}</version>
+      <version>${quarkus-base.version}</version>
     </dependency>
   </dependencies>
   <build>

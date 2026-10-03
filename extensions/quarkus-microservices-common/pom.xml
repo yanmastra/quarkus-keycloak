@@ -12,6 +12,7 @@
     <module>runtime</module>
   </modules>
   <properties>
+    <quarkus-base.version>4.2.2</quarkus-base.version>
     <compiler-plugin.version>3.14.0</compiler-plugin.version>
     <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
 
