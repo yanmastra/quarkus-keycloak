@@ -87,7 +87,26 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check if version already published
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          URL="https://maven.pkg.github.com/${{ github.repository }}/io/yanmastra/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$URL")
+          if [ "$STATUS" = "200" ]; then
+            echo "$ARTIFACT_ID:$VERSION is already published, skipping build/publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$ARTIFACT_ID:$VERSION not found (HTTP $STATUS), will publish."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: extensions/quarkus-base
       - name: Generate settings.xml
+        if: steps.check_version.outputs.exists != 'true'
         run: |
           cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
           <settings>
@@ -101,24 +120,20 @@ jobs:
           </settings>
           SETTINGS
       - name: Build and publish
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         working-directory: extensions/quarkus-base
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Read version
-        id: version
-        run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-        working-directory: extensions/quarkus-base
       - name: Create GitHub Release
+        if: steps.check_version.outputs.exists != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="quarkus-base-v${{ steps.version.outputs.version }}"
+          TAG="quarkus-base-v${{ steps.check_version.outputs.version }}"
           gh release create "$TAG" \
-            --title "quarkus-base ${{ steps.version.outputs.version }}" \
-            --notes "Published quarkus-base ${{ steps.version.outputs.version }} to GitHub Packages." \
+            --title "quarkus-base ${{ steps.check_version.outputs.version }}" \
+            --notes "Published quarkus-base ${{ steps.check_version.outputs.version }} to GitHub Packages." \
             --latest \
             2>/dev/null || echo "Release $TAG already exists, skipping."
 
@@ -138,7 +153,25 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check if version already published
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          URL="https://maven.pkg.github.com/${{ github.repository }}/io/yanmastra/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$URL")
+          if [ "$STATUS" = "200" ]; then
+            echo "$ARTIFACT_ID:$VERSION is already published, skipping build/publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$ARTIFACT_ID:$VERSION not found (HTTP $STATUS), will publish."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: extensions/quarkus-authentication
       - name: Generate settings.xml
+        if: steps.check_version.outputs.exists != 'true'
         run: |
           cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
           <settings>
@@ -152,9 +185,11 @@ jobs:
           </settings>
           SETTINGS
       - name: Install quarkus-base locally
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn install -DskipTests
         working-directory: extensions/quarkus-base
       - name: Build and publish
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         working-directory: extensions/quarkus-authentication
         env:
@@ -176,7 +211,25 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check if version already published
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          URL="https://maven.pkg.github.com/${{ github.repository }}/io/yanmastra/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$URL")
+          if [ "$STATUS" = "200" ]; then
+            echo "$ARTIFACT_ID:$VERSION is already published, skipping build/publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$ARTIFACT_ID:$VERSION not found (HTTP $STATUS), will publish."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: extensions/quarkus-authorization
       - name: Generate settings.xml
+        if: steps.check_version.outputs.exists != 'true'
         run: |
           cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
           <settings>
@@ -190,9 +243,11 @@ jobs:
           </settings>
           SETTINGS
       - name: Install quarkus-base locally
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn install -DskipTests
         working-directory: extensions/quarkus-base
       - name: Build and publish
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         working-directory: extensions/quarkus-authorization
         env:
@@ -214,7 +269,25 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check if version already published
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          URL="https://maven.pkg.github.com/${{ github.repository }}/io/yanmastra/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$URL")
+          if [ "$STATUS" = "200" ]; then
+            echo "$ARTIFACT_ID:$VERSION is already published, skipping build/publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$ARTIFACT_ID:$VERSION not found (HTTP $STATUS), will publish."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: extensions/quarkus-microservices-common
       - name: Generate settings.xml
+        if: steps.check_version.outputs.exists != 'true'
         run: |
           cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
           <settings>
@@ -228,9 +301,11 @@ jobs:
           </settings>
           SETTINGS
       - name: Install quarkus-base locally
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn install -DskipTests
         working-directory: extensions/quarkus-base
       - name: Build and publish
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         working-directory: extensions/quarkus-microservices-common
         env:
@@ -252,7 +327,25 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check if version already published
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          URL="https://maven.pkg.github.com/${{ github.repository }}/io/yanmastra/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$URL")
+          if [ "$STATUS" = "200" ]; then
+            echo "$ARTIFACT_ID:$VERSION is already published, skipping build/publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$ARTIFACT_ID:$VERSION not found (HTTP $STATUS), will publish."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: extensions/quarkus-error-mail-notification
       - name: Generate settings.xml
+        if: steps.check_version.outputs.exists != 'true'
         run: |
           cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
           <settings>
@@ -266,9 +359,11 @@ jobs:
           </settings>
           SETTINGS
       - name: Install quarkus-base locally
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn install -DskipTests
         working-directory: extensions/quarkus-base
       - name: Build and publish
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         working-directory: extensions/quarkus-error-mail-notification
         env:
@@ -290,7 +385,26 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Check if version already published
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          ARTIFACT_ID=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          URL="https://maven.pkg.github.com/${{ github.repository }}/io/yanmastra/${ARTIFACT_ID}/${VERSION}/${ARTIFACT_ID}-${VERSION}.pom"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "$URL")
+          if [ "$STATUS" = "200" ]; then
+            echo "$ARTIFACT_ID:$VERSION is already published, skipping build/publish."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "$ARTIFACT_ID:$VERSION not found (HTTP $STATUS), will publish."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: extensions/quarkus-media-file-manager
       - name: Generate settings.xml
+        if: steps.check_version.outputs.exists != 'true'
         run: |
           cat > $GITHUB_WORKSPACE/settings.xml << 'SETTINGS'
           <settings>
@@ -304,26 +418,23 @@ jobs:
           </settings>
           SETTINGS
       - name: Install quarkus-base locally
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn install -DskipTests
         working-directory: extensions/quarkus-base
       - name: Build and publish
+        if: steps.check_version.outputs.exists != 'true'
         run: mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         working-directory: extensions/quarkus-media-file-manager
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Read version
-        id: version
-        run: |
-          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-        working-directory: extensions/quarkus-media-file-manager
       - name: Create GitHub Release
+        if: steps.check_version.outputs.exists != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="quarkus-media-file-manager-v${{ steps.version.outputs.version }}"
+          TAG="quarkus-media-file-manager-v${{ steps.check_version.outputs.version }}"
           gh release create "$TAG" \
-            --title "quarkus-media-file-manager ${{ steps.version.outputs.version }}" \
-            --notes "Published quarkus-media-file-manager ${{ steps.version.outputs.version }} to GitHub Packages." \
+            --title "quarkus-media-file-manager ${{ steps.check_version.outputs.version }}" \
+            --notes "Published quarkus-media-file-manager ${{ steps.check_version.outputs.version }} to GitHub Packages." \
             --latest \
             2>/dev/null || echo "Release $TAG already exists, skipping."

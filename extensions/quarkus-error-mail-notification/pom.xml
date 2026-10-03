@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.yanmastra</groupId>
     <artifactId>quarkus-error-mail-notification-parent</artifactId>
-    <version>4.2.2</version>
+    <version>4.2.4</version>
     <packaging>pom</packaging>
     <name>Error Mail Notification - Parent</name>
     <modules>
@@ -13,7 +13,7 @@
         <module>runtime</module>
     </modules>
     <properties>
-        <quarkus-base.version>4.2.2</quarkus-base.version>
+        <quarkus-base.version>4.2.3</quarkus-base.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
 
