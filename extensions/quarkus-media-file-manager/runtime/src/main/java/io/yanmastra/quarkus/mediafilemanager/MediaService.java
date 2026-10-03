@@ -67,23 +67,44 @@ public class MediaService {
     // -------------------------------------------------------------------------
 
     public ImageStore storeImage(File file) {
-        if (isS3()) return new ImageStore(file, s3ClientInstance.get(), config.s3().bucket(), BASE_MEDIA_PATH);
-        return new ImageStore(file, config.path(), BASE_MEDIA_PATH);
+        return storeImage(file, file.getName());
+    }
+
+    /**
+     * @param originalFileName the file name as uploaded by the client, used to detect the extension.
+     *                          Needed because multipart upload handlers (e.g. RESTEasy Reactive) persist
+     *                          the uploaded content under a generated temp name with no extension.
+     */
+    public ImageStore storeImage(File file, String originalFileName) {
+        if (isS3()) return new ImageStore(file, originalFileName, s3ClientInstance.get(), config.s3().bucket(), BASE_MEDIA_PATH);
+        return new ImageStore(file, originalFileName, config.path(), BASE_MEDIA_PATH);
     }
 
     public ImageStore storeSecuredImage(File file) {
-        if (isS3()) return new ImageStore(file, s3ClientInstance.get(), config.s3().bucket(), BASE_SECURED_MEDIA_PATH);
-        return new ImageStore(file, config.secured().path(), BASE_SECURED_MEDIA_PATH);
+        return storeSecuredImage(file, file.getName());
+    }
+
+    public ImageStore storeSecuredImage(File file, String originalFileName) {
+        if (isS3()) return new ImageStore(file, originalFileName, s3ClientInstance.get(), config.s3().bucket(), BASE_SECURED_MEDIA_PATH);
+        return new ImageStore(file, originalFileName, config.secured().path(), BASE_SECURED_MEDIA_PATH);
     }
 
     public FileStore storeFile(File file) {
-        if (isS3()) return new FileStore(file, s3ClientInstance.get(), config.s3().bucket(), BASE_MEDIA_PATH);
-        return new FileStore(file, config.path(), BASE_MEDIA_PATH);
+        return storeFile(file, file.getName());
+    }
+
+    public FileStore storeFile(File file, String originalFileName) {
+        if (isS3()) return new FileStore(file, originalFileName, s3ClientInstance.get(), config.s3().bucket(), BASE_MEDIA_PATH);
+        return new FileStore(file, originalFileName, config.path(), BASE_MEDIA_PATH);
     }
 
     public FileStore storeSecuredFile(File file) {
-        if (isS3()) return new FileStore(file, s3ClientInstance.get(), config.s3().bucket(), BASE_SECURED_MEDIA_PATH);
-        return new FileStore(file, config.secured().path(), BASE_SECURED_MEDIA_PATH);
+        return storeSecuredFile(file, file.getName());
+    }
+
+    public FileStore storeSecuredFile(File file, String originalFileName) {
+        if (isS3()) return new FileStore(file, originalFileName, s3ClientInstance.get(), config.s3().bucket(), BASE_SECURED_MEDIA_PATH);
+        return new FileStore(file, originalFileName, config.secured().path(), BASE_SECURED_MEDIA_PATH);
     }
 
     // -------------------------------------------------------------------------
@@ -328,6 +349,7 @@ static String s3KeyPrefix(String urlPath) {
     @RegisterForReflection
     public static class MediaStore {
         protected File file;
+        protected String originalFileName;
         protected String path;
         protected String urlPath;
         protected String specificLocation;
@@ -375,15 +397,17 @@ static String s3KeyPrefix(String urlPath) {
 
         private final List<Integer> widthVariant;
 
-        public ImageStore(File file, String path, String urlPath) {
+        public ImageStore(File file, String originalFileName, String path, String urlPath) {
             this.file = file;
+            this.originalFileName = originalFileName;
             this.path = path;
             this.urlPath = urlPath;
             widthVariant = new ArrayList<>();
         }
 
-        public ImageStore(File file, S3Client s3Client, String bucket, String urlPath) {
+        public ImageStore(File file, String originalFileName, S3Client s3Client, String bucket, String urlPath) {
             this.file = file;
+            this.originalFileName = originalFileName;
             this.s3Client = s3Client;
             this.bucket = bucket;
             this.urlPath = urlPath;
@@ -415,7 +439,7 @@ static String s3KeyPrefix(String urlPath) {
                 Files.createDirectories(Paths.get(rootMetaPath));
 
                 String baseFileName = UUID.randomUUID().toString();
-                String extension = extractExtension(file.getAbsolutePath());
+                String extension = extractExtension(originalFileName);
 
                 if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension.toLowerCase())) {
                     throw new BadRequestException("File type not allowed: " + extension);
@@ -461,7 +485,7 @@ static String s3KeyPrefix(String urlPath) {
         private Map<String, String> storeToS3() {
             if (file == null || !file.exists()) throw new NotFoundException("File not found");
 
-            String extension = extractExtension(file.getName());
+            String extension = extractExtension(originalFileName);
             if (!ALLOWED_IMAGE_EXTENSIONS.contains(extension.toLowerCase())) {
                 throw new BadRequestException("File type not allowed: " + extension);
             }
@@ -527,14 +551,16 @@ static String s3KeyPrefix(String urlPath) {
     @RegisterForReflection
     public static class FileStore extends MediaStore {
 
-        public FileStore(File file, String path, String urlPath) {
+        public FileStore(File file, String originalFileName, String path, String urlPath) {
             this.file = file;
+            this.originalFileName = originalFileName;
             this.path = path;
             this.urlPath = urlPath;
         }
 
-        public FileStore(File file, S3Client s3Client, String bucket, String urlPath) {
+        public FileStore(File file, String originalFileName, S3Client s3Client, String bucket, String urlPath) {
             this.file = file;
+            this.originalFileName = originalFileName;
             this.s3Client = s3Client;
             this.bucket = bucket;
             this.urlPath = urlPath;
@@ -555,7 +581,7 @@ static String s3KeyPrefix(String urlPath) {
                 Files.createDirectories(Paths.get(basePath));
                 Files.createDirectories(Paths.get(rootMetaPath));
 
-                String extension = extractExtension(file.getName());
+                String extension = extractExtension(originalFileName);
                 String fileId = UUID.randomUUID().toString();
                 String storedName = fileId + (extension.isEmpty() ? "" : "." + extension);
                 Files.copy(file.toPath(), Paths.get(basePath + storedName));
@@ -576,7 +602,7 @@ static String s3KeyPrefix(String urlPath) {
                 throw new IllegalArgumentException("File must not be null or missing");
 
             try {
-                String extension = extractExtension(file.getName());
+                String extension = extractExtension(originalFileName);
                 String fileId = UUID.randomUUID().toString();
                 String storedName = fileId + (extension.isEmpty() ? "" : "." + extension);
                 String s3Prefix = buildS3Prefix(); // includes specificLocation
@@ -607,7 +633,7 @@ static String s3KeyPrefix(String urlPath) {
     }
 
     private static String extractExtension(String fileName) {
-        if (!fileName.contains(".")) return "";
+        if (StringUtils.isBlank(fileName) || !fileName.contains(".")) return "";
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
         return ext.length() <= 5 ? ext : "";
     }
