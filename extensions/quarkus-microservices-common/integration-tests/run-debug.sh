@@ -1,4 +1,4 @@
-#!/bin/bash
+
 DIR=$(pwd)
 cd ../../../infra/docker
 source .env

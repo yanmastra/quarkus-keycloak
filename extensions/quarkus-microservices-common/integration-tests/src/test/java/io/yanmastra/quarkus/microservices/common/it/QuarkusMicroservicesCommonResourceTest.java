@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static io.restassured.RestAssured.given;
@@ -449,5 +450,74 @@ public class QuarkusMicroservicesCommonResourceTest {
                 .body("meta.total_data", greaterThan(0));
     }
 
+    private String createSampleEntityWithDateTime(String category, ZonedDateTime dateTime) {
+        ResponseJson<SampleEntityJson> responseJson = given()
+                .body(Json.createObjectBuilder()
+                        .add("name", UUID.randomUUID().toString())
+                        .add("category", category)
+                        .add("price", 1000)
+                        .add("is_active", false)
+                        .add("x_date", DateTimeUtils.toDateOnly(dateTime))
+                        .add("x_date_time", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(dateTime))
+                        .build()
+                        .toString()
+                )
+                .contentType(MediaType.APPLICATION_JSON)
+                .post("/api/v1/sample-entity")
+                .then()
+                .statusCode(200)
+                .extract().response().getBody().as(new TypeRef<>() {
+                });
+        return responseJson.getData().id;
+    }
+
+    /**
+     * dateTime values are OffsetDateTime/ZonedDateTime, never java.util.Date, so they never hit the
+     * cast(... as date) branch in ParamToQueryIn/NotIn/GreaterThan/LessThan - these stay on the
+     * plain, uncast comparison path. This proves whether that uncast path is correct against a real
+     * timestamptz column, across a non-UTC offset.
+     */
+    @Test
+    public void testFilterDateTimeGreaterThanLessThanInNotIn() {
+        String category = UUID.randomUUID().toString();
+        ZonedDateTime base = ZonedDateTime.now().withZoneSameLocal(ZoneId.of("Asia/Makassar")).truncatedTo(ChronoUnit.MICROS);
+        ZonedDateTime earlier = base.minusHours(2);
+        ZonedDateTime later = base.plusHours(2);
+
+        String earlierId = createSampleEntityWithDateTime(category, earlier);
+        String laterId = createSampleEntityWithDateTime(category, later);
+
+        given()
+                .when().get("/api/v1/sample-entity?dateTime=greaterThan,"
+                        + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(base)
+                        + "&category=" + category)
+                .then().statusCode(200)
+                .body("meta.total_data", equalTo(1))
+                .body("data[0].id", equalTo(laterId));
+
+        given()
+                .when().get("/api/v1/sample-entity?dateTime=lessThan,"
+                        + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(base)
+                        + "&category=" + category)
+                .then().statusCode(200)
+                .body("meta.total_data", equalTo(1))
+                .body("data[0].id", equalTo(earlierId));
+
+        given()
+                .when().get("/api/v1/sample-entity?dateTime=in,"
+                        + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(earlier) + ","
+                        + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(later)
+                        + "&category=" + category)
+                .then().statusCode(200)
+                .body("meta.total_data", equalTo(2));
+
+        given()
+                .when().get("/api/v1/sample-entity?dateTime=notIn,"
+                        + DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(earlier)
+                        + "&category=" + category)
+                .then().statusCode(200)
+                .body("meta.total_data", equalTo(1))
+                .body("data[0].id", equalTo(laterId));
+    }
 
 }
